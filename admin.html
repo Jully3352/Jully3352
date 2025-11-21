@@ -118,7 +118,7 @@
             color: var(--text-dark);
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 10px;
             border: 2px solid var(--border-color);
@@ -150,6 +150,11 @@
             color: var(--primary-color);
         }
 
+        .user-role {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+        }
+
         .user-actions {
             display: flex;
             gap: 10px;
@@ -178,6 +183,86 @@
         .stat-label {
             color: var(--text-medium);
             margin-top: 0.5rem;
+        }
+
+        .module-list {
+            margin-top: 2rem;
+        }
+
+        .module-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: white;
+        }
+
+        .module-info {
+            flex: 1;
+        }
+
+        .module-name {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .module-desc {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+        }
+
+        .module-status {
+            font-size: 0.8rem;
+            color: var(--text-medium);
+        }
+
+        .module-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 2rem;
         }
     </style>
 </head>
@@ -216,12 +301,8 @@
             <div class="admin-card">
                 <h2><i class="fas fa-cubes"></i> 模块管理</h2>
                 <p>管理平台功能模块的上架和下架</p>
-                
-                <div class="form-group">
-                    <button class="btn btn-primary" id="addModuleBtn">添加新模块</button>
-                </div>
 
-                <div class="user-list" id="moduleList">
+                <div class="module-list" id="moduleList">
                     <!-- 模块列表将在这里动态生成 -->
                 </div>
             </div>
@@ -279,7 +360,7 @@
     </div>
 
     <!-- 添加用户弹窗 -->
-    <div class="modal-overlay" id="userModal" style="display: none;">
+    <div class="modal-overlay" id="userModal">
         <div class="modal">
             <div class="modal-header">
                 <h3 id="modalTitle">添加用户</h3>
@@ -301,7 +382,7 @@
                     </div>
                     <div class="form-group">
                         <label>角色</label>
-                        <select id="userRole" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px;">
+                        <select id="userRole">
                             <option value="user">普通用户</option>
                             <option value="admin">管理员</option>
                         </select>
@@ -365,11 +446,6 @@
                     this.showUserForm();
                 });
 
-                // 添加模块
-                document.getElementById('addModuleBtn').addEventListener('click', () => {
-                    this.showModuleForm();
-                });
-
                 // 修改密码
                 document.getElementById('changePasswordBtn').addEventListener('click', () => {
                     this.changeAdminPassword();
@@ -421,7 +497,7 @@
                     userItem.innerHTML = `
                         <div class="user-info">
                             <div class="user-name">${user.username}</div>
-                            <div style="color: #666; font-size: 0.9em;">角色: ${user.role === 'admin' ? '管理员' : '普通用户'}</div>
+                            <div class="user-role">角色: ${user.role === 'admin' ? '管理员' : '普通用户'}</div>
                         </div>
                         <div class="user-actions">
                             <button class="btn btn-primary" onclick="adminManager.editUser('${user.username}')">编辑</button>
@@ -534,27 +610,55 @@
             }
 
             loadModules() {
-                const modules = JSON.parse(localStorage.getItem('platformModules') || '[]');
-                this.renderModules(modules);
+                // 从localStorage加载模块状态
+                const moduleStatus = JSON.parse(localStorage.getItem('moduleStatus') || '{}');
+                const modules = [
+                    { id: 'aviation', name: '黑屏智能指令生成', desc: '支持身份证/护照双模式，自动生成标准民航指令' },
+                    { id: 'sdinf', name: '黑屏智能指令生成【手动关联成人】', desc: '支持身份证/护照双模式，自动生成标准民航指令' },
+                    { id: 'bp', name: '白屏多人生编', desc: '乘机人信息批量导入工具，根据输入的乘机人信息生成符合模板要求的Excel文件' },
+                    { id: 'nct', name: '升级模版', desc: '支持紧急、复杂等模版' },
+                    { id: 'compare', name: '智能数据对比', desc: 'Excel文件差异分析，支持金额容差配置' },
+                    { id: 'audit', name: '兜底记录审计系统', desc: '实时审计跟踪，支持数据导出Excel' },
+                    { id: 'itinerary', name: '国际行程单生成器', desc: '自动生成可打印行程单，支持多航班组合' },
+                    { id: 'hu', name: 'HU代理人平台', desc: '海南航空代理系统' },
+                    { id: '3u', name: '3U代理人平台', desc: '四川航空代理系统' },
+                    { id: 'cz', name: 'CZ代理人平台', desc: '南方航空代理系统' },
+                    { id: 'mf', name: 'MF代理人平台', desc: '客票操作' },
+                    { id: 'kn', name: 'KN代理人平台', desc: '联合航空代理系统' },
+                    { id: 'knowledge1', name: '客票病退操作知识库', desc: '退票/查询操作' },
+                    { id: 'knowledge2', name: '客票签转知识库', desc: '协助改签' },
+                    { id: 'knowledge3', name: '客票重复购票规则', desc: '航司规则' },
+                    { id: 'knowledge4', name: '客票错误购票规则', desc: '航司规则' },
+                    { id: 'hx', name: '海系非自愿退票', desc: '上传退票凭证' },
+                    { id: 'dft', name: '德付通', desc: '上传退票凭证' },
+                    { id: 'charter', name: '包机客票查询', desc: '特殊政策查询' },
+                    { id: 'dishonest', name: '失信人查询', desc: '中国执行信息公开网' },
+                    { id: 'change', name: '客票退改签查询', desc: '各航司客规' },
+                    { id: 'sms', name: '短信模板中心', desc: '常用短信模板快捷入口' },
+                    { id: 'more', name: '更多板块研发中', desc: '敬请期待' }
+                ];
+
+                this.renderModules(modules, moduleStatus);
             }
 
-            renderModules(modules) {
+            renderModules(modules, moduleStatus) {
                 const moduleList = document.getElementById('moduleList');
                 moduleList.innerHTML = '';
 
                 modules.forEach(module => {
+                    const status = moduleStatus[module.id] || 'active';
                     const moduleItem = document.createElement('div');
-                    moduleItem.className = 'user-item';
+                    moduleItem.className = 'module-item';
                     moduleItem.innerHTML = `
-                        <div class="user-info">
-                            <div class="user-name">${module.name}</div>
-                            <div style="color: #666; font-size: 0.9em;">${module.desc}</div>
-                            <div style="color: #999; font-size: 0.8em;">状态: ${module.status === 'active' ? '上架' : '下架'} | 点击量: ${module.clicks || 0}</div>
+                        <div class="module-info">
+                            <div class="module-name">${module.name}</div>
+                            <div class="module-desc">${module.desc}</div>
+                            <div class="module-status">状态: ${status === 'active' ? '上架' : '下架'}</div>
                         </div>
-                        <div class="user-actions">
-                            <button class="btn ${module.status === 'active' ? 'btn-danger' : 'btn-success'}" 
+                        <div class="module-actions">
+                            <button class="btn ${status === 'active' ? 'btn-danger' : 'btn-success'}" 
                                     onclick="adminManager.toggleModule('${module.id}')">
-                                ${module.status === 'active' ? '下架' : '上架'}
+                                ${status === 'active' ? '下架' : '上架'}
                             </button>
                         </div>
                     `;
@@ -563,39 +667,27 @@
             }
 
             toggleModule(moduleId) {
-                let modules = JSON.parse(localStorage.getItem('platformModules') || '[]');
-                const module = modules.find(m => m.id === moduleId);
-                if (module) {
-                    module.status = module.status === 'active' ? 'inactive' : 'active';
-                    localStorage.setItem('platformModules', JSON.stringify(modules));
-                    this.renderModules(modules);
-                }
-            }
-
-            showModuleForm() {
-                alert('模块添加功能需要在主页面中完成。');
-                window.location.href = 'index.html';
+                const moduleStatus = JSON.parse(localStorage.getItem('moduleStatus') || '{}');
+                moduleStatus[moduleId] = moduleStatus[moduleId] === 'active' ? 'inactive' : 'active';
+                localStorage.setItem('moduleStatus', JSON.stringify(moduleStatus));
+                this.loadModules(); // 重新加载模块
             }
 
             loadStats() {
                 const users = JSON.parse(localStorage.getItem('platformUsers') || '[]');
-                const modules = JSON.parse(localStorage.getItem('platformModules') || '[]');
+                const moduleStatus = JSON.parse(localStorage.getItem('moduleStatus') || '{}');
+                const activeModules = Object.values(moduleStatus).filter(status => status === 'active').length;
                 
-                let totalClicks = 0;
-                modules.forEach(module => {
-                    totalClicks += module.clicks || 0;
-                });
-
                 document.getElementById('totalUsers').textContent = users.length;
                 document.getElementById('activeUsers').textContent = users.length; // 简化：所有用户都算活跃
-                document.getElementById('totalModules').textContent = modules.filter(m => m.status === 'active').length;
-                document.getElementById('totalClicks').textContent = totalClicks;
+                document.getElementById('totalModules').textContent = activeModules;
+                document.getElementById('totalClicks').textContent = 'N/A'; // 点击量统计需要额外实现
             }
 
             backupData() {
                 const data = {
                     users: JSON.parse(localStorage.getItem('platformUsers') || '[]'),
-                    modules: JSON.parse(localStorage.getItem('platformModules') || '[]'),
+                    moduleStatus: JSON.parse(localStorage.getItem('moduleStatus') || '{}'),
                     backupTime: new Date().toISOString()
                 };
                 
@@ -620,7 +712,7 @@
                         try {
                             const data = JSON.parse(event.target.result);
                             if (data.users) localStorage.setItem('platformUsers', JSON.stringify(data.users));
-                            if (data.modules) localStorage.setItem('platformModules', JSON.stringify(data.modules));
+                            if (data.moduleStatus) localStorage.setItem('moduleStatus', JSON.stringify(data.moduleStatus));
                             
                             this.loadUsers();
                             this.loadModules();
@@ -638,7 +730,7 @@
             resetSystem() {
                 if (confirm('确定要重置系统吗？这将删除所有用户和模块数据！')) {
                     localStorage.removeItem('platformUsers');
-                    localStorage.removeItem('platformModules');
+                    localStorage.removeItem('moduleStatus');
                     this.loadUsers();
                     this.loadModules();
                     this.loadStats();
@@ -646,50 +738,6 @@
                 }
             }
         }
-
-        // 添加弹窗样式
-        const modalStyles = `
-            .modal-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 1000;
-            }
-            .modal {
-                background: white;
-                border-radius: 12px;
-                width: 90%;
-                max-width: 500px;
-                max-height: 90vh;
-                overflow-y: auto;
-            }
-            .modal-header {
-                padding: 1.5rem;
-                border-bottom: 1px solid #e2e8f0;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .modal-body {
-                padding: 1.5rem;
-            }
-            .form-actions {
-                display: flex;
-                gap: 10px;
-                justify-content: flex-end;
-                margin-top: 2rem;
-            }
-        `;
-
-        const styleSheet = document.createElement('style');
-        styleSheet.textContent = modalStyles;
-        document.head.appendChild(styleSheet);
 
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
