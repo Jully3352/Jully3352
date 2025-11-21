@@ -1,0 +1,27 @@
+{
+  "users": [
+    {"username": "吴晨晨", "password": "123456"},
+    {"username": "朱巾杰", "password": "123456"},
+    {"username": "胡国柱", "password": "123456"},
+    {"username": "胡柯兰", "password": "123456"},
+    {"username": "俞子文", "password": "123456"},
+ {"username": "杜千慧", "password": "123456"},
+ {"username": "方婷婷", "password": "123456"},
+ {"username": "刘广鑫", "password": "123456"},
+ {"username": "刘强", "password": "123456"},
+ {"username": "韩琼", "password": "123456"},
+ {"username": "周璇", "password": "123456"},
+ {"username": "刘兰欣", "password": "123456"},
+ {"username": "黄曌", "password": "123456"},
+ {"username": "测试4", "password": "123456"},
+    {"username": "薛俊琴", "password": "123456"},
+    {"username": "荆馨", "password": "123456"},
+    {"username": "谭浪", "password": "123456"},
+    {"username": "徐祥新", "password": "123456"},
+ {"username": "张夏书", "password": "123456"},
+ {"username": "杜一帆", "password": "123456"},
+ {"username": "邓文飞", "password": "123456"},
+ {"username": "龚寒霜", "password": "123456"},
+ {"username": "程萍", "password": "123456"}
+  ]
+}
