@@ -26,6 +26,142 @@
             --card-gradient: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(245,249,255,0.95) 100%);
             --header-gradient: linear-gradient(135deg, var(--primary-color), #003b7b);
             --sidebar-width: 280px;
+            --theme-name: "默认蓝色";
+        }
+
+        /* 绿色主题 */
+        .theme-green {
+            --primary-color: #2e7d32;
+            --accent-color: #4caf50;
+            --secondary-color: #81c784;
+            --background-color: #f1f8e9;
+            --card-shadow: 0 10px 30px rgba(46, 125, 50, 0.08);
+            --hover-shadow: 0 12px 30px rgba(76, 175, 80, 0.15);
+            --category-bg: #e8f5e9;
+            --header-gradient: linear-gradient(135deg, var(--primary-color), #1b5e20);
+            --theme-name: "清新绿色";
+        }
+
+        /* 紫色主题 */
+        .theme-purple {
+            --primary-color: #7b1fa2;
+            --accent-color: #9c27b0;
+            --secondary-color: #ba68c8;
+            --background-color: #f3e5f5;
+            --card-shadow: 0 10px 30px rgba(123, 31, 162, 0.08);
+            --hover-shadow: 0 12px 30px rgba(156, 39, 176, 0.15);
+            --category-bg: #f3e5f5;
+            --header-gradient: linear-gradient(135deg, var(--primary-color), #4a148c);
+            --theme-name: "优雅紫色";
+        }
+
+        /* 深色主题 */
+        .theme-dark {
+            --primary-color: #1565c0;
+            --accent-color: #2196f3;
+            --secondary-color: #64b5f6;
+            --background-color: #121212;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --hover-shadow: 0 12px 30px rgba(33, 150, 243, 0.2);
+            --category-bg: #1e1e1e;
+            --text-dark: #e0e0e0;
+            --text-medium: #b0b0b0;
+            --text-light: #8a8a8a;
+            --border-color: #333333;
+            --card-gradient: linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(40,40,40,0.95) 100%);
+            --header-gradient: linear-gradient(135deg, var(--primary-color), #0d47a1);
+            --theme-name: "深色模式";
+        }
+
+        /* 橙色主题 */
+        .theme-orange {
+            --primary-color: #ef6c00;
+            --accent-color: #ff9800;
+            --secondary-color: #ffb74d;
+            --background-color: #fff3e0;
+            --card-shadow: 0 10px 30px rgba(239, 108, 0, 0.08);
+            --hover-shadow: 0 12px 30px rgba(255, 152, 0, 0.15);
+            --category-bg: #ffe0b2;
+            --header-gradient: linear-gradient(135deg, var(--primary-color), #e65100);
+            --theme-name: "活力橙色";
+        }
+
+        /* 新增主题 - 粉色 */
+        .theme-pink {
+            --primary-color: #e91e63;
+            --accent-color: #ec407a;
+            --secondary-color: #f48fb1;
+            --background-color: #fce4ec;
+            --card-shadow: 0 10px 30px rgba(233, 30, 99, 0.08);
+            --hover-shadow: 0 12px 30px rgba(236, 64, 122, 0.15);
+            --category-bg: #fce4ec;
+            --header-gradient: linear-gradient(135deg, var(--primary-color), #ad1457);
+            --theme-name: "浪漫粉色";
+        }
+
+        /* 新增主题 - 红色 */
+        .theme-red {
+            --primary-color: #d32f2f;
+            --accent-color: #f44336;
+            --secondary-color: #ef5350;
+            --background-color: #ffebee;
+            --card-shadow: 0 10px 30px rgba(211, 47, 47, 0.08);
+            --hover-shadow: 0 12px 30px rgba(244, 67, 54, 0.15);
+            --category-bg: #ffebee;
+            --header-gradient: linear-gradient(135deg, var(--primary-color), #b71c1c);
+            --theme-name: "热情红色";
+        }
+
+        /* 新增主题 - 青色 */
+        .theme-cyan {
+            --primary-color: #0097a7;
+            --accent-color: #00bcd4;
+            --secondary-color: #26c6da;
+            --background-color: #e0f7fa;
+            --card-shadow: 0 10px 30px rgba(0, 151, 167, 0.08);
+            --hover-shadow: 0 12px 30px rgba(0, 188, 212, 0.15);
+            --category-bg: #e0f7fa;
+            --header-gradient: linear-gradient(135deg, var(--primary-color), #006978);
+            --theme-name: "清新青色";
+        }
+
+        /* 新增主题 - 蓝紫色 */
+        .theme-blue-purple {
+            --primary-color: #5c6bc0;
+            --accent-color: #7986cb;
+            --secondary-color: #9fa8da;
+            --background-color: #e8eaf6;
+            --card-shadow: 0 10px 30px rgba(92, 107, 192, 0.08);
+            --hover-shadow: 0 12px 30px rgba(121, 134, 203, 0.15);
+            --category-bg: #e8eaf6;
+            --header-gradient: linear-gradient(135deg, var(--primary-color), #3949ab);
+            --theme-name: "科技蓝紫";
+        }
+
+        /* 新增主题 - 棕色 */
+        .theme-brown {
+            --primary-color: #795548;
+            --accent-color: #8d6e63;
+            --secondary-color: #a1887f;
+            --background-color: #efebe9;
+            --card-shadow: 0 10px 30px rgba(121, 85, 72, 0.08);
+            --hover-shadow: 0 12px 30px rgba(141, 110, 99, 0.15);
+            --category-bg: #efebe9;
+            --header-gradient: linear-gradient(135deg, var(--primary-color), #4e342e);
+            --theme-name: "大地棕色";
+        }
+
+        /* 新增主题 - 深蓝色 */
+        .theme-deep-blue {
+            --primary-color: #0d47a1;
+            --accent-color: #1565c0;
+            --secondary-color: #1976d2;
+            --background-color: #e3f2fd;
+            --card-shadow: 0 10px 30px rgba(13, 71, 161, 0.08);
+            --hover-shadow: 0 12px 30px rgba(21, 101, 192, 0.15);
+            --category-bg: #e3f2fd;
+            --header-gradient: linear-gradient(135deg, var(--primary-color), #002171);
+            --theme-name: "午夜深蓝";
         }
 
         * {
@@ -40,7 +176,10 @@
             min-height: 100vh;
             line-height: 1.6;
             color: var(--text-dark);
+            background-image: radial-gradient(circle at 1% 1%, rgba(30, 136, 229, 0.03) 0%, rgba(245, 249, 255, 0) 90%);
+            background-attachment: fixed;
             display: flex;
+            transition: all 0.3s ease;
         }
 
         /* 侧边栏样式 */
@@ -53,6 +192,7 @@
             position: fixed;
             overflow-y: auto;
             z-index: 100;
+            transition: all 0.3s ease;
         }
 
         .sidebar-header {
@@ -70,6 +210,13 @@
             color: var(--primary-color);
         }
 
+        .logo i {
+            background: var(--header-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+        }
+
         .user-info {
             display: flex;
             align-items: center;
@@ -80,6 +227,15 @@
             border-radius: 12px;
             color: var(--primary-color);
             font-weight: 600;
+        }
+
+        .user-info::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success-color);
         }
 
         .sidebar-nav {
@@ -98,16 +254,125 @@
             cursor: pointer;
         }
 
+        .nav-item:hover {
+            background: rgba(30, 136, 229, 0.08);
+            color: var(--primary-color);
+        }
+
         .nav-item.active {
             background: var(--primary-color);
             color: white;
+            box-shadow: 0 5px 15px rgba(10, 92, 184, 0.2);
         }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-item.has-submenu {
+            position: relative;
+        }
+
+        .nav-item.has-submenu::after {
+            content: '\f107';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 20px;
+            transition: transform 0.3s;
+        }
+
+        .nav-item.has-submenu.open::after {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            margin-left: 20px;
+        }
+
+        .nav-item.has-submenu.open .submenu {
+            max-height: 350px; /* 增加高度以容纳更多选项 */
+            overflow-y: auto; /* 添加滚动条 */
+        }
+
+        /* 子菜单滚动条样式 */
+        .submenu::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .submenu::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 3px;
+        }
+
+        .submenu::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
+        }
+
+        .submenu::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.3);
+        }
+
+        .submenu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: var(--text-medium);
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .submenu-item:hover {
+            background: rgba(30, 136, 229, 0.05);
+            color: var(--primary-color);
+        }
+
+        .submenu-item.active {
+            background: rgba(30, 136, 229, 0.1);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .theme-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .theme-blue .theme-color { background: #0a5cb8; }
+        .theme-green .theme-color { background: #2e7d32; }
+        .theme-purple .theme-color { background: #7b1fa2; }
+        .theme-dark .theme-color { background: #121212; }
+        .theme-orange .theme-color { background: #ef6c00; }
+        .theme-pink .theme-color { background: #e91e63; }
+        .theme-red .theme-color { background: #d32f2f; }
+        .theme-cyan .theme-color { background: #0097a7; }
+        .theme-blue-purple .theme-color { background: #5c6bc0; }
+        .theme-brown .theme-color { background: #795548; }
+        .theme-deep-blue .theme-color { background: #0d47a1; }
 
         /* 主内容区样式 */
         .main-content {
             flex: 1;
             margin-left: var(--sidebar-width);
             padding: 30px;
+            transition: all 0.3s ease;
         }
 
         .platform-header {
@@ -117,10 +382,46 @@
             border-radius: 18px;
             margin-bottom: 30px;
             box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 4px solid rgba(255,255,255,0.15);
+        }
+
+        .platform-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            transform: translate(40%, -40%);
+        }
+
+        .platform-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: clamp(1.8rem, 4vw, 2.2rem);
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .platform-subtitle {
+            font-weight: 300;
+            opacity: 0.85;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
         }
 
         .search-container {
             margin-bottom: 30px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
         }
 
         #moduleSearch {
@@ -129,10 +430,35 @@
             border: none;
             border-radius: 16px;
             font-size: 1.05rem;
+            transition: all 0.3s;
             background: white;
             box-shadow: var(--card-shadow);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
         }
 
+        #moduleSearch:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.25);
+            border-color: var(--accent-color);
+        }
+
+        #moduleSearch::placeholder {
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-color);
+            pointer-events: none;
+            font-size: 1.2rem;
+        }
+
+        /* 分类筛选 */
         .category-filters {
             display: flex;
             flex-wrap: wrap;
@@ -150,11 +476,19 @@
             font-size: 0.95rem;
             font-weight: 500;
             transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .category-btn:hover {
+            background: rgba(10, 92, 184, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(30, 136, 229, 0.1);
         }
 
         .category-btn.active {
             background: var(--primary-color);
             color: white;
+            box-shadow: 0 6px 15px rgba(10, 92, 184, 0.2);
         }
 
         .section-title {
@@ -164,6 +498,22 @@
             color: var(--primary-color);
             font-size: 1.6rem;
             font-weight: 600;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-title i {
+            color: var(--accent-color);
+            background: rgba(30, 136, 229, 0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .module-grid {
@@ -177,19 +527,45 @@
             background: var(--card-gradient);
             border-radius: 18px;
             padding: 30px 25px;
-            transition: all 0.4s;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             cursor: pointer;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             min-height: 240px;
+            border: 1px solid rgba(0,0,0,0.05);
             box-shadow: var(--card-shadow);
+            transform: translateY(20px);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--accent-color);
+            transform: translateY(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .module-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .module-card.loaded {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .module-card:hover {
             transform: translateY(-8px);
             box-shadow: var(--hover-shadow);
+            border-color: var(--accent-color);
         }
 
         .module-tag {
@@ -202,6 +578,8 @@
             border-radius: 16px;
             font-size: 0.85rem;
             font-weight: 600;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            z-index: 2;
         }
 
         .hot-badge {
@@ -214,6 +592,8 @@
             border-radius: 16px;
             font-size: 0.8rem;
             font-weight: 600;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            z-index: 2;
             animation: pulse 2s infinite;
         }
 
@@ -228,10 +608,13 @@
             color: var(--accent-color);
             margin-bottom: 22px;
             transition: all 0.4s;
+            position: relative;
+            z-index: 1;
         }
 
         .module-card:hover .module-icon {
             transform: scale(1.12);
+            color: var(--primary-color);
         }
 
         .module-name {
@@ -239,13 +622,72 @@
             margin-bottom: 16px;
             font-size: 1.35rem;
             font-weight: 600;
+            line-height: 1.35;
             min-height: 3.4rem;
+            position: relative;
+            z-index: 1;
         }
 
         .module-desc {
             color: var(--text-medium);
             font-size: 1.02rem;
+            flex-grow: 1;
             line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .module-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(30, 136, 229, 0.08) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .module-card:hover::after {
+            opacity: 1;
+        }
+
+        /* 统计卡片 */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card-gradient);
+            border-radius: 16px;
+            padding: 18px 22px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--text-medium);
         }
 
         /* 弹窗样式 */
@@ -258,9 +700,10 @@
             background: rgba(0,0,0,0.5);
             z-index: 999;
             display: none;
+            backdrop-filter: blur(3px);
         }
 
-        #loginNote, #charterNote, #hxChoiceNote {
+        #loginNote {
             position: fixed;
             bottom: 30px;
             right: -400px;
@@ -270,71 +713,41 @@
             border-radius: 18px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.15);
             z-index: 1000;
-            transition: all 0.4s;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             overflow-y: auto;
+            border: 1px solid var(--border-color);
         }
 
-        .note-header {
-            position: sticky;
-            top: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 22px;
-            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
-            color: white;
-            border-radius: 18px 18px 0 0;
-            font-weight: 600;
+        #charterNote {
+            position: fixed;
+            bottom: 30px;
+            right: -400px;
+            width: 380px;
+            max-height: 80vh;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            z-index: 1001;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
         }
-
-        .close-btn {
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 1.6rem;
-            cursor: pointer;
+        
+        #hxChoiceNote {
+            position: fixed;
+            bottom: 30px;
+            right: -400px;
+            width: 380px;
+            max-height: 80vh;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            z-index: 1002;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
         }
-
-        .note-content {
-            padding: 18px;
-        }
-
-        .credential-item {
-            margin-bottom: 22px;
-            padding: 18px;
-            background: rgba(30, 136, 229, 0.04);
-            border-radius: 12px;
-            border-left: 4px solid var(--accent-color);
-        }
-
-        .credential-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 14px;
-        }
-
-        .credential-label {
-            font-weight: bold;
-            min-width: 90px;
-            color: var(--primary-color);
-        }
-
-        .credential-value {
-            flex: 1;
-            word-break: break-all;
-            padding-right: 10px;
-        }
-
-        .copy-btn {
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 7px 14px;
-            cursor: pointer;
-            margin-left: 8px;
-        }
-
+        
         .charter-content {
             padding: 18px;
             color: var(--text-medium);
@@ -366,115 +779,284 @@
             margin-top: 15px;
             border-left: 4px solid var(--warning-color);
         }
-
-        /* 管理员样式 */
-        .admin-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .admin-panel {
-            background: white;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 1000px;
-            max-height: 90vh;
-            overflow: hidden;
-        }
-
-        .admin-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .admin-tabs {
-            display: flex;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-
-        .tab-btn {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-medium);
-            border-bottom: 3px solid transparent;
-        }
-
-        .tab-btn.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-
-        .tab-content {
-            padding: 20px;
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .module-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+        
+        .charter-instruction li {
             margin-bottom: 10px;
         }
 
-        .module-item.inactive {
-            opacity: 0.6;
+        .note-header {
+            position: sticky;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 22px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            color: white;
+            border-radius: 18px 18px 0 0;
+            z-index: 1;
+            font-weight: 600;
+            font-size: 1.1rem;
         }
 
-        .btn-primary, .btn-secondary, .btn-danger {
-            padding: 8px 16px;
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+
+        .note-content {
+            padding: 18px;
+        }
+
+        .credential-item {
+            margin-bottom: 22px;
+            padding: 18px;
+            background: rgba(30, 136, 229, 0.04);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .credential-item:hover {
+            background: rgba(30, 136, 229, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .credential-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .credential-label {
+            font-weight: bold;
+            min-width: 90px;
+            color: var(--primary-color);
+            font-size: 0.95rem;
+        }
+
+        .credential-value {
+            flex: 1;
+            word-break: break-all;
+            padding-right: 10px;
+            color: var(--text-medium);
+            font-size: 0.95rem;
+        }
+
+        .copy-btn {
+            position: relative;
+            background: var(--accent-color);
+            color: white;
             border: none;
             border-radius: 6px;
+            padding: 7px 14px;
             cursor: pointer;
-            margin: 0 5px;
-            color: white;
+            margin-left: 8px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .btn-primary { background: var(--primary-color); }
-        .btn-secondary { background: var(--secondary-color); }
-        .btn-danger { background: var(--danger-color); }
+        .copy-btn:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(30, 136, 229, 0.25);
+        }
 
+        .copy-btn i {
+            font-size: 13px;
+        }
+
+        .copy-notice {
+            position: absolute;
+            right: -85px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--success-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            animation: fadeOut 1.5s forwards;
+            white-space: nowrap;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .choice-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .choice-btn {
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: var(--accent-color);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .choice-btn:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(30, 136, 229, 0.25);
+        }
+
+        .choice-btn.secondary {
+            background: var(--secondary-color);
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-50%) translateX(10px); }
+        }
+
+        /* 空状态提示 */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-medium);
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            color: #dbe4f0;
+            margin-bottom: 18px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .empty-state p {
+            font-size: 1.05rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 主题指示器 */
+        .theme-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+            color: var(--text-medium);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-indicator::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+
+        /* 移动端适配 */
         @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
             .sidebar {
                 position: static;
                 width: 100%;
                 height: auto;
+                padding: 15px;
             }
+            
             .main-content {
                 margin-left: 0;
+                padding: 20px;
             }
+            
             .module-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
+            
             #loginNote, #charterNote, #hxChoiceNote {
                 width: calc(100% - 40px);
                 right: -100%;
+                bottom: 20px;
+            }
+            
+            .platform-header {
+                padding: 1.5rem;
+            }
+            
+            .module-card {
+                min-height: 220px;
+                padding: 25px;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .section-title {
+                margin: 30px 0 15px;
+                font-size: 1.4rem;
+            }
+
+            .theme-indicator {
+                bottom: 10px;
+                left: 10px;
+                font-size: 0.8rem;
             }
         }
     </style>
 </head>
-<body>
+<body class="theme-default">
     <div class="overlay" id="overlay"></div>
     
     <!-- 侧边栏 -->
@@ -484,7 +1066,9 @@
                 <i class="fas fa-rocket"></i>
                 <span>民航业务平台</span>
             </div>
-            <div class="user-info" id="usernameDisplay">管理员</div>
+            <div class="user-info" id="usernameDisplay">
+                管理员
+            </div>
         </div>
         
         <div class="sidebar-nav">
@@ -495,6 +1079,84 @@
             <div class="nav-item" data-page="tools">
                 <i class="fas fa-tools"></i>
                 <span>核心工具</span>
+            </div>
+            <div class="nav-item" data-page="analytics">
+                <i class="fas fa-chart-bar"></i>
+                <span>数据分析</span>
+            </div>
+            <div class="nav-item" data-page="audit">
+                <i class="fas fa-search"></i>
+                <span>审计追踪</span>
+            </div>
+            <div class="nav-item" data-page="tickets">
+                <i class="fas fa-ticket-alt"></i>
+                <span>票务管理</span>
+            </div>
+            <div class="nav-item" data-page="agents">
+                <i class="fas fa-user-tie"></i>
+                <span>代理系统</span>
+            </div>
+            <div class="nav-item" data-page="knowledge">
+                <i class="fas fa-book"></i>
+                <span>知识库</span>
+            </div>
+            <div class="nav-item" data-page="refunds">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>退票服务</span>
+            </div>
+            <div class="nav-item" data-page="payments">
+                <i class="fas fa-credit-card"></i>
+                <span>支付系统</span>
+            </div>
+            <div class="nav-item has-submenu" id="settingsMenu">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+                <div class="submenu">
+                    <div class="submenu-item theme-option theme-blue" data-theme="default">
+                        <div class="theme-color"></div>
+                        <span>默认蓝色</span>
+                    </div>
+                    <div class="submenu-item theme-option theme-green" data-theme="green">
+                        <div class="theme-color"></div>
+                        <span>清新绿色</span>
+                    </div>
+                    <div class="submenu-item theme-option theme-purple" data-theme="purple">
+                        <div class="theme-color"></div>
+                        <span>优雅紫色</span>
+                    </div>
+                    <div class="submenu-item theme-option theme-dark" data-theme="dark">
+                        <div class="theme-color"></div>
+                        <span>深色模式</span>
+                    </div>
+                    <div class="submenu-item theme-option theme-orange" data-theme="orange">
+                        <div class="theme-color"></div>
+                        <span>活力橙色</span>
+                    </div>
+                    <div class="submenu-item theme-option theme-pink" data-theme="pink">
+                        <div class="theme-color"></div>
+                        <span>浪漫粉色</span>
+                    </div>
+                    <div class="submenu-item theme-option theme-red" data-theme="red">
+                        <div class="theme-color"></div>
+                        <span>热情红色</span>
+                    </div>
+                    <div class="submenu-item theme-option theme-cyan" data-theme="cyan">
+                        <div class="theme-color"></div>
+                        <span>清新青色</span>
+                    </div>
+                    <div class="submenu-item theme-option theme-blue-purple" data-theme="blue-purple">
+                        <div class="theme-color"></div>
+                        <span>科技蓝紫</span>
+                    </div>
+                    <div class="submenu-item theme-option theme-brown" data-theme="brown">
+                        <div class="theme-color"></div>
+                        <span>大地棕色</span>
+                    </div>
+                    <div class="submenu-item theme-option theme-deep-blue" data-theme="deep-blue">
+                        <div class="theme-color"></div>
+                        <span>午夜深蓝</span>
+                    </div>
+                </div>
             </div>
             <div class="nav-item" id="adminBtn">
                 <i class="fas fa-user-shield"></i>
@@ -515,8 +1177,30 @@
                     <div>民航综合业务平台 v3.1</div>
                     <div class="platform-subtitle">高效 · 智能 · 专业 · 安全</div>
                 </div>
+                <div class="fade-in" style="animation-delay: 0.3s">
+                    <i class="fas fa-shield-alt" style="font-size: 3rem; opacity: 0.7;"></i>
+                </div>
             </div>
         </header>
+
+        <div class="stats-bar">
+            <div class="stat-card fade-in" style="animation-delay: 0.1s">
+                <div class="stat-value">32</div>
+                <div class="stat-label">功能模块</div>
+            </div>
+            <div class="stat-card fade-in" style="animation-delay: 0.2s">
+                <div class="stat-value">17</div>
+                <div class="stat-label">航司系统</div>
+            </div>
+            <div class="stat-card fade-in" style="animation-delay: 0.3s">
+                <div class="stat-value">13</div>
+                <div class="stat-label">核心工具</div>
+            </div>
+            <div class="stat-card fade-in" style="animation-delay: 0.4s">
+                <div class="stat-value">98%</div>
+                <div class="stat-label">系统可用率</div>
+            </div>
+        </div>
 
         <div class="search-container">
             <div style="position: relative;">
@@ -534,26 +1218,26 @@
                 <button class="category-btn" data-category="知识库">知识库</button>
                 <button class="category-btn" data-category="退票服务">退票服务</button>
                 <button class="category-btn" data-category="支付系统">支付系统</button>
-                <button class="category-btn" data-category="特殊政策">特殊政策</button>
-                <button class="category-btn" data-category="公共查询">公共查询</button>
-                <button class="category-btn" data-category="客规查询">客规查询</button>
-                <button class="category-btn" data-category="短信模板">短信模板</button>
             </div>
         </div>
 
         <main>
             <h2 class="section-title"><i class="fas fa-fire"></i>热门功能</h2>
-            <div class="module-grid" id="hotModules"></div>
+            <div class="module-grid" id="hotModules">
+                <!-- 热门模块将通过JS动态生成 -->
+            </div>
             
             <h2 class="section-title"><i class="fas fa-th-large"></i>所有功能</h2>
-            <div class="module-grid" id="allModules"></div>
+            <div class="module-grid" id="allModules">
+                <!-- 所有模块将通过JS动态生成 -->
+            </div>
         </main>
     </div>
 
     <!-- 弹窗 -->
     <div id="loginNote">
         <div class="note-header">
-            <span><i class="fas fa-key"></i> 登录凭证</span>
+            <span><i class="fas fa-key"></i> <span id="platformName"></span> 登录凭证</span>
             <button class="close-btn" id="closeNoteBtn">&times;</button>
         </div>
         <div class="note-content" id="credentialContent"></div>
@@ -583,7 +1267,7 @@
             <div class="charter-title">注意事项：</div>
             <p>如查询到【首段报价航班号】未展示查询的航班号，可点击【导出】-【导出EXCEL】，在excel表格中查看</p>
             
-            <button class="copy-btn" id="copyCharterLink" style="margin-top: 20px; width: 100%;">
+            <button class="copy-btn" id="copyCharterLink" data-text="http://tc.corp.qunar.com/newweb/index.html#/editor?fileType=table&amp;appcode=f_pangolin_search_post&amp;envType=prod&amp;envName=&amp;dataId=charter.t" style="margin-top: 20px; width: 100%;">
                 <i class="fas fa-copy"></i>复制查询网址
             </button>
         </div>
@@ -597,885 +1281,1312 @@
         </div>
         <div class="note-content">
             <p>请选择您要进行的操作：</p>
-            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
-                <button class="btn-primary" id="goToPlatformBtn" style="padding: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div class="choice-buttons">
+                <button class="choice-btn" id="goToPlatformBtn">
                     <i class="fas fa-external-link-alt"></i>跳转代理人服务平台
                 </button>
-                <button class="btn-secondary" id="viewOperationBtn" style="padding: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <button class="choice-btn secondary" id="viewOperationBtn">
                     <i class="fas fa-book"></i>查看操作方式
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- 主题指示器 -->
+    <div class="theme-indicator" id="themeIndicator">
+        当前主题：默认蓝色
+    </div>
+
     <script>
-        // 完整的模块数据 - 按照原文件补齐
-        const defaultModules = [
-            // 核心功能模块
-            {
-                id: 'aviation',
-                name: '黑屏智能指令生成',
-                desc: '支持身份证/护照双模式，自动生成标准民航指令',
-                url: 'pages/aviation.html',
-                tags: ['核心工具'],
-                icon: 'fa-passport',
-                clicks: 42,
-                status: 'active'
-            },
-            {
-                id: 'sdinf',
-                name: '黑屏智能指令生成【手动关联成人】',
-                desc: '支持身份证/护照双模式，自动生成标准民航指令',
-                url: 'pages/sdinf.html',
-                tags: ['核心工具'],
-                icon: 'fa-passport',
-                clicks: 42,
-                status: 'active'
-            },
-            {
-                id: 'bp',
-                name: '白屏多人生编',
-                desc: '乘机人信息批量导入工具，根据输入的乘机人信息生成符合模板要求的Excel文件',
-                url: 'pages/bp.html',
-                tags: ['核心工具'],
-                icon: 'fa-users',
-                clicks: 0,
-                status: 'active'
-            },
-            {
-                id: 'nct',
-                name: '升级模版',
-                desc: '支持紧急、复杂等模版',
-                url: 'pages/nct.html',
-                tags: ['核心工具'],
-                icon: 'fa-passport',
-                clicks: 25,
-                status: 'active'
-            },
-            // 数据对比模块
-            {
-                id: 'compare',
-                name: '智能数据对比',
-                desc: 'Excel文件差异分析，支持金额容差配置',
-                url: 'pages/compare.html',
-                tags: ['数据分析'],
-                icon: 'fa-file-excel',
-                clicks: 18,
-                status: 'active'
-            },
-            // 审计系统模块
-            {
-                id: 'audit',
-                name: '兜底记录审计系统',
-                desc: '实时审计跟踪，支持数据导出Excel',
-                url: 'pages/audit.html',
-                tags: ['审计追踪'],
-                icon: 'fa-chart-pie',
-                clicks: 15,
-                status: 'active'
-            },
-            // 行程单生成模块
-            {
-                id: 'itinerary',
-                name: '国际行程单生成器',
-                desc: '自动生成可打印行程单，支持多航班组合',
-                url: 'pages/itinerary.html',
-                tags: ['票务管理'],
-                icon: 'fa-ticket-alt',
-                clicks: 29,
-                status: 'active'
-            },
-            
-            // 代理人平台模块
-            {
-                id: 'hu',
-                name: 'HU代理人平台',
-                desc: '海南航空代理系统',
-                url: 'https://irr.hnair.com/newagent/login',
-                tags: ['代理系统'],
-                icon: 'fa-plane-departure',
-                platform: 'HU',
-                accounts: "账号:pek950217; 账号:pek950218; 账号:pek950219; 账号:pek950220; 账号:pek950221; 账号:pek950222; 账号:pek950223; 账号:pek950224; 账号:pek950308; 账号:pek950309; 账号:pek950310; 账号:pek950311; 账号:pek950312; 账号:pek950313; 账号:pek950314; 账号:pek950315; 账号:pek950316; 账号:pek950317;",
-                passwords: "密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*",
-                phones: "手机:13241474562;手机:13241474576;手机:13241474575;手机:13241466742;手机:13241466740;手机:13241469640;手机:13241466774;手机:13241474627;手机:13241474758;手机:13241472419;手机:13241474993;手机:13241467485;手机:13241474104;手机:13241468469;手机:13241467405;手机:13241475484;手机:13241469047;手机:13241468418",
-                clicks: 36,
-                status: 'active'
-            },
-            {
-                id: '3u',
-                name: '3U代理人平台',
-                desc: '四川航空代理系统',
-                url: 'https://msapp.sichuanair.com/otaserverPc/#/ticket/search',
-                tags: ['代理系统'],
-                icon: 'fa-mountain',
-                platform: '3U',
-                accounts: "账号:向丽君; 账号:苏欢",
-                passwords: "密码:whts.5282; 密码:whzy.9660",
-                clicks: 19,
-                status: 'active'
-            },
-            {
-                id: 'cz',
-                name: 'CZ代理人平台',
-                desc: '南方航空代理系统',
-                url: 'https://www.csair.com/cn/',
-                tags: ['代理系统'],
-                icon: 'fa-cloud',
-                platform: 'CZ',
-                accounts: "账号:手机号码",
-                passwords: "密码:验证码",
-                clicks: 21,
-                status: 'active'
-            },
-            {
-                id: 'mf',
-                name: 'MF代理人平台',
-                desc: '客票操作',
-                url: 'http://95557robot.xiamenair.cn/hindex.htm?entrance=40010&tenantId=1',
-                tags: ['代理系统'],
-                icon: 'fa-umbrella-beach',
-                platform: 'MF',
-                accounts: "账号:去哪网",
-                passwords: "密码:随便写数字",
-                clicks: 14,
-                status: 'active'
-            },
-            {
-                id: 'kn',
-                name: 'KN代理人平台',
-                desc: '联合航空代理系统',
-                url: 'https://alidocs.dingtalk.com/notable/share/form/v01MAeqxY6RDMXKO8j9_dv19yqvsgs3oebp3pcjys_1qX0QQ0',
-                tags: ['代理系统'],
-                icon: 'fa-satellite',
-                platform: 'KN',
-                accounts: "账号:自己手机号",
-                passwords: "密码:扫码登录",
-                clicks: 11,
-                status: 'active'
-            },
-            // 知识库模块
-            {
-                id: 'knowledge1',
-                name: '客票病退操作知识库',
-                desc: '退票/查询操作',
-                url: 'http://fuwu.qunar.com/newPageStore/separate/repositoryRule?eventType=1230058&eventNo=E241213134623scra6',
-                tags: ['知识库'],
-                icon: 'fa-book-open',
-                clicks: 22,
-                status: 'active'
-            },
-            {
-                id: 'knowledge2',
-                name: '客票签转知识库',
-                desc: '协助改签',
-                url: 'http://fuwu.qunar.com/newPageStore/separate/repositoryRule?eventType=460005&eventNo=E2510111239296kn66&domain=tss.fuwu.qunar.com&ruleName=%E5%9B%BD%E5%86%85-%E7%AD%BE%E8%BD%AC%E8%A7%84%E5%88%99',
-                tags: ['知识库'],
-                icon: 'fa-exchange-alt',
-                clicks: 18,
-                status: 'active'
-            },
-            {
-                id: 'knowledge3',
-                name: '客票重复购票规则',
-                desc: '航司规则',
-                url: 'http://wh.corp.qunar.com/#/quHelp/quArticle/30223',
-                tags: ['知识库'],
-                icon: 'fa-clone',
-                clicks: 16,
-                status: 'active'
-            },
-            {
-                id: 'knowledge4',
-                name: '客票错误购票规则',
-                desc: '航司规则',
-                url: 'http://wh.corp.qunar.com/#/quHelp/quArticle/30226',
-                tags: ['知识库'],
-                icon: 'fa-exclamation-triangle',
-                clicks: 14,
-                status: 'active'
-            },
-            // 特殊业务模块
-            {
-                id: 'hx',
-                name: '海系非自愿退票',
-                desc: '上传退票凭证，黑屏出票：海系部分航司所有BSP客票涉及非自愿退票的客票需通过代理人管理系统进行凭证上传',
-                url: 'https://asp.hnair.com/#/',
-                tags: ['退票服务'],
-                icon: 'fa-ship',
-                platform: 'HX',
-                accounts: "账号:pek950",
-                passwords: "密码:Qunar.1029!",
-                clicks: 28,
-                status: 'active'
-            },
-            {
-                id: 'dft',
-                name: '德付通',
-                desc: '上传退票凭证',
-                url: 'https://www.dovepay.com/dovePay/logAction.do?m=logout',
-                tags: ['支付系统'],
-                icon: 'fa-coins',
-                platform: 'DFT',
-                accounts: "账号:beijingjxhy@126.com; 账号:WUH003",
-                passwords: "密码:123456789a",
-                clicks: 23,
-                status: 'active'
-            },
-            {
-                id: 'charter',
-                name: '包机客票查询',
-                desc: '特殊政策查询',
-                url: '',
-                tags: ['特殊政策'],
-                icon: 'fa-plane-arrival',
-                clicks: 15,
-                status: 'active'
-            },
-            {
-                id: 'dishonest',
-                name: '失信人查询',
-                desc: '中国执行信息公开网',
-                url: 'http://zxgk.court.gov.cn/',
-                tags: ['公共查询'],
-                icon: 'fa-gavel',
-                clicks: 19,
-                status: 'active'
-            },
-            {
-                id: 'change',
-                name: '客票退改签查询',
-                desc: '各航司客规',
-                url: 'http://www.8000yi.com/AirRule/tuigaiqian.aspx?Airlines=DZ',
-                tags: ['客规查询'],
-                icon: 'fa-file-contract',
-                clicks: 26,
-                status: 'active'
-            },
-            // 短信模板
-            {
-                id: 'sms',
-                name: '短信模板中心',
-                desc: '常用短信模板快捷入口',
-                url: 'pages/sms.html',
-                tags: ['短信模板'],
-                icon: 'fa-comment-dots',
-                clicks: 31,
-                status: 'active'
-            },
-            // 更多
-            {
-                id: 'more',
-                name: '更多板块研发中',
-                desc: '敬请期待',
-                url: 'https://www.baidu.com/',
-                tags: ['其他'],
-                icon: 'fa-retweet',
-                clicks: 5,
-                status: 'active'
-            }
-        ];
-
-        class PlatformManager {
-            constructor() {
-                this.currentCategory = 'all';
-                this.searchTerm = '';
-                this.modulesData = [];
-                this.adminPassword = "admin123";
-                this.currentHxModule = null;
-                this.init();
-            }
-
-            init() {
-                this.checkAuth();
-                this.loadModulesData();
-                this.setupEventListeners();
-                this.renderModules();
-            }
-
-            checkAuth() {
-                if (!sessionStorage.getItem('loggedIn')) {
-                    window.location.href = 'login.html';
+        (function() {
+            const iconConfig = {
+                pool: [
+                    'fa-passport', 'fa-file-excel', 'fa-chart-pie', 'fa-ticket-alt',
+                    'fa-plane', 'fa-ship', 'fa-train', 'fa-bus', 'fa-database',
+                    'fa-cloud', 'fa-lock', 'fa-university', 'fa-chart-line',
+                    'fa-cogs', 'fa-wifi', 'fa-satellite-dish', 'fa-headset',
+                    'fa-qrcode', 'fa-shield-alt', 'fa-robot'
+                ],
+                mappings: {
+                    'HU': 'fa-plane-departure',
+                    '3U': 'fa-mountain',
+                    'CZ': 'fa-cloud',
+                    'MF': 'fa-umbrella-beach',
+                    'KN': 'fa-satellite',
+                    'DFT': 'fa-coins',
+                    'HX': 'fa-ship'
                 }
-                document.getElementById('usernameDisplay').textContent = 
-                    sessionStorage.getItem('username') || '用户';
-            }
+            };
 
-            loadModulesData() {
-                const saved = localStorage.getItem('platformModules');
-                if (saved) {
-                    this.modulesData = JSON.parse(saved);
-                } else {
-                    this.modulesData = defaultModules;
-                    this.saveModulesData();
+            // 模块数据
+            const modulesData = [
+                // 核心功能模块
+                {
+                    id: 'aviation',
+                    name: '黑屏智能指令生成',
+                    desc: '支持身份证/护照双模式，自动生成标准民航指令',
+                    url: 'pages/aviation.html',
+                    tags: ['核心工具'],
+                    icon: 'fa-passport',
+                    clicks: 42
+                },
+                {
+                    id: 'sdinf',
+                    name: '黑屏智能指令生成【手动关联成人】',
+                    desc: '支持身份证/护照双模式，自动生成标准民航指令',
+                    url: 'pages/sdinf.html',
+                    tags: ['核心工具'],
+                    icon: 'fa-passport',
+                    clicks: 42
+                },
+                {
+                    id: 'bp',
+                    name: '白屏多人生编',
+                    desc: '乘机人信息批量导入工具，根据输入的乘机人信息生成符合模板要求的Excel文件',
+                    url: 'pages/bp.html',
+                    tags: ['核心工具'],
+                    icon: 'fa-users',
+                    clicks: 0
+                },
+                {
+                    id: 'nct',
+                    name: '升级模版',
+                    desc: '支持紧急、复杂等模版',
+                    url: 'pages/nct.html',
+                    tags: ['核心工具'],
+                    icon: 'fa-passport',
+                    clicks: 25
+                },
+                // 数据对比模块
+                {
+                    id: 'compare',
+                    name: '智能数据对比',
+                    desc: 'Excel文件差异分析，支持金额容差配置',
+                    url: 'pages/compare.html',
+                    tags: ['数据分析'],
+                    icon: 'fa-file-excel',
+                    clicks: 18
+                },
+                // 审计系统模块
+                {
+                    id: 'audit',
+                    name: '兜底记录审计系统',
+                    desc: '实时审计跟踪，支持数据导出Excel',
+                    url: 'pages/audit.html',
+                    tags: ['审计追踪'],
+                    icon: 'fa-chart-pie',
+                    clicks: 15
+                },
+                // 行程单生成模块
+                {
+                    id: 'itinerary',
+                    name: '国际行程单生成器',
+                    desc: '自动生成可打印行程单，支持多航班组合',
+                    url: 'pages/itinerary.html',
+                    tags: ['票务管理'],
+                    icon: 'fa-ticket-alt',
+                    clicks: 29
+                },
+                
+                // 代理人平台模块
+                {
+                    id: 'hu',
+                    name: 'HU代理人平台',
+                    desc: '海南航空代理系统',
+                    url: 'https://irr.hnair.com/newagent/login',
+                    tags: ['代理系统'],
+                    icon: 'fa-plane-departure',
+                    platform: 'HU',
+                    accounts: "账号:pek950217; 账号:pek950218; 账号:pek950219; 账号:pek950220; 账号:pek950221; 账号:pek950222; 账号:pek950223; 账号:pek950224; 账号:pek950308; 账号:pek950309; 账号:pek950310; 账号:pek950311; 账号:pek950312; 账号:pek950313; 账号:pek950314; 账号:pek950315; 账号:pek950316; 账号:pek950317;",
+                    passwords: "密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*",
+                    phones: "手机:13241474562;手机:13241474576;手机:13241474575;手机:13241466742;手机:13241466740;手机:13241469640;手机:13241466774;手机:13241474627;手机:13241474758;手机:13241472419;手机:13241474993;手机:13241467485;手机:13241474104;手机:13241468469;手机:13241467405;手机:13241475484;手机:13241469047;手机:13241468418",
+                    clicks: 36
+                },
+                {
+                    id: '3u',
+                    name: '3U代理人平台',
+                    desc: '四川航空代理系统',
+                    url: 'https://msapp.sichuanair.com/otaserverPc/#/ticket/search',
+                    tags: ['代理系统'],
+                    icon: 'fa-mountain',
+                    platform: '3U',
+                    accounts: "账号:向丽君; 账号:苏欢",
+                    passwords: "密码:whts.5282; 密码:whzy.9660",
+                    clicks: 19
+                },
+                {
+                    id: 'cz',
+                    name: 'CZ代理人平台',
+                    desc: '南方航空代理系统',
+                    url: 'https://www.csair.com/cn/',
+                    tags: ['代理系统'],
+                    icon: 'fa-cloud',
+                    platform: 'CZ',
+                    accounts: "账号:手机号码",
+                    passwords: "密码:验证码",
+                    clicks: 21
+                },
+                {
+                    id: 'mf',
+                    name: 'MF代理人平台',
+                    desc: '客票操作',
+                    url: 'http://95557robot.xiamenair.cn/hindex.htm?entrance=40010&tenantId=1',
+                    tags: ['代理系统'],
+                    icon: 'fa-umbrella-beach',
+                    platform: 'MF',
+                    accounts: "账号:去哪网",
+                    passwords: "密码:随便写数字",
+                    clicks: 14
+                },
+                {
+                    id: 'kn',
+                    name: 'KN代理人平台',
+                    desc: '联合航空代理系统',
+                    url: 'https://alidocs.dingtalk.com/notable/share/form/v01MAeqxY6RDMXKO8j9_dv19yqvsgs3oebp3pcjys_1qX0QQ0',
+                    tags: ['代理系统'],
+                    icon: 'fa-satellite',
+                    platform: 'KN',
+                    accounts: "账号:自己手机号",
+                    passwords: "密码:扫码登录",
+                    clicks: 11
+                },
+                // 知识库模块
+                {
+                    id: 'knowledge1',
+                    name: '客票病退操作知识库',
+                    desc: '退票/查询操作',
+                    url: 'http://fuwu.qunar.com/newPageStore/separate/repositoryRule?eventType=1230058&eventNo=E241213134623scra6',
+                    tags: ['知识库'],
+                    icon: 'fa-book-open',
+                    clicks: 22
+                },
+                {
+                    id: 'knowledge2',
+                    name: '客票签转知识库',
+                    desc: '协助改签',
+                    url: 'http://fuwu.qunar.com/newPageStore/separate/repositoryRule?eventType=460005&eventNo=E2510111239296kn66&domain=tss.fuwu.qunar.com&ruleName=%E5%9B%BD%E5%86%85-%E7%AD%BE%E8%BD%AC%E8%A7%84%E5%88%99',
+                    tags: ['知识库'],
+                    icon: 'fa-exchange-alt',
+                    clicks: 18
+                },
+                {
+                    id: 'knowledge3',
+                    name: '客票重复购票规则',
+                    desc: '航司规则',
+                    url: 'http://wh.corp.qunar.com/#/quHelp/quArticle/30223',
+                    tags: ['知识库'],
+                    icon: 'fa-clone',
+                    clicks: 16
+                },
+                {
+                    id: 'knowledge4',
+                    name: '客票错误购票规则',
+                    desc: '航司规则',
+                    url: 'http://wh.corp.qunar.com/#/quHelp/quArticle/30226',
+                    tags: ['知识库'],
+                    icon: 'fa-exclamation-triangle',
+                    clicks: 14
+                },
+                // 特殊业务模块
+                {
+                    id: 'hx',
+                    name: '海系非自愿退票',
+                    desc: '上传退票凭证，黑屏出票：海系部分航司【因未涉及全部航司可能会有调整，可以通过查看操作方式跳转核实需要上传凭证的航司】所有BSP客票涉及非自愿退票的客票需通过代理人管理系统进行凭证上传，若不符合规定或存在材料缺失，航司的审核人员将予以驳回，并要求代理人在七天内补充完整所需凭证。）',
+                    url: 'https://asp.hnair.com/#/',
+                    tags: ['退票服务'],
+                    icon: 'fa-ship',
+                    platform: 'HX',
+                    accounts: "账号:pek950",
+                    passwords: "密码:Qunar.1029!",
+                    clicks: 28
+                },
+                {
+                    id: 'dft',
+                    name: '德付通',
+                    desc: '上传退票凭证',
+                    url: 'https://www.dovepay.com/dovePay/logAction.do?m=logout',
+                    tags: ['支付系统'],
+                    icon: 'fa-coins',
+                    platform: 'DFT',
+                    accounts: "账号:beijingjxhy@126.com; 账号:WUH003",
+                    passwords: "密码:123456789a",
+                    clicks: 23
+                },
+                {
+                    id: 'charter',
+                    name: '包机客票查询',
+                    desc: '特殊政策查询',
+                    url: '',
+                    tags: ['特殊政策'],
+                    icon: 'fa-plane-arrival',
+                    clicks: 15
+                },
+                {
+                    id: 'dishonest',
+                    name: '失信人查询',
+                    desc: '中国执行信息公开网',
+                    url: 'http://zxgk.court.gov.cn/',
+                    tags: ['公共查询'],
+                    icon: 'fa-gavel',
+                    clicks: 19
+                },
+                {
+                    id: 'change',
+                    name: '客票退改签查询',
+                    desc: '各航司客规',
+                    url: 'http://www.8000yi.com/AirRule/tuigaiqian.aspx?Airlines=DZ',
+                    tags: ['客规查询'],
+                    icon: 'fa-file-contract',
+                    clicks: 26
+                },
+                // 短信模板
+                {
+                    id: 'sms',
+                    name: '短信模板中心',
+                    desc: '常用短信模板快捷入口',
+                    url: 'pages/sms.html',
+                    tags: ['短信模板'],
+                    icon: 'fa-comment-dots',
+                    clicks: 31
+                },
+                // 更多
+                {
+                    id: 'more',
+                    name: '更多板块研发中',
+                    desc: '敬请期待',
+                    url: 'https://www.baidu.com/',
+                    tags: ['百度'],
+                    icon: 'fa-retweet',
+                    clicks: 5
                 }
-            }
+            ];
 
-            saveModulesData() {
-                localStorage.setItem('platformModules', JSON.stringify(this.modulesData));
-            }
+            class PlatformManager {
+                constructor() {
+                    this.usedIcons = new Set();
+                    this.currentCategory = 'all';
+                    this.searchTerm = '';
+                    this.currentPage = 'home';
+                    this.currentTheme = localStorage.getItem('theme') || 'default';
+                    this.currentHxModule = null; // 存储当前点击的海系非自愿退票模块
+                    this.adminPassword = "admin123";
+                    this.init();
+                }
 
-            setupEventListeners() {
-                // 搜索功能
-                document.getElementById('moduleSearch').addEventListener('input', e => {
-                    this.searchTerm = e.target.value.toLowerCase();
+                init() {
+                    this.checkAuth();
+                    this.loadClickData(); // 加载点击数据
+                    this.setupEventListeners();
                     this.renderModules();
-                });
+                    this.applyTheme(this.currentTheme);
+                    
+                    // 添加包机弹窗关闭事件
+                    document.getElementById('closeCharterNoteBtn').addEventListener('click', () => {
+                        this.toggleCharterNote(false);
+                    });
+                    
+                    // 添加复制包机链接事件 - 修复部分
+                    document.getElementById('copyCharterLink').addEventListener('click', (e) => {
+                        const text = e.currentTarget.dataset.text;
+                        this.copyToClipboard(text, e.currentTarget);
+                    });
+                    
+                    // 添加海系非自愿退票选择弹窗事件
+                    document.getElementById('closeHxChoiceNoteBtn').addEventListener('click', () => {
+                        this.toggleHxChoiceNote(false);
+                    });
+                    
+                    document.getElementById('goToPlatformBtn').addEventListener('click', () => {
+                        // 跳转平台
+                        window.open('https://asp.hnair.com/#/', '_blank');
+                        // 显示账号信息弹窗
+                        if (this.currentHxModule) {
+                            this.showCredentials(this.currentHxModule);
+                        }
+                        this.toggleHxChoiceNote(false);
+                    });
+                    
+                    document.getElementById('viewOperationBtn').addEventListener('click', () => {
+                        // 查看操作方式
+                        window.open('http://wh.corp.qunar.com/#/quHelp/quArticle/35114?question=%E6%B5%B7%E7%B3%BB%E9%9D%9E%E8%87%AA%E6%84%BF%E9%80%80%E5%87%AD%E8%AF%81%E4%B8%8A%E4%BC%A0', '_blank');
+                        this.toggleHxChoiceNote(false);
+                    });
+                }
 
-                // 分类筛选
-                document.querySelectorAll('.category-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        document.querySelectorAll('.category-btn').forEach(b => 
-                            b.classList.remove('active'));
-                        btn.classList.add('active');
-                        this.currentCategory = btn.dataset.category;
+                checkAuth() {
+                    if (!sessionStorage.getItem('loggedIn')) {
+                        window.location.href = 'login.html';
+                    }
+                    document.getElementById('usernameDisplay').textContent = 
+                        sessionStorage.getItem('username') || '用户';
+                }
+
+                // 保存点击数据到 localStorage
+                saveClickData(moduleId) {
+                    let clickData = JSON.parse(localStorage.getItem('moduleClickData') || '{}');
+                    clickData[moduleId] = (clickData[moduleId] || 0) + 1;
+                    localStorage.setItem('moduleClickData', JSON.stringify(clickData));
+                    
+                    // 同时更新内存中的数据
+                    const module = modulesData.find(m => m.id === moduleId);
+                    if (module) {
+                        module.clicks = clickData[moduleId];
+                    }
+                }
+
+                // 从 localStorage 加载点击数据
+                loadClickData() {
+                    const clickData = JSON.parse(localStorage.getItem('moduleClickData') || '{}');
+                    modulesData.forEach(module => {
+                        if (clickData[module.id]) {
+                            module.clicks = clickData[module.id];
+                        }
+                    });
+                }
+
+                setupEventListeners() {
+                    // 搜索框功能
+                    document.getElementById('moduleSearch').addEventListener('input', e => {
+                        this.searchTerm = e.target.value.toLowerCase();
                         this.renderModules();
                     });
-                });
 
-                // 管理员功能
-                document.getElementById('adminBtn').addEventListener('click', () => {
-                    this.showAdminLogin();
-                });
-
-                // 退出登录
-                document.getElementById('logoutBtn').addEventListener('click', () => {
-                    sessionStorage.clear();
-                    window.location.href = 'login.html';
-                });
-
-                // 关闭弹窗
-                document.getElementById('closeNoteBtn').addEventListener('click', () => {
-                    this.toggleCredentialNote(false);
-                });
-
-                document.getElementById('closeCharterNoteBtn').addEventListener('click', () => {
-                    this.toggleCharterNote(false);
-                });
-
-                document.getElementById('closeHxChoiceNoteBtn').addEventListener('click', () => {
-                    this.toggleHxChoiceNote(false);
-                });
-
-                document.getElementById('overlay').addEventListener('click', () => {
-                    this.toggleCredentialNote(false);
-                    this.toggleCharterNote(false);
-                    this.toggleHxChoiceNote(false);
-                });
-
-                // 包机链接复制
-                document.getElementById('copyCharterLink').addEventListener('click', () => {
-                    const text = "http://tc.corp.qunar.com/newweb/index.html#/editor?fileType=table&appcode=f_pangolin_search_post&envType=prod&envName=&dataId=charter.t";
-                    this.copyToClipboard(text, document.getElementById('copyCharterLink'));
-                });
-
-                // 海系非自愿退票选择
-                document.getElementById('goToPlatformBtn').addEventListener('click', () => {
-                    window.open('https://asp.hnair.com/#/', '_blank');
-                    if (this.currentHxModule) {
-                        this.showCredentials(this.currentHxModule);
-                    }
-                    this.toggleHxChoiceNote(false);
-                });
-
-                document.getElementById('viewOperationBtn').addEventListener('click', () => {
-                    window.open('http://wh.corp.qunar.com/#/quHelp/quArticle/35114?question=%E6%B5%B7%E7%B3%BB%E9%9D%9E%E8%87%AA%E6%84%BF%E9%80%80%E5%87%AD%E8%AF%81%E4%B8%8A%E4%BC%A0', '_blank');
-                    this.toggleHxChoiceNote(false);
-                });
-            }
-
-            showAdminLogin() {
-                const password = prompt('请输入管理员密码:');
-                if (password === this.adminPassword) {
-                    this.showAdminPanel();
-                } else {
-                    alert('密码错误！');
-                }
-            }
-
-            showAdminPanel() {
-                const adminHTML = `
-                    <div class="admin-overlay">
-                        <div class="admin-panel">
-                            <div class="admin-header">
-                                <h3><i class="fas fa-cogs"></i> 模块管理</h3>
-                                <button class="close-btn close-admin-btn">&times;</button>
-                            </div>
-                            <div class="admin-content">
-                                <div class="admin-tabs">
-                                    <button class="tab-btn active" data-tab="modules">模块管理</button>
-                                    <button class="tab-btn" data-tab="settings">系统设置</button>
-                                </div>
-                                
-                                <div class="tab-content active" id="modulesTab">
-                                    <div style="margin-bottom: 20px;">
-                                        <button class="btn-primary" id="addModuleBtn">添加新模块</button>
-                                    </div>
-                                    <div class="module-list" id="adminModuleList"></div>
-                                </div>
-                                
-                                <div class="tab-content" id="settingsTab">
-                                    <div class="system-settings">
-                                        <h4>系统设置</h4>
-                                        <div style="margin: 15px 0;">
-                                            <label>管理员密码: </label>
-                                            <input type="password" id="adminPasswordInput" value="${this.adminPassword}">
-                                            <button class="btn-primary" id="changePasswordBtn">修改密码</button>
-                                        </div>
-                                        <div style="margin: 15px 0;">
-                                            <button class="btn-primary" id="backupBtn">备份数据</button>
-                                            <button class="btn-secondary" id="restoreBtn">恢复数据</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                document.body.insertAdjacentHTML('beforeend', adminHTML);
-                this.setupAdminPanelEvents();
-                this.renderAdminModuleList();
-            }
-
-            setupAdminPanelEvents() {
-                // 标签切换
-                document.querySelectorAll('.tab-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                        e.target.classList.add('active');
-                        document.getElementById(e.target.dataset.tab + 'Tab').classList.add('active');
+                    // 分类筛选
+                    document.querySelectorAll('.category-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            document.querySelectorAll('.category-btn').forEach(b => 
+                                b.classList.remove('active'));
+                            btn.classList.add('active');
+                            this.currentCategory = btn.dataset.category;
+                            this.renderModules();
+                        });
                     });
-                });
 
-                // 关闭面板
-                document.querySelector('.close-admin-btn').addEventListener('click', () => {
-                    document.querySelector('.admin-overlay').remove();
-                });
+                    // 关闭凭证弹窗
+                    document.getElementById('closeNoteBtn').addEventListener('click', () => {
+                        this.toggleCredentialNote(false);
+                    });
 
-                // 添加模块
-                document.getElementById('addModuleBtn').addEventListener('click', () => {
-                    this.showModuleForm();
-                });
+                    // 遮罩层点击关闭
+                    document.getElementById('overlay').addEventListener('click', () => {
+                        this.toggleCredentialNote(false);
+                        this.toggleCharterNote(false);
+                        this.toggleHxChoiceNote(false);
+                    });
 
-                // 修改密码
-                document.getElementById('changePasswordBtn').addEventListener('click', () => {
-                    this.adminPassword = document.getElementById('adminPasswordInput').value;
-                    alert('密码修改成功！');
-                });
+                    // 注销
+                    document.getElementById('logoutBtn').addEventListener('click', () => {
+                        sessionStorage.clear();
+                        window.location.href = 'login.html';
+                    });
 
-                // 数据备份恢复
-                document.getElementById('backupBtn').addEventListener('click', () => this.backupData());
-                document.getElementById('restoreBtn').addEventListener('click', () => this.restoreData());
-            }
+                    // 侧边栏导航
+                    document.querySelectorAll('.nav-item:not(.has-submenu):not(#logoutBtn):not(#adminBtn)').forEach(item => {
+                        item.addEventListener('click', () => {
+                            document.querySelectorAll('.nav-item').forEach(i => 
+                                i.classList.remove('active'));
+                            item.classList.add('active');
+                            
+                            // 更新当前页面
+                            this.currentPage = item.dataset.page;
+                            this.updateContentByPage();
+                        });
+                    });
 
-            renderAdminModuleList() {
-                const list = document.getElementById('adminModuleList');
-                list.innerHTML = '';
+                    // 系统设置子菜单
+                    const settingsMenu = document.getElementById('settingsMenu');
+                    settingsMenu.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        settingsMenu.classList.toggle('open');
+                    });
 
-                this.modulesData.forEach(module => {
-                    const item = document.createElement('div');
-                    item.className = `module-item ${module.status === 'inactive' ? 'inactive' : ''}`;
-                    item.innerHTML = `
-                        <div>
-                            <div style="font-weight: bold;">${module.name}</div>
-                            <div style="color: #666; font-size: 0.9em;">${module.desc}</div>
-                            <div style="color: #999; font-size: 0.8em;">标签: ${module.tags.join(', ')}</div>
-                        </div>
-                        <div>
-                            <button class="btn-secondary" onclick="platformManager.toggleModule('${module.id}')">
-                                ${module.status === 'active' ? '下架' : '上架'}
-                            </button>
-                            <button class="btn-primary" onclick="platformManager.editModule('${module.id}')">编辑</button>
-                            <button class="btn-danger" onclick="platformManager.deleteModule('${module.id}')">删除</button>
-                        </div>
-                    `;
-                    list.appendChild(item);
-                });
-            }
+                    // 主题选择
+                    document.querySelectorAll('.theme-option').forEach(option => {
+                        option.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const theme = option.dataset.theme;
+                            this.applyTheme(theme);
+                            
+                            // 关闭设置菜单
+                            settingsMenu.classList.remove('open');
+                        });
+                    });
 
-            toggleModule(moduleId) {
-                const module = this.modulesData.find(m => m.id === moduleId);
-                module.status = module.status === 'active' ? 'inactive' : 'active';
-                this.saveModulesData();
-                this.renderAdminModuleList();
-                this.renderModules();
-            }
+                    // 管理员功能
+                    document.getElementById('adminBtn').addEventListener('click', () => {
+                        this.showAdminPanel();
+                    });
+                }
 
-            deleteModule(moduleId) {
-                if (confirm('确定要删除这个模块吗？')) {
-                    this.modulesData = this.modulesData.filter(m => m.id !== moduleId);
-                    this.saveModulesData();
-                    this.renderAdminModuleList();
+                updateContentByPage() {
+                    // 根据当前页面更新内容
+                    console.log(`切换到页面: ${this.currentPage}`);
+                    
+                    // 示例：根据页面筛选模块
+                    if (this.currentPage === 'home') {
+                        // 首页显示所有模块
+                        this.currentCategory = 'all';
+                        document.querySelectorAll('.category-btn').forEach(btn => {
+                            btn.classList.toggle('active', btn.dataset.category === 'all');
+                        });
+                    } else {
+                        // 其他页面显示对应分类的模块
+                        const categoryMap = {
+                            'tools': '核心工具',
+                            'analytics': '数据分析',
+                            'audit': '审计追踪',
+                            'tickets': '票务管理',
+                            'agents': '代理系统',
+                            'knowledge': '知识库',
+                            'refunds': '退票服务',
+                            'payments': '支付系统'
+                        };
+                        
+                        if (categoryMap[this.currentPage]) {
+                            this.currentCategory = categoryMap[this.currentPage];
+                            document.querySelectorAll('.category-btn').forEach(btn => {
+                                btn.classList.toggle('active', btn.dataset.category === this.currentCategory);
+                            });
+                        }
+                    }
+                    
                     this.renderModules();
                 }
-            }
 
-            showModuleForm(editModule = null) {
-                const isEdit = !!editModule;
-                const formHTML = `
-                    <div class="admin-overlay">
-                        <div class="admin-panel" style="max-width: 500px;">
-                            <div class="admin-header">
-                                <h3>${isEdit ? '编辑' : '添加'}模块</h3>
-                                <button class="close-btn close-form-btn">&times;</button>
+                applyTheme(theme) {
+                    // 移除所有主题类
+                    document.body.className = '';
+                    // 添加新主题类
+                    document.body.classList.add(`theme-${theme}`);
+                    
+                    // 保存主题设置
+                    localStorage.setItem('theme', theme);
+                    this.currentTheme = theme;
+                    
+                    // 更新主题指示器
+                    const themeNames = {
+                        'default': '默认蓝色',
+                        'green': '清新绿色',
+                        'purple': '优雅紫色',
+                        'dark': '深色模式',
+                        'orange': '活力橙色',
+                        'pink': '浪漫粉色',
+                        'red': '热情红色',
+                        'cyan': '清新青色',
+                        'blue-purple': '科技蓝紫',
+                        'brown': '大地棕色',
+                        'deep-blue': '午夜深蓝'
+                    };
+                    
+                    document.getElementById('themeIndicator').textContent = 
+                        `当前主题：${themeNames[theme]}`;
+                }
+
+                renderModules() {
+                    const hotContainer = document.getElementById('hotModules');
+                    const allContainer = document.getElementById('allModules');
+                    
+                    // 清空容器
+                    hotContainer.innerHTML = '';
+                    allContainer.innerHTML = '';
+                    
+                    // 过滤模块
+                    let filteredModules = modulesData;
+                    
+                    // 应用搜索
+                    if (this.searchTerm) {
+                        filteredModules = filteredModules.filter(module => 
+                            module.name.toLowerCase().includes(this.searchTerm) || 
+                            module.desc.toLowerCase().includes(this.searchTerm) ||
+                            module.tags.some(tag => tag.toLowerCase().includes(this.searchTerm))
+                        );
+                    }
+                    
+                    // 应用分类筛选
+                    if (this.currentCategory !== 'all') {
+                        filteredModules = filteredModules.filter(module => 
+                            module.tags.includes(this.currentCategory)
+                        );
+                    }
+                    
+                    // 获取热门模块（按点击量排序的前4个）
+                    const hotModules = [...filteredModules]
+                        .sort((a, b) => b.clicks - a.clicks)
+                        .slice(0, 4)
+                        .filter(module => module.clicks > 0); // 只显示有点击量的模块
+                    
+                    // 渲染热门模块
+                    if (hotModules.length > 0) {
+                        hotModules.forEach(module => {
+                            hotContainer.appendChild(this.createModuleCard(module, true));
+                        });
+                    } else {
+                        // 如果没有热门模块，显示默认推荐
+                        const defaultHotModules = filteredModules.slice(0, 3);
+                        defaultHotModules.forEach(module => {
+                            hotContainer.appendChild(this.createModuleCard(module, true));
+                        });
+                    }
+                    
+                    // 渲染所有模块（按原始顺序，不按点击量排序）
+                    if (filteredModules.length > 0) {
+                        filteredModules.forEach(module => {
+                            allContainer.appendChild(this.createModuleCard(module));
+                        });
+                    } else {
+                        allContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-search"></i>
+                                <h3>没有找到匹配的模块</h3>
+                                <p>请尝试其他搜索词或分类</p>
                             </div>
-                            <div class="tab-content active">
-                                <form id="moduleForm" style="padding: 20px;">
-                                    <div style="margin-bottom: 15px;">
-                                        <label>模块名称:</label>
-                                        <input type="text" id="moduleName" value="${isEdit ? editModule.name : ''}" style="width: 100%; padding: 8px; margin-top: 5px;">
+                        `;
+                    }
+                    
+                    // 添加卡片动画
+                    setTimeout(() => {
+                        document.querySelectorAll('.module-card').forEach(card => {
+                            card.classList.add('loaded');
+                        });
+                    }, 50);
+                }
+
+                // 单独渲染热门模块（用于点击后即时更新）
+                renderHotModules() {
+                    const hotContainer = document.getElementById('hotModules');
+                    hotContainer.innerHTML = '';
+                    
+                    let filteredModules = modulesData;
+                    
+                    // 应用搜索和分类筛选
+                    if (this.searchTerm) {
+                        filteredModules = filteredModules.filter(module => 
+                            module.name.toLowerCase().includes(this.searchTerm) || 
+                            module.desc.toLowerCase().includes(this.searchTerm) ||
+                            module.tags.some(tag => tag.toLowerCase().includes(this.searchTerm))
+                        );
+                    }
+                    
+                    if (this.currentCategory !== 'all') {
+                        filteredModules = filteredModules.filter(module => 
+                            module.tags.includes(this.currentCategory)
+                        );
+                    }
+                    
+                    // 获取热门模块（按点击量排序的前4个）
+                    const hotModules = [...filteredModules]
+                        .sort((a, b) => b.clicks - a.clicks)
+                        .slice(0, 4)
+                        .filter(module => module.clicks > 0);
+                    
+                    // 渲染热门模块
+                    if (hotModules.length > 0) {
+                        hotModules.forEach(module => {
+                            hotContainer.appendChild(this.createModuleCard(module, true));
+                        });
+                    } else {
+                        // 如果没有热门模块，显示默认推荐
+                        const defaultHotModules = filteredModules.slice(0, 3);
+                        defaultHotModules.forEach(module => {
+                            hotContainer.appendChild(this.createModuleCard(module, true));
+                        });
+                    }
+                    
+                    // 重新添加动画
+                    setTimeout(() => {
+                        hotContainer.querySelectorAll('.module-card').forEach(card => {
+                            card.classList.add('loaded');
+                        });
+                    }, 50);
+                }
+
+                createModuleCard(module, isHot = false) {
+                    const card = document.createElement('div');
+                    card.className = 'module-card';
+                    card.dataset.id = module.id;
+                    card.dataset.url = module.url;
+                    card.dataset.tags = module.tags.join(',');
+                    if (module.platform) card.dataset.platform = module.platform;
+                    
+                    // 生成标签
+                    const tagsHTML = module.tags.map(tag => 
+                        `<span class="module-tag">${tag}</span>`
+                    ).join('');
+                    
+                    // 热门标记
+                    const hotBadge = isHot ? '<div class="hot-badge">热门</div>' : '';
+                    
+                    // 图标
+                    let iconClass = module.icon;
+                    if (module.platform && iconConfig.mappings[module.platform]) {
+                        iconClass = iconConfig.mappings[module.platform];
+                    }
+                    
+                    card.innerHTML = `
+                        ${tagsHTML}
+                        ${hotBadge}
+                        <i class="fas ${iconClass} module-icon"></i>
+                        <h3 class="module-name">${module.name}</h3>
+                        <p class="module-desc">${module.desc}</p>
+                    `;
+                    
+                    // 添加点击事件
+                    card.addEventListener('click', () => {
+                        this.handleCardClick(card, module);
+                    });
+                    
+                    return card;
+                }
+
+                handleCardClick(card, module) {
+                    // 记录点击
+                    this.saveClickData(module.id);
+                    
+                    // 特殊处理包机查询模块
+                    if (module.id === 'charter') {
+                        this.showCharterInfo();
+                        return;
+                    }
+                    
+                    // 特殊处理海系非自愿退票模块
+                    if (module.id === 'hx') {
+                        this.currentHxModule = module; // 保存当前模块信息
+                        this.showHxChoice();
+                        return;
+                    }
+                    
+                    // 打开链接
+                    const url = card.dataset.url;
+                    const platform = card.dataset.platform;
+                    if (url) {
+                        window.open(url, '_blank');
+                    }
+                    
+                    // 显示凭证（如果需要）
+                    if (['HU', '3U', 'HX', 'DFT'].includes(platform)) {
+                        this.showCredentials(module);
+                    }
+                    
+                    // 立即更新热门模块显示
+                    this.renderHotModules();
+                }
+
+                showCharterInfo() {
+                    this.toggleCharterNote(true);
+                }
+                
+                toggleCharterNote(show) {
+                    document.getElementById('charterNote').style.right = show ? '30px' : '-400px';
+                    document.getElementById('overlay').style.display = show ? 'block' : 'none';
+                    
+                    // 关闭其他弹窗
+                    if (show) {
+                        this.toggleCredentialNote(false);
+                        this.toggleHxChoiceNote(false);
+                    }
+                }
+                
+                showHxChoice() {
+                    this.toggleHxChoiceNote(true);
+                }
+                
+                toggleHxChoiceNote(show) {
+                    document.getElementById('hxChoiceNote').style.right = show ? '30px' : '-400px';
+                    document.getElementById('overlay').style.display = show ? 'block' : 'none';
+                    
+                    // 关闭其他弹窗
+                    if (show) {
+                        this.toggleCredentialNote(false);
+                        this.toggleCharterNote(false);
+                    }
+                }
+
+                showCredentials(module) {
+                    const parseData = (str) => 
+                        str?.split(';').map(item => {
+                            const [type, value] = item.trim().split(':');
+                            return { type, value };
+                        }) || [];
+                    
+                    const accounts = parseData(module.accounts);
+                    const passwords = parseData(module.passwords);
+                    const phones = parseData(module.phones);
+                    
+                    let html = '';
+                    accounts.forEach((acc, i) => {
+                        html += `
+                        <div class="credential-item">
+                            <div class="credential-row">
+                                <span class="credential-label">${acc.type}</span>
+                                <span class="credential-value">${acc.value}</span>
+                                <button class="copy-btn" data-text="${acc.value}">
+                                    <i class="fas fa-copy"></i>复制
+                                </button>
+                            </div>`;
+                        
+                        if (passwords[i]) {
+                            html += `
+                            <div class="credential-row">
+                                <span class="credential-label">${passwords[i].type}</span>
+                                <span class="credential-value">${passwords[i].value}</span>
+                                <button class="copy-btn" data-text="${passwords[i].value}">
+                                    <i class="fas fa-copy"></i>复制
+                                </button>
+                            </div>`;
+                        }
+                        
+                        if (phones[i]) {
+                            html += `
+                            <div class="credential-row">
+                                <span class="credential-label">${phones[i].type}</span>
+                                <span class="credential-value">${phones[i].value}</span>
+                                <button class="copy-btn" data-text="${phones[i].value}">
+                                    <i class="fas fa-copy"></i>复制
+                                </button>
+                            </div>`;
+                        }
+                        
+                        html += `</div>`;
+                    });
+                    
+                    document.getElementById('platformName').textContent = module.platform || module.name;
+                    document.getElementById('credentialContent').innerHTML = html;
+                    this.toggleCredentialNote(true);
+                    this.setupCopyButtons();
+                }
+
+                toggleCredentialNote(show) {
+                    document.getElementById('loginNote').style.right = show ? '30px' : '-400px';
+                    document.getElementById('overlay').style.display = show ? 'block' : 'none';
+                    
+                    // 关闭其他弹窗
+                    if (show) {
+                        this.toggleCharterNote(false);
+                        this.toggleHxChoiceNote(false);
+                    }
+                }
+
+                setupCopyButtons() {
+                    document.querySelectorAll('.copy-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const text = btn.dataset.text;
+                            this.copyToClipboard(text, btn);
+                        });
+                    });
+                }
+
+                copyToClipboard(text, button) {
+                    // 使用现代剪贴板API
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(text).then(() => {
+                            this.showCopyNotice(button);
+                        }).catch(err => {
+                            console.error('复制失败:', err);
+                            this.fallbackCopyText(text, button);
+                        });
+                    } else {
+                        // 使用降级方案
+                        this.fallbackCopyText(text, button);
+                    }
+                }
+
+                fallbackCopyText(text, button) {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.opacity = 0;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        this.showCopyNotice(button);
+                    } catch (err) {
+                        console.error('降级复制也失败:', err);
+                        alert('复制失败，请手动复制：' + text);
+                    }
+                    document.body.removeChild(textArea);
+                }
+
+                showCopyNotice(button) {
+                    const notice = document.createElement('div');
+                    notice.className = 'copy-notice';
+                    notice.textContent = '✓ 已复制';
+                    
+                    // 确保按钮有父元素
+                    if (button && button.parentNode) {
+                        button.parentNode.appendChild(notice);
+                        setTimeout(() => {
+                            if (notice.parentNode) {
+                                notice.parentNode.removeChild(notice);
+                            }
+                        }, 1500);
+                    }
+                }
+
+                // 管理员功能
+                showAdminPanel() {
+                    const password = prompt('请输入管理员密码:');
+                    if (password === this.adminPassword) {
+                        // 显示管理员面板
+                        this.showAdminManagementPanel();
+                    } else {
+                        alert('密码错误！');
+                    }
+                }
+
+                showAdminManagementPanel() {
+                    const adminHTML = `
+                        <div class="admin-overlay">
+                            <div class="admin-panel">
+                                <div class="admin-header">
+                                    <h3><i class="fas fa-cogs"></i> 模块管理</h3>
+                                    <button class="close-btn close-admin-btn">&times;</button>
+                                </div>
+                                <div class="admin-content">
+                                    <div class="admin-tabs">
+                                        <button class="tab-btn active" data-tab="modules">模块管理</button>
+                                        <button class="tab-btn" data-tab="users">用户管理</button>
+                                        <button class="tab-btn" data-tab="settings">系统设置</button>
                                     </div>
-                                    <div style="margin-bottom: 15px;">
-                                        <label>模块描述:</label>
-                                        <textarea id="moduleDesc" style="width: 100%; padding: 8px; margin-top: 5px; height: 80px;">${isEdit ? editModule.desc : ''}</textarea>
+                                    
+                                    <div class="tab-content active" id="modulesTab">
+                                        <div class="module-management">
+                                            <div class="admin-search">
+                                                <input type="text" id="adminModuleSearch" placeholder="搜索模块...">
+                                                <button class="btn-primary" id="addModuleBtn">添加模块</button>
+                                            </div>
+                                            <div class="module-list" id="adminModuleList">
+                                                <!-- 模块列表将通过JS动态生成 -->
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div style="margin-bottom: 15px;">
-                                        <label>链接地址:</label>
-                                        <input type="text" id="moduleUrl" value="${isEdit ? editModule.url : ''}" style="width: 100%; padding: 8px; margin-top: 5px;">
+                                    
+                                    <div class="tab-content" id="usersTab">
+                                        <div class="user-management">
+                                            <h4>用户访问统计</h4>
+                                            <div class="user-stats">
+                                                <div class="stat-item">
+                                                    <span class="stat-value" id="totalUsers">0</span>
+                                                    <span class="stat-label">总用户数</span>
+                                                </div>
+                                                <div class="stat-item">
+                                                    <span class="stat-value" id="activeToday">0</span>
+                                                    <span class="stat-label">今日活跃</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div style="margin-bottom: 15px;">
-                                        <label>标签(用逗号分隔):</label>
-                                        <input type="text" id="moduleTags" value="${isEdit ? editModule.tags.join(', ') : ''}" style="width: 100%; padding: 8px; margin-top: 5px;">
+                                    
+                                    <div class="tab-content" id="settingsTab">
+                                        <div class="system-settings">
+                                            <h4>系统设置</h4>
+                                            <div class="setting-item">
+                                                <label>管理员密码</label>
+                                                <input type="password" id="adminPasswordInput" value="${this.adminPassword}">
+                                                <button class="btn-secondary" id="changePasswordBtn">修改</button>
+                                            </div>
+                                            <div class="setting-item">
+                                                <label>数据备份</label>
+                                                <button class="btn-secondary" id="backupBtn">备份数据</button>
+                                                <button class="btn-secondary" id="restoreBtn">恢复数据</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div style="margin-bottom: 15px;">
-                                        <label>图标类名:</label>
-                                        <input type="text" id="moduleIcon" value="${isEdit ? editModule.icon : 'fa-cube'}" style="width: 100%; padding: 8px; margin-top: 5px;">
-                                    </div>
-                                    <div style="display: flex; gap: 10px; margin-top: 20px;">
-                                        <button type="button" class="btn-secondary close-form-btn">取消</button>
-                                        <button type="submit" class="btn-primary">${isEdit ? '更新' : '添加'}</button>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
 
-                document.body.insertAdjacentHTML('beforeend', formHTML);
-                
-                document.getElementById('moduleForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.saveModule(editModule);
-                });
-
-                document.querySelectorAll('.close-form-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        document.querySelector('.admin-overlay:last-child').remove();
-                    });
-                });
-            }
-
-            saveModule(editModule) {
-                const formData = {
-                    name: document.getElementById('moduleName').value,
-                    desc: document.getElementById('moduleDesc').value,
-                    url: document.getElementById('moduleUrl').value,
-                    tags: document.getElementById('moduleTags').value.split(',').map(tag => tag.trim()),
-                    icon: document.getElementById('moduleIcon').value,
-                    status: 'active',
-                    clicks: editModule ? editModule.clicks : 0
-                };
-
-                if (editModule) {
-                    Object.assign(editModule, formData);
-                } else {
-                    formData.id = 'module_' + Date.now();
-                    this.modulesData.push(formData);
+                    document.body.insertAdjacentHTML('beforeend', adminHTML);
+                    this.setupAdminPanelEvents();
+                    this.renderAdminModuleList();
                 }
 
-                this.saveModulesData();
-                this.renderAdminModuleList();
-                this.renderModules();
-                document.querySelector('.admin-overlay:last-child').remove();
-            }
+                setupAdminPanelEvents() {
+                    // 标签切换
+                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                            e.target.classList.add('active');
+                            document.getElementById(e.target.dataset.tab + 'Tab').classList.add('active');
+                        });
+                    });
 
-            editModule(moduleId) {
-                const module = this.modulesData.find(m => m.id === moduleId);
-                this.showModuleForm(module);
-            }
+                    // 关闭面板
+                    document.querySelector('.close-admin-btn').addEventListener('click', () => {
+                        document.querySelector('.admin-overlay').remove();
+                    });
 
-            backupData() {
-                const data = {
-                    modules: this.modulesData,
-                    backupTime: new Date().toISOString()
-                };
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `platform_backup.json`;
-                a.click();
-            }
+                    // 添加模块
+                    document.getElementById('addModuleBtn').addEventListener('click', () => {
+                        this.showAddModuleForm();
+                    });
 
-            restoreData() {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = '.json';
-                input.onchange = (e) => {
-                    const file = e.target.files[0];
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        try {
-                            const data = JSON.parse(event.target.result);
-                            this.modulesData = data.modules;
-                            this.saveModulesData();
-                            this.renderAdminModuleList();
-                            this.renderModules();
-                            alert('数据恢复成功！');
-                        } catch (error) {
-                            alert('文件格式错误！');
+                    // 修改密码
+                    document.getElementById('changePasswordBtn').addEventListener('click', () => {
+                        const newPassword = document.getElementById('adminPasswordInput').value;
+                        this.adminPassword = newPassword;
+                        alert('密码修改成功！');
+                    });
+
+                    // 数据备份
+                    document.getElementById('backupBtn').addEventListener('click', () => {
+                        this.backupData();
+                    });
+
+                    // 数据恢复
+                    document.getElementById('restoreBtn').addEventListener('click', () => {
+                        this.restoreData();
+                    });
+                }
+
+                renderAdminModuleList() {
+                    const moduleList = document.getElementById('adminModuleList');
+                    moduleList.innerHTML = '';
+
+                    // 获取模块状态数据
+                    const moduleStatus = JSON.parse(localStorage.getItem('moduleStatus') || '{}');
+
+                    modulesData.forEach(module => {
+                        const status = moduleStatus[module.id] || 'active';
+                        const moduleItem = document.createElement('div');
+                        moduleItem.className = `module-item ${status === 'inactive' ? 'inactive' : ''}`;
+                        moduleItem.innerHTML = `
+                            <div class="module-info">
+                                <div class="module-name">${module.name}</div>
+                                <div class="module-desc">${module.desc}</div>
+                                <div class="module-tags">${module.tags.join(', ')}</div>
+                            </div>
+                            <div class="module-actions">
+                                <button class="btn-small ${status === 'active' ? 'btn-warning' : 'btn-success'}" 
+                                        data-action="toggle" data-id="${module.id}">
+                                    ${status === 'active' ? '下架' : '上架'}
+                                </button>
+                            </div>
+                        `;
+                        moduleList.appendChild(moduleItem);
+                    });
+
+                    // 添加事件监听
+                    moduleList.addEventListener('click', (e) => {
+                        if (e.target.tagName === 'BUTTON') {
+                            const action = e.target.dataset.action;
+                            const moduleId = e.target.dataset.id;
+                            this.handleModuleAction(action, moduleId);
                         }
+                    });
+                }
+
+                handleModuleAction(action, moduleId) {
+                    const moduleStatus = JSON.parse(localStorage.getItem('moduleStatus') || '{}');
+                    
+                    switch (action) {
+                        case 'toggle':
+                            moduleStatus[moduleId] = moduleStatus[moduleId] === 'active' ? 'inactive' : 'active';
+                            localStorage.setItem('moduleStatus', JSON.stringify(moduleStatus));
+                            this.renderAdminModuleList();
+                            this.renderModules(); // 重新渲染主页面
+                            break;
+                    }
+                }
+
+                showAddModuleForm() {
+                    alert('添加新模块功能需要更复杂的管理界面，建议使用独立的管理员后台页面。');
+                }
+
+                backupData() {
+                    const data = {
+                        modules: modulesData,
+                        moduleStatus: JSON.parse(localStorage.getItem('moduleStatus') || '{}'),
+                        moduleClickData: JSON.parse(localStorage.getItem('moduleClickData') || '{}'),
+                        backupTime: new Date().toISOString()
                     };
-                    reader.readAsText(file);
-                };
-                input.click();
-            }
-
-            renderModules() {
-                const hotContainer = document.getElementById('hotModules');
-                const allContainer = document.getElementById('allModules');
-                
-                hotContainer.innerHTML = '';
-                allContainer.innerHTML = '';
-                
-                // 过滤模块
-                let filteredModules = this.modulesData.filter(module => module.status === 'active');
-                
-                if (this.searchTerm) {
-                    filteredModules = filteredModules.filter(module => 
-                        module.name.toLowerCase().includes(this.searchTerm) || 
-                        module.desc.toLowerCase().includes(this.searchTerm) ||
-                        module.tags.some(tag => tag.toLowerCase().includes(this.searchTerm))
-                    );
-                }
-                
-                if (this.currentCategory !== 'all') {
-                    filteredModules = filteredModules.filter(module => 
-                        module.tags.includes(this.currentCategory)
-                    );
-                }
-                
-                // 热门模块（点击量前4）
-                const hotModules = [...filteredModules]
-                    .sort((a, b) => b.clicks - a.clicks)
-                    .slice(0, 4)
-                    .filter(module => module.clicks > 0);
-
-                // 渲染热门模块
-                if (hotModules.length > 0) {
-                    hotModules.forEach(module => {
-                        hotContainer.appendChild(this.createModuleCard(module, true));
-                    });
-                } else {
-                    // 如果没有热门模块，显示默认推荐
-                    const defaultHotModules = filteredModules.slice(0, 3);
-                    defaultHotModules.forEach(module => {
-                        hotContainer.appendChild(this.createModuleCard(module, true));
-                    });
-                }
-
-                // 渲染所有模块
-                filteredModules.forEach(module => {
-                    allContainer.appendChild(this.createModuleCard(module));
-                });
-            }
-
-            createModuleCard(module, isHot = false) {
-                const card = document.createElement('div');
-                card.className = 'module-card';
-                
-                const tagsHTML = module.tags.map(tag => 
-                    `<span class="module-tag">${tag}</span>`
-                ).join('');
-                
-                const hotBadge = isHot ? '<div class="hot-badge">热门</div>' : '';
-                
-                card.innerHTML = `
-                    ${tagsHTML}
-                    ${hotBadge}
-                    <i class="fas ${module.icon} module-icon"></i>
-                    <h3 class="module-name">${module.name}</h3>
-                    <p class="module-desc">${module.desc}</p>
-                `;
-                
-                card.addEventListener('click', () => {
-                    this.handleCardClick(module);
-                });
-                
-                return card;
-            }
-
-            handleCardClick(module) {
-                // 记录点击
-                module.clicks = (module.clicks || 0) + 1;
-                this.saveModulesData();
-                
-                // 特殊处理包机查询模块
-                if (module.id === 'charter') {
-                    this.showCharterInfo();
-                    return;
-                }
-                
-                // 特殊处理海系非自愿退票模块
-                if (module.id === 'hx') {
-                    this.currentHxModule = module;
-                    this.showHxChoice();
-                    return;
-                }
-                
-                if (module.url && module.url !== '#') {
-                    window.open(module.url, '_blank');
-                }
-                
-                if (module.accounts) {
-                    this.showCredentials(module);
-                }
-                
-                this.renderModules();
-            }
-
-            showCharterInfo() {
-                this.toggleCharterNote(true);
-            }
-            
-            toggleCharterNote(show) {
-                document.getElementById('charterNote').style.right = show ? '30px' : '-400px';
-                document.getElementById('overlay').style.display = show ? 'block' : 'none';
-                
-                if (show) {
-                    this.toggleCredentialNote(false);
-                    this.toggleHxChoiceNote(false);
-                }
-            }
-            
-            showHxChoice() {
-                this.toggleHxChoiceNote(true);
-            }
-            
-            toggleHxChoiceNote(show) {
-                document.getElementById('hxChoiceNote').style.right = show ? '30px' : '-400px';
-                document.getElementById('overlay').style.display = show ? 'block' : 'none';
-                
-                if (show) {
-                    this.toggleCredentialNote(false);
-                    this.toggleCharterNote(false);
-                }
-            }
-
-            showCredentials(module) {
-                const parseData = (str) => 
-                    str?.split(';').map(item => {
-                        const [type, value] = item.trim().split(':');
-                        return { type, value };
-                    }) || [];
-                
-                const accounts = parseData(module.accounts);
-                const passwords = parseData(module.passwords);
-                const phones = parseData(module.phones);
-                
-                let html = '';
-                accounts.forEach((acc, i) => {
-                    html += `
-                    <div class="credential-item">
-                        <div class="credential-row">
-                            <span class="credential-label">${acc.type}</span>
-                            <span class="credential-value">${acc.value}</span>
-                            <button class="copy-btn" data-text="${acc.value}">复制</button>
-                        </div>`;
                     
-                    if (passwords[i]) {
-                        html += `
-                        <div class="credential-row">
-                            <span class="credential-label">${passwords[i].type}</span>
-                            <span class="credential-value">${passwords[i].value}</span>
-                            <button class="copy-btn" data-text="${passwords[i].value}">复制</button>
-                        </div>`;
-                    }
-                    
-                    if (phones && phones[i]) {
-                        html += `
-                        <div class="credential-row">
-                            <span class="credential-label">${phones[i].type}</span>
-                            <span class="credential-value">${phones[i].value}</span>
-                            <button class="copy-btn" data-text="${phones[i].value}">复制</button>
-                        </div>`;
-                    }
-                    
-                    html += `</div>`;
-                });
-                
-                document.getElementById('credentialContent').innerHTML = html;
-                this.toggleCredentialNote(true);
-                
-                // 设置复制按钮
-                this.setupCopyButtons();
-            }
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `platform_backup_${new Date().getTime()}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }
 
-            toggleCredentialNote(show) {
-                document.getElementById('loginNote').style.right = show ? '30px' : '-400px';
-                document.getElementById('overlay').style.display = show ? 'block' : 'none';
-                
-                if (show) {
-                    this.toggleCharterNote(false);
-                    this.toggleHxChoiceNote(false);
+                restoreData() {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json';
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            try {
+                                const data = JSON.parse(event.target.result);
+                                if (data.moduleStatus) localStorage.setItem('moduleStatus', JSON.stringify(data.moduleStatus));
+                                if (data.moduleClickData) localStorage.setItem('moduleClickData', JSON.stringify(data.moduleClickData));
+                                
+                                this.renderAdminModuleList();
+                                this.renderModules();
+                                alert('数据恢复成功！');
+                            } catch (error) {
+                                alert('文件格式错误！');
+                            }
+                        };
+                        reader.readAsText(file);
+                    };
+                    input.click();
                 }
             }
 
-            setupCopyButtons() {
-                document.querySelectorAll('.copy-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const text = e.target.dataset.text;
-                        this.copyToClipboard(text, e.target);
-                    });
-                });
-            }
-
-            copyToClipboard(text, button) {
-                if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        this.showCopyNotice(button);
-                    }).catch(err => {
-                        console.error('复制失败:', err);
-                        this.fallbackCopyText(text, button);
-                    });
-                } else {
-                    this.fallbackCopyText(text, button);
+            // 添加管理员面板的CSS样式
+            const adminStyles = `
+                .admin-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0,0,0,0.7);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 2000;
+                    backdrop-filter: blur(5px);
                 }
-            }
 
-            fallbackCopyText(text, button) {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                textArea.style.position = 'fixed';
-                textArea.style.opacity = 0;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    this.showCopyNotice(button);
-                } catch (err) {
-                    console.error('降级复制也失败:', err);
-                    alert('复制失败，请手动复制：' + text);
+                .admin-panel {
+                    background: white;
+                    border-radius: 16px;
+                    width: 90%;
+                    max-width: 1000px;
+                    max-height: 90vh;
+                    overflow: hidden;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
                 }
-                document.body.removeChild(textArea);
-            }
 
-            showCopyNotice(button) {
-                const originalText = button.innerHTML;
-                button.innerHTML = '✓ 已复制';
-                button.style.background = '#4CAF50';
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.style.background = '';
-                }, 1500);
-            }
-        }
+                .admin-header {
+                    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+                    color: white;
+                    padding: 20px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
 
-        // 初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            window.platformManager = new PlatformManager();
-        });
+                .admin-header h3 {
+                    margin: 0;
+                    font-size: 1.4rem;
+                }
+
+                .close-admin-btn {
+                    background: none;
+                    border: none;
+                    color: white;
+                    font-size: 1.8rem;
+                    cursor: pointer;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .close-admin-btn:hover {
+                    background: rgba(255,255,255,0.2);
+                }
+
+                .admin-content {
+                    padding: 20px;
+                    max-height: calc(90vh - 80px);
+                    overflow-y: auto;
+                }
+
+                .admin-tabs {
+                    display: flex;
+                    border-bottom: 2px solid var(--border-color);
+                    margin-bottom: 20px;
+                }
+
+                .tab-btn {
+                    padding: 12px 24px;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    color: var(--text-medium);
+                    border-bottom: 3px solid transparent;
+                    transition: all 0.3s;
+                }
+
+                .tab-btn.active {
+                    color: var(--primary-color);
+                    border-bottom-color: var(--primary-color);
+                }
+
+                .tab-content {
+                    display: none;
+                }
+
+                .tab-content.active {
+                    display: block;
+                }
+
+                .admin-search {
+                    display: flex;
+                    gap: 15px;
+                    margin-bottom: 20px;
+                }
+
+                .admin-search input {
+                    flex: 1;
+                    padding: 12px;
+                    border: 2px solid var(--border-color);
+                    border-radius: 8px;
+                    font-size: 1rem;
+                }
+
+                .btn-primary, .btn-secondary, .btn-danger, .btn-warning, .btn-success {
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    transition: all 0.3s;
+                }
+
+                .btn-primary {
+                    background: var(--primary-color);
+                    color: white;
+                }
+
+                .btn-secondary {
+                    background: var(--secondary-color);
+                    color: white;
+                }
+
+                .btn-danger {
+                    background: var(--danger-color);
+                    color: white;
+                }
+
+                .btn-warning {
+                    background: var(--warning-color);
+                    color: white;
+                }
+
+                .btn-success {
+                    background: var(--success-color);
+                    color: white;
+                }
+
+                .btn-small {
+                    padding: 6px 12px;
+                    font-size: 0.8rem;
+                }
+
+                .module-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 15px;
+                    border: 1px solid var(--border-color);
+                    border-radius: 8px;
+                    margin-bottom: 10px;
+                    background: white;
+                }
+
+                .module-item.inactive {
+                    opacity: 0.6;
+                    background: #f8f9fa;
+                }
+
+                .module-info {
+                    flex: 1;
+                }
+
+                .module-name {
+                    font-weight: 600;
+                    color: var(--primary-color);
+                    margin-bottom: 5px;
+                }
+
+                .module-desc {
+                    color: var(--text-medium);
+                    font-size: 0.9rem;
+                    margin-bottom: 5px;
+                }
+
+                .module-tags {
+                    font-size: 0.8rem;
+                    color: var(--text-light);
+                }
+
+                .module-actions {
+                    display: flex;
+                    gap: 8px;
+                }
+
+                .user-stats {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                    gap: 20px;
+                    margin-top: 20px;
+                }
+
+                .stat-item {
+                    text-align: center;
+                    padding: 20px;
+                    background: var(--category-bg);
+                    border-radius: 12px;
+                }
+
+                .stat-value {
+                    display: block;
+                    font-size: 2rem;
+                    font-weight: 700;
+                    color: var(--primary-color);
+                }
+
+                .stat-label {
+                    color: var(--text-medium);
+                    font-size: 0.9rem;
+                }
+
+                .setting-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    margin-bottom: 20px;
+                    padding: 15px;
+                    background: var(--category-bg);
+                    border-radius: 8px;
+                }
+
+                .setting-item label {
+                    min-width: 120px;
+                    font-weight: 600;
+                    margin: 0;
+                }
+
+                .setting-item input {
+                    flex: 1;
+                    padding: 10px;
+                    border: 2px solid var(--border-color);
+                    border-radius: 6px;
+                }
+            `;
+
+            // 将样式添加到页面
+            const styleSheet = document.createElement('style');
+            styleSheet.textContent = adminStyles;
+            document.head.appendChild(styleSheet);
+
+            // 初始化
+            document.addEventListener('DOMContentLoaded', () => {
+                window.platformManager = new PlatformManager();
+            });
+        })();
     </script>
 </body>
 </html>

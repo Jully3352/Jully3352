@@ -1,0 +1,3677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国际机票行程单系统 | Flight Itinerary System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a4b8c;
+            --primary-light: #e8f4fd;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #bdc3c7;
+            --notice-bg: #f8f9fa;
+            --notice-border: #3498db;
+            --background: #ecf0f1;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 8px;
+            z-index: 10000;
+            text-decoration: none;
+            border-radius: 0 0 4px 0;
+            transition: top 0.3s;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), #2980b9);
+        }
+
+        .back-button {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .back-button button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .back-button button:hover {
+            background: #153a6d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 75, 140, 0.3);
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 语言选择器样式 */
+        .language-selector {
+            margin: 1rem 0 2rem 0;
+            padding: 1.5rem;
+            background: var(--primary-light);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .language-selector label {
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .language-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.2rem;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .language-option:hover {
+            border-color: var(--primary);
+        }
+        
+        .language-option.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .language-option input {
+            display: none;
+        }
+        
+        .language-option i {
+            font-size: 0.9rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.8rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .form-section:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        label {
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        label i {
+            color: var(--primary);
+            width: 20px;
+        }
+
+        input, select {
+            padding: 0.9rem 1.2rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+            transition: var(--transition);
+            background: #fafcff;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 75, 140, 0.15);
+            background: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.85rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            font-size: 1rem;
+        }
+
+        .btn i {
+            font-size: 1.1rem;
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(26, 75, 140, 0.3);
+        }
+
+        .btn-add:hover {
+            background: #153a6d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(26, 75, 140, 0.4);
+        }
+
+        .btn-remove {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-remove:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-print {
+            background: var(--success);
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-print:hover {
+            background: #219653;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-sms {
+            background: #8e44ad;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3);
+        }
+
+        .btn-sms:hover {
+            background: #7d3c98;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(142, 68, 173, 0.4);
+        }
+
+        .template {
+            display: none;
+        }
+
+        .flight-card {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .flight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px 0 0 4px;
+        }
+
+        .form-section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .form-section-title i {
+            background: rgba(26, 75, 140, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .counter-badge {
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        .validation-error {
+            color: var(--accent);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        input:invalid, select:invalid {
+            border-color: var(--accent);
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .sms-template {
+            width: 100%;
+            min-height: 300px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: vertical;
+            margin-bottom: 1.5rem;
+            white-space: pre-wrap;
+            transition: font-size 0.3s ease;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-copy {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #153a6d;
+        }
+
+        .btn-close {
+            background: var(--text-light);
+            color: white;
+        }
+
+        .btn-close:hover {
+            background: #7f8c8d;
+        }
+
+        /* 字体控制样式 */
+        .font-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .font-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .font-btn:hover {
+            background: #153a6d;
+        }
+        
+        .font-size-display {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin: 0 0.5rem;
+        }
+        
+        /* Toast通知样式 */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.error {
+            background: var(--accent);
+        }
+        
+        .toast i {
+            font-size: 1.2rem;
+        }
+        
+        /* 自动跳转提示样式 */
+        .auto-redirect-notice {
+            background: #fff3e0;
+            border: 1px solid #ffcc80;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #ef6c00;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .auto-redirect-notice i {
+            font-size: 1.2rem;
+        }
+        
+        .auto-redirect-notice strong {
+            color: #d84315;
+        }
+
+        /* 短信模板颜色标记 */
+        .sms-highlight {
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .sms-datetime {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .sms-airport {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .sms-airline {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .sms-flight {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .sms-passenger {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .sms-ticket {
+            background-color: #efebe9;
+            color: #5d4037;
+        }
+        
+        /* 公告模态框样式 */
+        .announcement-content {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .announcement-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem 0;
+        }
+
+        .announcement-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .announcement-item i {
+            color: var(--primary);
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+
+        .announcement-item span {
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .modal-body {
+            padding: 1rem 0;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #153a6d;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .language-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .language-options {
+                width: 100%;
+            }
+            
+            .language-option {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+                margin: 0.5rem;
+            }
+            
+            .form-section {
+                padding: 1rem;
+            }
+            
+            .flight-card {
+                padding: 1rem;
+            }
+            
+            input[type="datetime-local"] {
+                font-size: 14px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* 优化后的行程单打印样式 */
+        @media print {
+            body {
+                background: white !important;
+                font-size: 12pt;
+                line-height: 1.4;
+            }
+            
+            .container {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0.5in !important;
+                max-width: 100% !important;
+                border: 1px solid #ddd !important;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .itinerary-container {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
+            
+            .flight-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            
+            .notice-section {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            
+            h1, h2, h3 {
+                color: #000 !important;
+            }
+            
+            .baggage-info, .carry-on-baggage-info {
+                background: #f9f9f9 !important;
+                border: 1px solid #ddd !important;
+            }
+        }
+
+        .itinerary-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .itinerary-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), #2980b9, #27ae60);
+        }
+
+        .logo-container {
+            text-align: center;
+            padding: 2.5rem 2rem 1.5rem;
+            background: linear-gradient(135deg, #1a4b8c 0%, #2980b9 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .header-content h1 {
+            color: white;
+            margin: 0 0 0.5rem 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .header-content p {
+            color: rgba(255,255,255,0.9);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        /* 修改后的预订信息样式 */
+        .booking-info {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            margin: 0;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .booking-code {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .section-header {
+            padding: 1.5rem 2rem 0.5rem;
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            border-bottom: 2px solid var(--primary-light);
+            margin: 0 2rem;
+        }
+
+        .passenger-card {
+            margin: 1.5rem 2rem;
+            padding: 2rem;
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .passenger-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        .passenger-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px 0 0 4px;
+        }
+
+        .passenger-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .flight-card {
+            margin: 1.5rem 2rem;
+            padding: 2rem;
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .flight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        .flight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px 0 0 4px;
+        }
+
+        .flight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .airline-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .airline-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .airline-details h3 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .airline-details p {
+            margin: 0.2rem 0 0 0;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .cabin-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .flight-timeline {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .timeline-connector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .flight-duration {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .flight-arrow {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .airport-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .airport-info.arrival {
+            text-align: right;
+            align-items: flex-end;
+        }
+
+        .airport-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .airport-time {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .airport-date {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+
+        .time-note {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        .baggage-section {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .baggage-info, .carry-on-baggage-info {
+            padding: 1.2rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .baggage-info {
+            background: #e8f5e8;
+            border-left: 4px solid var(--success);
+        }
+
+        .carry-on-baggage-info {
+            background: #e3f2fd;
+            border-left: 4px solid var(--primary);
+        }
+
+        .baggage-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .baggage-info .baggage-icon {
+            color: var(--success);
+        }
+
+        .carry-on-baggage-info .baggage-icon {
+            color: var(--primary);
+        }
+
+        .baggage-details h4 {
+            margin: 0 0 0.3rem 0;
+            font-size: 1rem;
+        }
+
+        .baggage-details p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .baggage-through-notice {
+            margin: 1.5rem 0 0 0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .baggage-through-yes {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            color: #2e7d32;
+        }
+
+        .baggage-through-maybe {
+            background: #fff3e0;
+            border: 1px solid #ffcc80;
+            color: #ef6c00;
+        }
+
+        .baggage-through-no {
+            background: #ffebee;
+            border: 1px solid #ef9a9a;
+            color: #c62828;
+        }
+
+        .baggage-through-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .baggage-through-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .baggage-through-content p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .notice-section {
+            margin: 2rem;
+            padding: 2rem;
+            background: var(--notice-bg);
+            border: 1px solid var(--notice-border);
+            border-radius: 10px;
+            color: #2c3e50;
+        }
+
+        .notice-section h3 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .notice-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .notice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 0.8rem 0;
+        }
+
+        .notice-icon {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+
+        .notice-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .print-actions {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .print-button {
+            padding: 1rem 2.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(26, 75, 140, 0.3);
+        }
+
+        .print-button:hover {
+            background: #153a6d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(26, 75, 140, 0.4);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .flight-timeline {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .airport-info.arrival {
+                text-align: left;
+                align-items: flex-start;
+            }
+            
+            .timeline-connector {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .flight-arrow {
+                transform: rotate(90deg);
+            }
+            
+            .booking-info {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .passenger-info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .baggage-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+                margin: 0.5rem;
+            }
+            
+            .flight-card, .passenger-card {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .logo-container {
+                padding: 1.5rem 1rem 1rem;
+            }
+            
+            .header-content h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">跳过导航</a>
+    
+    <div class="container" id="main-content">
+        <div class="back-button no-print">
+            <button>
+                <i class="fas fa-arrow-left"></i> 返回主页
+            </button>
+        </div>
+
+        <div class="header">
+            <h1><i class="fas fa-plane"></i> 国际机票行程单系统</h1>
+            <p>管理您的航班信息，生成专业行程单，轻松出行无忧</p>
+        </div>
+
+        <!-- 语言选择器 -->
+        <div class="language-selector">
+            <label><i class="fas fa-language"></i> 行程单语言 / Itinerary Language:</label>
+            <div class="language-options">
+                <label class="language-option selected" id="lang-zh-en">
+                    <input type="radio" name="language" value="zh-en" checked>
+                    <i class="fas fa-check"></i>
+                    中英文版 / Chinese-English
+                </label>
+                <label class="language-option" id="lang-en">
+                    <input type="radio" name="language" value="en">
+                    <i class="fas fa-check"></i>
+                    全英文版 / English Only
+                </label>
+            </div>
+        </div>
+
+        <!-- 预订信息 -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-file-invoice"></i>
+                <span>预订信息 / Booking Details</span>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="bookingCode"><i class="fas fa-barcode"></i>预订编码</label>
+                    <input type="text" id="bookingCode" required placeholder="请输入预订编码">
+                    <div class="validation-error">预订编码不能为空</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 乘客信息 -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-users"></i>
+                <span>乘客信息 / Passenger Information</span>
+                <span class="counter-badge" id="passenger-count">1</span>
+            </div>
+            
+            <div id="passengers">
+                <div class="passenger template" id="passengerTemplate">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i>乘客姓名</label>
+                            <input type="text" class="passengerName" required placeholder="请输入乘客姓名">
+                            <div class="validation-error">乘客姓名不能为空</div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-passport"></i>证件号码</label>
+                            <input type="text" class="passportNumber" required placeholder="请输入证件号码">
+                            <div class="validation-error">证件号码不能为空</div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-ticket-alt"></i>电子票号</label>
+                            <input type="text" class="ticketNumber" required placeholder="请输入电子票号">
+                            <div class="validation-error">电子票号不能为空</div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-remove" onclick="removePassenger(this)">
+                            <i class="fas fa-trash"></i>
+                            删除乘客
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-add" onclick="addPassenger()">
+                    <i class="fas fa-user-plus"></i>
+                    添加乘客
+                </button>
+            </div>
+        </div>
+
+        <!-- 航班信息 -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-plane"></i>
+                <span>航班信息 / Flight Details</span>
+                <span class="counter-badge" id="flight-count">1</span>
+            </div>
+            
+            <div id="flightSegments">
+                <div class="flight-segment template" id="flightTemplate">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class="fas fa-plane"></i>航空公司</label>
+                            <input type="text" class="airline" required placeholder="请输入航空公司">
+                            <div class="validation-error">航空公司不能为空</div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-hashtag"></i>航班号</label>
+                            <input type="text" class="flightNumber" required placeholder="请输入航班号">
+                            <div class="validation-error">航班号不能为空</div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-couch"></i>舱位等级</label>
+                            <select class="cabinClass" required>
+                                <option value="">请选择舱位等级</option>
+                                <option value="经济舱">经济舱 Economy</option>
+                                <option value="超级经济舱">超级经济舱 Premium Economy</option>
+                                <option value="商务舱">商务舱 Business</option>
+                                <option value="头等舱">头等舱 First Class</option>
+                            </select>
+                            <div class="validation-error">请选择舱位等级</div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i>出发地</label>
+                            <input type="text" class="departureAirport" required placeholder="请输入出发地">
+                            <div class="validation-error">出发地不能为空</div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i>目的地</label>
+                            <input type="text" class="arrivalAirport" required placeholder="请输入目的地">
+                            <div class="validation-error">目的地不能为空</div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-plane-departure"></i>出发时间</label>
+                            <input type="datetime-local" class="departureTime" required>
+                            <div class="validation-error">请选择出发时间</div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-plane-arrival"></i>到达时间</label>
+                            <input type="datetime-local" class="arrivalTime" required>
+                            <div class="validation-error">请选择到达时间</div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-suitcase"></i>免费托运行李额</label>
+                            <input type="text" class="baggage" placeholder="例: 2x23kg">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-briefcase"></i>手提行李额</label>
+                            <input type="text" class="carryOnBaggage" placeholder="例: 1x7kg">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-exchange-alt"></i>行李直挂</label>
+                            <select class="baggageThrough">
+                                <option value="">请选择行李直挂情况</option>
+                                <option value="行李直挂">行李直挂</option>
+                                <option value="行李是否直挂以机场现场为准">行李是否直挂以机场现场为准</option>
+                                <option value="行李不直挂">行李不直挂</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-remove" onclick="removeFlightSegment(this)">
+                            <i class="fas fa-trash"></i>
+                            删除航班
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-add" onclick="addFlightSegment()">
+                    <i class="fas fa-plane"></i>
+                    添加航班
+                </button>
+            </div>
+        </div>
+
+        <div class="action-buttons" style="justify-content: center; margin-top: 2rem;">
+            <button class="btn btn-sms" onclick="generateSmsTemplate()">
+                <i class="fas fa-sms"></i> 生成短信模板
+            </button>
+            <button class="btn btn-print" onclick="generateItinerary()">
+                <i class="fas fa-file-alt"></i> 生成行程单
+            </button>
+        </div>
+    </div>
+
+    <!-- 短信模板模态框 -->
+    <div id="smsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-sms"></i> 机票短信模板</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            
+            <!-- 自动跳转提示 -->
+            <div class="auto-redirect-notice">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>注意：</strong>点击复制短信后将自动跳转至行程单页面！
+                </div>
+            </div>
+            
+            <!-- 字体控制区域 -->
+            <div class="font-controls">
+                <span>字体大小:</span>
+                <button class="font-btn" id="fontDecrease" title="减小字体">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <span class="font-size-display" id="fontSizeDisplay">16px</span>
+                <button class="font-btn" id="fontIncrease" title="增大字体">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="font-btn" id="fontReset" title="重置字体大小">
+                    <i class="fas fa-redo"></i>
+                </button>
+            </div>
+            
+            <div id="smsTemplate" class="sms-template" contenteditable="true"></div>
+            <div class="modal-actions">
+                <button class="btn btn-copy" id="copySmsButton">
+                    <i class="fas fa-copy"></i> 复制模板并生成行程单
+                </button>
+                <button class="btn btn-close" id="closeSmsModal">
+                    <i class="fas fa-times"></i> 关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公告模态框 -->
+    <div id="announcementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-bullhorn"></i> 系统公告</h2>
+                <button class="close-button" id="closeAnnouncement">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="announcement-content">
+                    <div class="announcement-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>目前已上线行程单编辑展示，支持全英文和中英文版本，可自行选择。</span>
+                    </div>
+                    <div class="announcement-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>目前协商航班短信编辑模板也可自动生成，短信复制后将自动生成行程单模板。</span>
+                    </div>
+                    <div class="announcement-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>生成的行程单点击打印后，尽量设置页面格式为A3更加美观。</span>
+                    </div>
+                    <div class="announcement-item">
+                        <i class="fas fa-tools"></i>
+                        <span>其他功能后续继续完善。</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="confirmAnnouncement">
+                    <i class="fas fa-check"></i> 我知道了
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast通知 -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">操作成功</span>
+    </div>
+
+    <script>
+        // 初始化
+        window.onload = () => {
+            addPassenger();
+            addFlightSegment();
+            
+            // 添加模态框事件监听
+            document.querySelector('.close-button').addEventListener('click', closeSmsModal);
+            document.getElementById('closeSmsModal').addEventListener('click', closeSmsModal);
+            document.getElementById('copySmsButton').addEventListener('click', copySmsTemplate);
+            
+            // 点击模态框外部关闭
+            document.getElementById('smsModal').addEventListener('click', function(e) {
+                if (e.target === this) closeSmsModal();
+            });
+            
+            // 添加字体控制事件监听
+            document.getElementById('fontDecrease').addEventListener('click', decreaseFontSize);
+            document.getElementById('fontIncrease').addEventListener('click', increaseFontSize);
+            document.getElementById('fontReset').addEventListener('click', resetFontSize);
+            
+            // 设置输入事件监听
+            setupInputListeners();
+            
+            // 加载保存的数据
+            loadFromLocalStorage();
+            
+            // 添加语言选择事件监听
+            setupLanguageSelector();
+            
+            // 添加公告弹窗控制
+            checkAndShowAnnouncement();
+            
+            // 添加公告弹窗事件监听
+            document.getElementById('closeAnnouncement').addEventListener('click', closeAnnouncement);
+            document.getElementById('confirmAnnouncement').addEventListener('click', closeAnnouncement);
+            
+            // 点击模态框外部关闭
+            document.getElementById('announcementModal').addEventListener('click', function(e) {
+                if (e.target === this) closeAnnouncement();
+            });
+        };
+
+        // 公告弹窗功能
+        function checkAndShowAnnouncement() {
+            // 检查是否已经显示过公告
+            const hasSeenAnnouncement = sessionStorage.getItem('hasSeenAnnouncement');
+            
+            if (!hasSeenAnnouncement) {
+                // 延迟显示，确保页面加载完成
+                setTimeout(() => {
+                    document.getElementById('announcementModal').style.display = 'flex';
+                }, 1000);
+            }
+        }
+
+        function closeAnnouncement() {
+            // 设置标记，表示用户已经看过公告
+            sessionStorage.setItem('hasSeenAnnouncement', 'true');
+            document.getElementById('announcementModal').style.display = 'none';
+        }
+
+        // 语言选择功能
+        function setupLanguageSelector() {
+            const languageOptions = document.querySelectorAll('.language-option');
+            
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除所有选中状态
+                    languageOptions.forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // 添加当前选中状态
+                    this.classList.add('selected');
+                    
+                    // 选中对应的单选按钮
+                    const radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                    
+                    // 保存语言选择到本地存储
+                    saveToLocalStorage();
+                });
+            });
+        }
+        
+        // 获取当前选择的语言
+        function getSelectedLanguage() {
+            const selectedRadio = document.querySelector('input[name="language"]:checked');
+            return selectedRadio ? selectedRadio.value : 'zh-en';
+        }
+
+        // 乘客操作
+        function addPassenger() {
+            const template = document.getElementById('passengerTemplate').cloneNode(true);
+            template.classList.remove('template');
+            template.querySelectorAll('input').forEach(i => i.value = '');
+            document.getElementById('passengers').appendChild(template);
+            updatePassengerCount();
+            setupInputValidation(template);
+            saveToLocalStorage();
+        }
+
+        function removePassenger(btn) {
+            const passengers = document.querySelectorAll('.passenger:not(.template)');
+            if (passengers.length > 1) {
+                btn.closest('.passenger').remove();
+                updatePassengerCount();
+                saveToLocalStorage();
+            }
+        }
+        
+        function updatePassengerCount() {
+            const count = document.querySelectorAll('.passenger:not(.template)').length;
+            document.getElementById('passenger-count').textContent = count;
+        }
+
+        // 航班操作
+        function addFlightSegment() {
+            const template = document.getElementById('flightTemplate').cloneNode(true);
+            template.classList.remove('template');
+            template.querySelectorAll('input').forEach(i => i.value = '');
+            template.querySelector('select').value = '';
+            
+            // 设置默认时间（当前时间+2小时）
+            const now = new Date();
+            const defaultDeparture = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+            const defaultArrival = new Date(defaultDeparture.getTime() + 3 * 60 * 60 * 1000);
+            
+            template.querySelector('.departureTime').value = formatDateTimeLocal(defaultDeparture);
+            template.querySelector('.arrivalTime').value = formatDateTimeLocal(defaultArrival);
+            
+            document.getElementById('flightSegments').appendChild(template);
+            updateFlightCount();
+            setupInputValidation(template);
+            saveToLocalStorage();
+        }
+
+        function removeFlightSegment(btn) {
+            const segments = document.querySelectorAll('.flight-segment:not(.template)');
+            if (segments.length > 1) {
+                btn.closest('.flight-segment').remove();
+                updateFlightCount();
+                saveToLocalStorage();
+            }
+        }
+        
+        function updateFlightCount() {
+            const count = document.querySelectorAll('.flight-segment:not(.template)').length;
+            document.getElementById('flight-count').textContent = count;
+        }
+        
+        // 日期格式化辅助函数
+        function formatDateTimeLocal(date) {
+            if (!date) return '';
+            const dt = new Date(date);
+            dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
+            return dt.toISOString().slice(0, 16);
+        }
+        
+        // 格式化日期时间显示
+        function formatDisplayDateTime(dtString) {
+            if (!dtString) return '';
+            const dt = new Date(dtString);
+            return dt.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).replace(/\//g, '-');
+        }
+
+        // 格式化短信日期时间
+        function formatSmsDateTime(dtString) {
+            if (!dtString) return '';
+            const dt = new Date(dtString);
+            const year = dt.getFullYear();
+            const month = (dt.getMonth() + 1).toString().padStart(2, '0');
+            const day = dt.getDate().toString().padStart(2, '0');
+            const hour = dt.getHours().toString().padStart(2, '0');
+            const minute = dt.getMinutes().toString().padStart(2, '0');
+            
+            return `${year}年${month}月${day}日${hour}时${minute}分`;
+        }
+
+        // 字体控制功能
+        let currentFontSize = 16;
+        const smsTemplate = document.getElementById('smsTemplate');
+        const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+        
+        function decreaseFontSize() {
+            if (currentFontSize > 12) {
+                currentFontSize--;
+                updateFontSize();
+            }
+        }
+        
+        function increaseFontSize() {
+            if (currentFontSize < 24) {
+                currentFontSize++;
+                updateFontSize();
+            }
+        }
+        
+        function resetFontSize() {
+            currentFontSize = 16;
+            updateFontSize();
+        }
+        
+        function updateFontSize() {
+            smsTemplate.style.fontSize = `${currentFontSize}px`;
+            fontSizeDisplay.textContent = `${currentFontSize}px`;
+        }
+        
+        // Toast通知功能
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            
+            if (isError) {
+                toast.classList.add('error');
+            } else {
+                toast.classList.remove('error');
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 数据持久化
+        function saveToLocalStorage() {
+            const data = {
+                bookingCode: document.getElementById('bookingCode').value,
+                passengers: Array.from(document.querySelectorAll('.passenger:not(.template)')).map(p => ({
+                    name: p.querySelector('.passengerName').value,
+                    passport: p.querySelector('.passportNumber').value,
+                    ticket: p.querySelector('.ticketNumber').value
+                })),
+                flights: Array.from(document.querySelectorAll('.flight-segment:not(.template)')).map(f => ({
+                    airline: f.querySelector('.airline').value,
+                    number: f.querySelector('.flightNumber').value,
+                    cabinClass: f.querySelector('.cabinClass').value,
+                    departure: f.querySelector('.departureAirport').value,
+                    arrival: f.querySelector('.arrivalAirport').value,
+                    departTime: f.querySelector('.departureTime').value,
+                    arriveTime: f.querySelector('.arrivalTime').value,
+                    baggage: f.querySelector('.baggage').value,
+                    carryOnBaggage: f.querySelector('.carryOnBaggage').value,
+                    baggageThrough: f.querySelector('.baggageThrough').value
+                })),
+                language: getSelectedLanguage()
+            };
+            localStorage.setItem('flightItineraryData', JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('flightItineraryData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    
+                    // 恢复预订编码
+                    if (data.bookingCode) {
+                        document.getElementById('bookingCode').value = data.bookingCode;
+                    }
+                    
+                    // 恢复乘客信息
+                    if (data.passengers && data.passengers.length > 0) {
+                        // 清除现有乘客（保留一个）
+                        const passengers = document.querySelectorAll('.passenger:not(.template)');
+                        for (let i = 1; i < passengers.length; i++) {
+                            passengers[i].remove();
+                        }
+                        
+                        // 更新第一个乘客
+                        const firstPassenger = document.querySelector('.passenger:not(.template)');
+                        if (firstPassenger && data.passengers[0]) {
+                            firstPassenger.querySelector('.passengerName').value = data.passengers[0].name || '';
+                            firstPassenger.querySelector('.passportNumber').value = data.passengers[0].passport || '';
+                            firstPassenger.querySelector('.ticketNumber').value = data.passengers[0].ticket || '';
+                        }
+                        
+                        // 添加其他乘客
+                        for (let i = 1; i < data.passengers.length; i++) {
+                            addPassenger();
+                            const passenger = document.querySelectorAll('.passenger:not(.template)')[i];
+                            if (passenger && data.passengers[i]) {
+                                passenger.querySelector('.passengerName').value = data.passengers[i].name || '';
+                                passenger.querySelector('.passportNumber').value = data.passengers[i].passport || '';
+                                passenger.querySelector('.ticketNumber').value = data.passengers[i].ticket || '';
+                            }
+                        }
+                    }
+                    
+                    // 恢复航班信息
+                    if (data.flights && data.flights.length > 0) {
+                        // 清除现有航班（保留一个）
+                        const flights = document.querySelectorAll('.flight-segment:not(.template)');
+                        for (let i = 1; i < flights.length; i++) {
+                            flights[i].remove();
+                        }
+                        
+                        // 更新第一个航班
+                        const firstFlight = document.querySelector('.flight-segment:not(.template)');
+                        if (firstFlight && data.flights[0]) {
+                            firstFlight.querySelector('.airline').value = data.flights[0].airline || '';
+                            firstFlight.querySelector('.flightNumber').value = data.flights[0].number || '';
+                            firstFlight.querySelector('.cabinClass').value = data.flights[0].cabinClass || '';
+                            firstFlight.querySelector('.departureAirport').value = data.flights[0].departure || '';
+                            firstFlight.querySelector('.arrivalAirport').value = data.flights[0].arrival || '';
+                            firstFlight.querySelector('.departureTime').value = data.flights[0].departTime || '';
+                            firstFlight.querySelector('.arrivalTime').value = data.flights[0].arriveTime || '';
+                            firstFlight.querySelector('.baggage').value = data.flights[0].baggage || '';
+                            firstFlight.querySelector('.carryOnBaggage').value = data.flights[0].carryOnBaggage || '';
+                            firstFlight.querySelector('.baggageThrough').value = data.flights[0].baggageThrough || '';
+                        }
+                        
+                        // 添加其他航班
+                        for (let i = 1; i < data.flights.length; i++) {
+                            addFlightSegment();
+                            const flight = document.querySelectorAll('.flight-segment:not(.template)')[i];
+                            if (flight && data.flights[i]) {
+                                flight.querySelector('.airline').value = data.flights[i].airline || '';
+                                flight.querySelector('.flightNumber').value = data.flights[i].number || '';
+                                flight.querySelector('.cabinClass').value = data.flights[i].cabinClass || '';
+                                flight.querySelector('.departureAirport').value = data.flights[i].departure || '';
+                                flight.querySelector('.arrivalAirport').value = data.flights[i].arrival || '';
+                                flight.querySelector('.departureTime').value = data.flights[i].departTime || '';
+                                flight.querySelector('.arrivalTime').value = data.flights[i].arriveTime || '';
+                                flight.querySelector('.baggage').value = data.flights[i].baggage || '';
+                                flight.querySelector('.carryOnBaggage').value = data.flights[i].carryOnBaggage || '';
+                                flight.querySelector('.baggageThrough').value = data.flights[i].baggageThrough || '';
+                            }
+                        }
+                    }
+                    
+                    // 恢复语言设置
+                    if (data.language) {
+                        const languageOptions = document.querySelectorAll('.language-option');
+                        languageOptions.forEach(option => {
+                            const radio = option.querySelector('input[type="radio"]');
+                            if (radio.value === data.language) {
+                                option.classList.add('selected');
+                                radio.checked = true;
+                            } else {
+                                option.classList.remove('selected');
+                                radio.checked = false;
+                            }
+                        });
+                    }
+                    
+                    updatePassengerCount();
+                    updateFlightCount();
+                    showToast('已恢复上次保存的数据');
+                } catch (e) {
+                    console.error('加载保存数据失败:', e);
+                }
+            }
+        }
+
+        // 输入验证
+        function setupInputValidation(element) {
+            const inputs = element.querySelectorAll('input[required], select[required]');
+            
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.style.borderColor = 'var(--accent)';
+                        const errorElement = this.parentElement.querySelector('.validation-error');
+                        if (errorElement) errorElement.style.display = 'block';
+                    } else {
+                        this.style.borderColor = '';
+                        const errorElement = this.parentElement.querySelector('.validation-error');
+                        if (errorElement) errorElement.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function setupInputListeners() {
+            // 为所有输入框添加保存功能
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', debounce(saveToLocalStorage, 500));
+            });
+            
+            // 为现有元素设置验证
+            document.querySelectorAll('.passenger:not(.template), .flight-segment:not(.template)').forEach(element => {
+                setupInputValidation(element);
+            });
+        }
+
+        // 时间冲突检测
+        function validateFlightTimes() {
+            const flights = Array.from(document.querySelectorAll('.flight-segment:not(.template)'));
+            
+            for (let i = 0; i < flights.length - 1; i++) {
+                const currentArrival = new Date(flights[i].querySelector('.arrivalTime').value);
+                const nextDeparture = new Date(flights[i + 1].querySelector('.departureTime').value);
+                
+                if (currentArrival >= nextDeparture) {
+                    return {
+                        valid: false,
+                        message: `第${i + 1}航段的到达时间不能晚于第${i + 2}航段的出发时间`
+                    };
+                }
+                
+                // 检查中转时间是否足够（至少60分钟）
+                const transferTime = (nextDeparture - currentArrival) / (1000 * 60);
+                if (transferTime < 60) {
+                    return {
+                        valid: false,
+                        message: `第${i + 1}和第${i + 2}航段之间的中转时间不足60分钟`
+                    };
+                }
+            }
+            
+            return { valid: true };
+        }
+
+        // 防抖函数
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 生成短信模板 - 修复版，添加颜色标签
+        function generateSmsTemplate() {
+            // 验证基本数据
+            const bookingCode = document.getElementById('bookingCode').value;
+            if (!bookingCode) {
+                alert('请先填写预订编码');
+                return;
+            }
+            
+            // 获取乘客信息
+            const passengers = Array.from(document.querySelectorAll('.passenger:not(.template)'))
+                .map(p => ({
+                    name: p.querySelector('.passengerName').value,
+                    passport: p.querySelector('.passportNumber').value,
+                    ticket: p.querySelector('.ticketNumber').value
+                }));
+
+            if (!passengers.length || !passengers[0].name) {
+                alert('请至少填写一位乘客信息');
+                return;
+            }
+
+            // 获取航班信息
+            const flights = Array.from(document.querySelectorAll('.flight-segment:not(.template)'))
+                .map(f => ({
+                    airline: f.querySelector('.airline').value,
+                    number: f.querySelector('.flightNumber').value,
+                    departure: f.querySelector('.departureAirport').value,
+                    arrival: f.querySelector('.arrivalAirport').value,
+                    departTime: formatSmsDateTime(f.querySelector('.departureTime').value),
+                    arriveTime: formatSmsDateTime(f.querySelector('.arrivalTime').value)
+                }));
+
+            if (!flights.length || !flights[0].airline) {
+                alert('请至少填写一条航班信息');
+                return;
+            }
+
+            // 构建短信模板 - 添加颜色标签
+            let smsTemplate = "已协商出票：";
+            
+            // 添加航班信息
+            if (flights.length === 1) {
+                const flight = flights[0];
+                smsTemplate += `「<span class="sms-highlight sms-datetime">${flight.departTime}</span>」从「<span class="sms-highlight sms-airport">${flight.departure}</span>」起飞，「<span class="sms-highlight sms-datetime">${flight.arriveTime}</span>」到达「<span class="sms-highlight sms-airport">${flight.arrival}</span>」，航空公司：「<span class="sms-highlight sms-airline">${flight.airline}</span>」，航班号：「<span class="sms-highlight sms-flight">${flight.number}</span>」`;
+            } else {
+                // 多个航班用斜杠分隔
+                const flightSegments = flights.map(flight => 
+                    `「<span class="sms-highlight sms-datetime">${flight.departTime}</span>」从「<span class="sms-highlight sms-airport">${flight.departure}</span>」起飞，「<span class="sms-highlight sms-datetime">${flight.arriveTime}</span>」到达「<span class="sms-highlight sms-airport">${flight.arrival}</span>」，航空公司：「<span class="sms-highlight sms-airline">${flight.airline}</span>」，航班号：「<span class="sms-highlight sms-flight">${flight.number}</span>」`
+                );
+                smsTemplate += flightSegments.join('/');
+            }
+            
+            // 添加固定结尾 - 修改乘客信息显示方式
+            let passengerInfo = "";
+            if (passengers.length === 1) {
+                // 单个乘客
+                passengerInfo = `乘机人：「<span class="sms-highlight sms-passenger">${passengers[0].name}</span>」，票号：「<span class="sms-highlight sms-ticket">${passengers[0].ticket}</span>」`;
+            } else {
+                // 多个乘客，逐个对应显示
+                const passengerItems = passengers.map(p => 
+                    `乘机人：「<span class="sms-highlight sms-passenger">${p.name}</span>」，票号：「<span class="sms-highlight sms-ticket">${p.ticket}</span>」`
+                );
+                passengerInfo = passengerItems.join('，');
+            }
+            
+            smsTemplate += `，已出票完成。${passengerInfo}，请您合理安排出行时间。如有疑问您可登录去哪儿旅行「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！「以此出票短信/邮件为准」`;
+            
+            // 显示模态框
+            document.getElementById('smsTemplate').innerHTML = smsTemplate;
+            document.getElementById('smsModal').style.display = 'flex';
+            
+            // 重置字体大小
+            resetFontSize();
+        }
+
+        // 关闭短信模态框
+        function closeSmsModal() {
+            document.getElementById('smsModal').style.display = 'none';
+        }
+
+        // 复制短信模板
+        function copySmsTemplate() {
+            const smsTemplate = document.getElementById('smsTemplate');
+            const textToCopy = smsTemplate.innerText || smsTemplate.textContent;
+            
+            // 创建临时textarea元素
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            
+            // 选择并复制文本
+            tempTextArea.select();
+            tempTextArea.setSelectionRange(0, 99999); // 对于移动设备
+    
+            try {
+                const successful = document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                
+                if (successful) {
+                    showToast('短信模板已复制到剪贴板，即将生成行程单！');
+                    
+                    // 关闭短信模态框
+                    closeSmsModal();
+                    
+                    // 自动跳转到生成行程单
+                    setTimeout(() => {
+                        generateItinerary();
+                    }, 1000);
+                } else {
+                    showToast('复制失败，请手动选择并复制文本。', true);
+                }
+            } catch (err) {
+                console.error('复制失败:', err);
+                document.body.removeChild(tempTextArea);
+                showToast('复制失败，请手动选择并复制文本。', true);
+            }
+        }
+
+        // 计算航班时长
+        function calculateFlightDuration(departTime, arriveTime) {
+            const depart = new Date(departTime);
+            const arrive = new Date(arriveTime);
+            const duration = arrive - depart;
+            
+            const hours = Math.floor(duration / (1000 * 60 * 60));
+            const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+            
+            return `${hours}小时${minutes}分钟`;
+        }
+
+        // 生成行程单 - 修复版
+        function generateItinerary() {
+            // 验证时间冲突
+            const timeValidation = validateFlightTimes();
+            if (!timeValidation.valid) {
+                alert(timeValidation.message);
+                return;
+            }
+            
+            // 重置所有错误信息
+            document.querySelectorAll('.validation-error').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            document.querySelectorAll('input, select').forEach(field => {
+                field.style.borderColor = '';
+            });
+            
+            let isValid = true;
+            
+            // 验证预订编码
+            const bookingCode = document.getElementById('bookingCode').value;
+            if (!bookingCode) {
+                isValid = false;
+                const errorElement = document.getElementById('bookingCode').parentElement.querySelector('.validation-error');
+                errorElement.style.display = 'block';
+                document.getElementById('bookingCode').style.borderColor = 'var(--accent)';
+            }
+            
+            // 验证乘客信息
+            document.querySelectorAll('.passenger:not(.template)').forEach(passenger => {
+                const name = passenger.querySelector('.passengerName').value;
+                const passport = passenger.querySelector('.passportNumber').value;
+                const ticket = passenger.querySelector('.ticketNumber').value;
+                
+                if (!name) {
+                    isValid = false;
+                    const errorElement = passenger.querySelector('.passengerName').parentElement.querySelector('.validation-error');
+                    errorElement.style.display = 'block';
+                    passenger.querySelector('.passengerName').style.borderColor = 'var(--accent)';
+                }
+                
+                if (!passport) {
+                    isValid = false;
+                    const errorElement = passenger.querySelector('.passportNumber').parentElement.querySelector('.validation-error');
+                    errorElement.style.display = 'block';
+                    passenger.querySelector('.passportNumber').style.borderColor = 'var(--accent)';
+                }
+                
+                if (!ticket) {
+                    isValid = false;
+                    const errorElement = passenger.querySelector('.ticketNumber').parentElement.querySelector('.validation-error');
+                    errorElement.style.display = 'block';
+                    passenger.querySelector('.ticketNumber').style.borderColor = 'var(--accent)';
+                }
+            });
+            
+            // 验证航班信息
+            document.querySelectorAll('.flight-segment:not(.template)').forEach(flight => {
+                const airline = flight.querySelector('.airline').value;
+                const flightNumber = flight.querySelector('.flightNumber').value;
+                const cabinClass = flight.querySelector('.cabinClass').value;
+                const departureAirport = flight.querySelector('.departureAirport').value;
+                const arrivalAirport = flight.querySelector('.arrivalAirport').value;
+                const departureTime = flight.querySelector('.departureTime').value;
+                const arrivalTime = flight.querySelector('.arrivalTime').value;
+                
+                if (!airline) {
+                    isValid = false;
+                    const errorElement = flight.querySelector('.airline').parentElement.querySelector('.validation-error');
+                    errorElement.style.display = 'block';
+                    flight.querySelector('.airline').style.borderColor = 'var(--accent)';
+                }
+                
+                if (!flightNumber) {
+                    isValid = false;
+                    const errorElement = flight.querySelector('.flightNumber').parentElement.querySelector('.validation-error');
+                    errorElement.style.display = 'block';
+                    flight.querySelector('.flightNumber').style.borderColor = 'var(--accent)';
+                }
+                
+                if (!cabinClass) {
+                    isValid = false;
+                    const errorElement = flight.querySelector('.cabinClass').parentElement.querySelector('.validation-error');
+                    errorElement.style.display = 'block';
+                    flight.querySelector('.cabinClass').style.borderColor = 'var(--accent)';
+                }
+                
+                if (!departureAirport) {
+                    isValid = false;
+                    const errorElement = flight.querySelector('.departureAirport').parentElement.querySelector('.validation-error');
+                    errorElement.style.display = 'block';
+                    flight.querySelector('.departureAirport').style.borderColor = 'var(--accent)';
+                }
+                
+                if (!arrivalAirport) {
+                    isValid = false;
+                    const errorElement = flight.querySelector('.arrivalAirport').parentElement.querySelector('.validation-error');
+                    errorElement.style.display = 'block';
+                    flight.querySelector('.arrivalAirport').style.borderColor = 'var(--accent)';
+                }
+                
+                if (!departureTime) {
+                    isValid = false;
+                    const errorElement = flight.querySelector('.departureTime').parentElement.querySelector('.validation-error');
+                    errorElement.style.display = 'block';
+                    flight.querySelector('.departureTime').style.borderColor = 'var(--accent)';
+                }
+                
+                if (!arrivalTime) {
+                    isValid = false;
+                    const errorElement = flight.querySelector('.arrivalTime').parentElement.querySelector('.validation-error');
+                    errorElement.style.display = 'block';
+                    flight.querySelector('.arrivalTime').style.borderColor = 'var(--accent)';
+                }
+            });
+            
+            if (!isValid) {
+                alert('请填写所有必填字段');
+                return;
+            }
+            
+            const passengers = Array.from(document.querySelectorAll('.passenger:not(.template)'))
+                .map(p => ({
+                    name: p.querySelector('.passengerName').value,
+                    passport: p.querySelector('.passportNumber').value,
+                    ticket: p.querySelector('.ticketNumber').value
+                }));
+
+            const flights = Array.from(document.querySelectorAll('.flight-segment:not(.template)'))
+                .map(f => ({
+                    airline: f.querySelector('.airline').value,
+                    number: f.querySelector('.flightNumber').value,
+                    cabinClass: f.querySelector('.cabinClass').value,
+                    departure: f.querySelector('.departureAirport').value,
+                    arrival: f.querySelector('.arrivalAirport').value,
+                    departTime: formatDisplayDateTime(f.querySelector('.departureTime').value),
+                    arriveTime: formatDisplayDateTime(f.querySelector('.arrivalTime').value),
+                    baggage: f.querySelector('.baggage').value,
+                    carryOnBaggage: f.querySelector('.carryOnBaggage').value,
+                    baggageThrough: f.querySelector('.baggageThrough').value
+                }));
+
+            // 获取选择的语言
+            const language = getSelectedLanguage();
+            
+            // 创建打印窗口
+            const printWindow = window.open('', '_blank');
+            
+            // 根据语言选择不同的行程单模板
+            const itineraryHTML = language === 'zh-en' ? 
+                generateZhEnItinerary(bookingCode, passengers, flights) : 
+                generateEnItinerary(bookingCode, passengers, flights);
+            
+            // 写入打印窗口
+            printWindow.document.open();
+            printWindow.document.write(itineraryHTML);
+            printWindow.document.close();
+        }
+
+        // 生成中英文版行程单 - 修改版
+        function generateZhEnItinerary(bookingCode, passengers, flights) {
+            return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>行程单 - ${bookingCode}</title>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                <meta charset="UTF-8">
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        background: white;
+                        color: #2c3e50;
+                        line-height: 1.6;
+                    }
+                    
+                    .itinerary-container {
+                        max-width: 1000px;
+                        margin: 0 auto;
+                        background: white;
+                        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+                        overflow: hidden;
+                        position: relative;
+                    }
+                    
+                    .itinerary-container::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 6px;
+                        background: linear-gradient(90deg, #1a4b8c, #2980b9, #27ae60);
+                    }
+                    
+                    .logo-container {
+                        text-align: center;
+                        padding: 2.5rem 2rem 1.5rem;
+                        background: linear-gradient(135deg, #1a4b8c 0%, #2980b9 100%);
+                        color: white;
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    .logo-container::after {
+                        content: '';
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 4px;
+                        background: rgba(255,255,255,0.3);
+                    }
+                    
+                    .header-content h1 {
+                        color: white;
+                        margin: 0 0 0.5rem 0;
+                        font-size: 2.5rem;
+                        font-weight: 700;
+                    }
+                    
+                    .header-content p {
+                        color: rgba(255,255,255,0.9);
+                        margin: 0;
+                        font-size: 1.1rem;
+                    }
+                    
+                    /* 修改后的预订信息样式 */
+                    .booking-info {
+                        background: #f8f9fa;
+                        padding: 1.5rem 2rem;
+                        margin: 0;
+                        border-bottom: 1px solid #bdc3c7;
+                        text-align: center;
+                    }
+                    
+                    .booking-code {
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                        color: #1a4b8c;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 0.5rem;
+                    }
+                    
+                    .section-header {
+                        padding: 1.5rem 2rem 0.5rem;
+                        color: #1a4b8c;
+                        font-size: 1.4rem;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.7rem;
+                        border-bottom: 2px solid #e8f4fd;
+                        margin: 0 2rem;
+                    }
+                    
+                    .passenger-card {
+                        margin: 1.5rem 2rem;
+                        padding: 2rem;
+                        background: white;
+                        border: 1px solid #e1e8ed;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                        position: relative;
+                    }
+                    
+                    .passenger-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 4px;
+                        height: 100%;
+                        background: #1a4b8c;
+                        border-radius: 4px 0 0 4px;
+                    }
+                    
+                    .passenger-info-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                        gap: 1.5rem;
+                    }
+                    
+                    .info-item {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.5rem;
+                    }
+                    
+                    .info-label {
+                        font-size: 0.9rem;
+                        color: #7f8c8d;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                    }
+                    
+                    .info-value {
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        color: #2c3e50;
+                    }
+                    
+                    .flight-card {
+                        margin: 1.5rem 2rem;
+                        padding: 2rem;
+                        background: white;
+                        border: 1px solid #e1e8ed;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                        position: relative;
+                    }
+                    
+                    .flight-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 4px;
+                        height: 100%;
+                        background: #1a4b8c;
+                        border-radius: 4px 0 0 4px;
+                    }
+                    
+                    .flight-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 1.5rem;
+                        padding-bottom: 1rem;
+                        border-bottom: 1px solid #e1e8ed;
+                    }
+                    
+                    .airline-info {
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                    }
+                    
+                    .airline-icon {
+                        width: 40px;
+                        height: 40px;
+                        background: #e8f4fd;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #1a4b8c;
+                        font-size: 1.2rem;
+                    }
+                    
+                    .airline-details h3 {
+                        margin: 0;
+                        color: #1a4b8c;
+                        font-size: 1.3rem;
+                    }
+                    
+                    .airline-details p {
+                        margin: 0.2rem 0 0 0;
+                        color: #7f8c8d;
+                        font-size: 0.95rem;
+                    }
+                    
+                    .cabin-badge {
+                        background: #e8f4fd;
+                        color: #1a4b8c;
+                        padding: 0.5rem 1rem;
+                        border-radius: 20px;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .flight-timeline {
+                        display: grid;
+                        grid-template-columns: 1fr auto 1fr;
+                        gap: 2rem;
+                        align-items: center;
+                        margin: 2rem 0;
+                        padding: 1.5rem;
+                        background: #f8fafc;
+                        border-radius: 10px;
+                        position: relative;
+                    }
+                    
+                    .timeline-connector {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 0.5rem;
+                    }
+                    
+                    .flight-duration {
+                        font-size: 0.9rem;
+                        color: #7f8c8d;
+                        text-align: center;
+                    }
+                    
+                    .flight-arrow {
+                        font-size: 1.8rem;
+                        color: #1a4b8c;
+                    }
+                    
+                    .airport-info {
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    
+                    .airport-info.arrival {
+                        text-align: right;
+                        align-items: flex-end;
+                    }
+                    
+                    .airport-name {
+                        font-size: 1.3rem;
+                        font-weight: 700;
+                        color: #2c3e50;
+                        margin-bottom: 0.5rem;
+                    }
+                    
+                    .airport-time {
+                        font-size: 1.5rem;
+                        font-weight: 600;
+                        color: #1a4b8c;
+                        margin-bottom: 0.3rem;
+                    }
+                    
+                    .airport-date {
+                        font-size: 1rem;
+                        color: #7f8c8d;
+                    }
+                    
+                    .time-note {
+                        font-size: 0.85rem;
+                        color: #7f8c8d;
+                        font-style: italic;
+                        margin-top: 0.5rem;
+                    }
+                    
+                    .baggage-section {
+                        margin-top: 1.5rem;
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                        gap: 1rem;
+                    }
+                    
+                    .baggage-info, .carry-on-baggage-info {
+                        padding: 1.2rem;
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                    }
+                    
+                    .baggage-info {
+                        background: #e8f5e8;
+                        border-left: 4px solid #27ae60;
+                    }
+                    
+                    .carry-on-baggage-info {
+                        background: #e3f2fd;
+                        border-left: 4px solid #1a4b8c;
+                    }
+                    
+                    .baggage-icon {
+                        font-size: 1.5rem;
+                        flex-shrink: 0;
+                    }
+                    
+                    .baggage-info .baggage-icon {
+                        color: #27ae60;
+                    }
+                    
+                    .carry-on-baggage-info .baggage-icon {
+                        color: #1a4b8c;
+                    }
+                    
+                    .baggage-details h4 {
+                        margin: 0 0 0.3rem 0;
+                        font-size: 1rem;
+                    }
+                    
+                    .baggage-details p {
+                        margin: 0;
+                        font-size: 0.95rem;
+                        color: #2c3e50;
+                    }
+                    
+                    .baggage-through-notice {
+                        margin: 1.5rem 0 0 0;
+                        padding: 1.5rem;
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                    }
+                    
+                    .baggage-through-yes {
+                        background: #e8f5e9;
+                        border: 1px solid #a5d6a7;
+                        color: #2e7d32;
+                    }
+                    
+                    .baggage-through-maybe {
+                        background: #fff3e0;
+                        border: 1px solid #ffcc80;
+                        color: #ef6c00;
+                    }
+                    
+                    .baggage-through-no {
+                        background: #ffebee;
+                        border: 1px solid #ef9a9a;
+                        color: #c62828;
+                    }
+                    
+                    .baggage-through-icon {
+                        font-size: 1.8rem;
+                        flex-shrink: 0;
+                    }
+                    
+                    .baggage-through-content h4 {
+                        margin: 0 0 0.5rem 0;
+                        font-size: 1.1rem;
+                    }
+                    
+                    .baggage-through-content p {
+                        margin: 0;
+                        font-size: 0.95rem;
+                        line-height: 1.5;
+                    }
+                    
+                    .notice-section {
+                        margin: 2rem;
+                        padding: 2rem;
+                        background: #f8f9fa;
+                        border: 1px solid #3498db;
+                        border-radius: 10px;
+                        color: #2c3e50;
+                    }
+                    
+                    .notice-section h3 {
+                        margin-top: 0;
+                        color: #1a4b8c;
+                        font-size: 1.3rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.7rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    
+                    .notice-list {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                        gap: 1rem;
+                    }
+                    
+                    .notice-item {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 0.8rem;
+                        padding: 0.8rem 0;
+                    }
+                    
+                    .notice-icon {
+                        color: #1a4b8c;
+                        font-size: 1.1rem;
+                        margin-top: 0.2rem;
+                        flex-shrink: 0;
+                    }
+                    
+                    .notice-text {
+                        font-size: 0.95rem;
+                        line-height: 1.5;
+                    }
+                    
+                    .print-actions {
+                        text-align: center;
+                        padding: 2rem;
+                        border-top: 1px solid #e1e8ed;
+                    }
+                    
+                    .print-button {
+                        padding: 1rem 2.5rem;
+                        background: #1a4b8c;
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 0.7rem;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 15px rgba(26, 75, 140, 0.3);
+                    }
+                    
+                    .print-button:hover {
+                        background: #153a6d;
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 18px rgba(26, 75, 140, 0.4);
+                    }
+                    
+                    @media print {
+                        body {
+                            background: white !important;
+                            font-size: 12pt;
+                            line-height: 1.4;
+                        }
+                        
+                        .itinerary-container {
+                            box-shadow: none !important;
+                            border: 1px solid #ddd !important;
+                        }
+                        
+                        .flight-card {
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+                        
+                        .notice-section {
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+                        
+                        h1, h2, h3 {
+                            color: #000 !important;
+                        }
+                        
+                        .baggage-info, .carry-on-baggage-info {
+                            background: #f9f9f9 !important;
+                            border: 1px solid #ddd !important;
+                        }
+                        
+                        .print-actions {
+                            display: none !important;
+                        }
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .flight-timeline {
+                            grid-template-columns: 1fr;
+                            gap: 1rem;
+                        }
+                        
+                        .airport-info.arrival {
+                            text-align: left;
+                            align-items: flex-start;
+                        }
+                        
+                        .timeline-connector {
+                            flex-direction: row;
+                            justify-content: center;
+                        }
+                        
+                        .flight-arrow {
+                            transform: rotate(90deg);
+                        }
+                        
+                        .passenger-info-grid {
+                            grid-template-columns: 1fr;
+                        }
+                        
+                        .baggage-section {
+                            grid-template-columns: 1fr;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="itinerary-container">
+                    <!-- 顶部LOGO和标题 -->
+                    <div class="logo-container">
+                        <div class="header-content">
+                            <h1>电子行程单</h1>
+                            <p>E-Ticket Itinerary</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 预订信息 - 修改版 -->
+                    <div class="booking-info">
+                        <div class="booking-code">
+                            <i class="fas fa-barcode"></i> 预订编码 / Booking Code: ${bookingCode}
+                        </div>
+                    </div>
+
+                    <!-- 乘客信息 -->
+                    <div class="section-header">
+                        <i class="fas fa-users"></i> 乘客信息 / Passenger Information
+                    </div>
+                    ${passengers.map((p, index) => `
+                    <div class="passenger-card">
+                        <div class="passenger-info-grid">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-user"></i>
+                                    乘客 / Passenger
+                                </div>
+                                <div class="info-value">${p.name}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-passport"></i>
+                                    证件号码 / ID Number
+                                </div>
+                                <div class="info-value">${p.passport}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-ticket-alt"></i>
+                                    电子票号 / E-Ticket Number
+                                </div>
+                                <div class="info-value">${p.ticket}</div>
+                            </div>
+                        </div>
+                    </div>
+                    `).join('')}
+
+                    <!-- 航班信息 -->
+                    <div class="section-header">
+                        <i class="fas fa-plane"></i> 航班信息 / Flight Details
+                    </div>
+                    ${flights.map((f, index) => `
+                    <div class="flight-card">
+                        <div class="flight-header">
+                            <div class="airline-info">
+                                <div class="airline-icon">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <div class="airline-details">
+                                    <h3>${f.airline}</h3>
+                                    <p>航班号 / Flight No. ${f.number}</p>
+                                </div>
+                            </div>
+                            <div class="cabin-badge">
+                                <i class="fas fa-couch"></i> ${f.cabinClass}
+                            </div>
+                        </div>
+
+                        <!-- 航班时间轴 -->
+                        <div class="flight-timeline">
+                            <div class="airport-info departure">
+                                <div class="airport-name">${f.departure}</div>
+                                <div class="airport-time">${f.departTime.split(' ')[1]}</div>
+                                <div class="airport-date">${f.departTime.split(' ')[0]}</div>
+                                <div class="time-note">当地时间 / Local Time</div>
+                            </div>
+                            
+                            <div class="timeline-connector">
+                                <div class="flight-arrow">
+                                    <i class="fas fa-long-arrow-alt-right"></i>
+                                </div>
+                                <div class="flight-duration">
+                                    ${calculateFlightDuration(f.departTime, f.arriveTime)}
+                                </div>
+                            </div>
+                            
+                            <div class="airport-info arrival">
+                                <div class="airport-name">${f.arrival}</div>
+                                <div class="airport-time">${f.arriveTime.split(' ')[1]}</div>
+                                <div class="airport-date">${f.arriveTime.split(' ')[0]}</div>
+                                <div class="time-note">当地时间 / Local Time</div>
+                            </div>
+                        </div>
+
+                        <!-- 行李信息 -->
+                        ${(f.baggage || f.carryOnBaggage) ? `
+                        <div class="baggage-section">
+                            ${f.baggage ? `
+                            <div class="baggage-info">
+                                <div class="baggage-icon">
+                                    <i class="fas fa-suitcase"></i>
+                                </div>
+                                <div class="baggage-details">
+                                    <h4>免费托运行李额 / Checked Baggage</h4>
+                                    <p>${f.baggage}</p>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            ${f.carryOnBaggage ? `
+                            <div class="carry-on-baggage-info">
+                                <div class="baggage-icon">
+                                    <i class="fas fa-briefcase"></i>
+                                </div>
+                                <div class="baggage-details">
+                                    <h4>手提行李额 / Carry-on Baggage</h4>
+                                    <p>${f.carryOnBaggage}</p>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        ` : ''}
+
+                        <!-- 行李直挂提示 -->
+                        ${index < flights.length - 1 && f.baggageThrough ? `
+                        <div class="baggage-through-notice ${f.baggageThrough === '行李直挂' ? 'baggage-through-yes' : f.baggageThrough === '行李是否直挂以机场现场为准' ? 'baggage-through-maybe' : 'baggage-through-no'}">
+                            <div class="baggage-through-icon">
+                                ${f.baggageThrough === '行李直挂' ? '<i class="fas fa-check-circle"></i>' : f.baggageThrough === '行李是否直挂以机场现场为准' ? '<i class="fas fa-question-circle"></i>' : '<i class="fas fa-times-circle"></i>'}
+                            </div>
+                            <div class="baggage-through-content">
+                                <h4>行李直挂提示 / Baggage Through Check-in</h4>
+                                <p>
+                                    ${f.baggageThrough === '行李直挂' ? 
+                                        '您的行李将直接运送到最终目的地，无需在中转地提取。 / Your baggage will be checked through to your final destination.' : 
+                                        f.baggageThrough === '行李是否直挂以机场现场为准' ? 
+                                        '行李是否直挂需在机场办理值机时确认，请提前咨询航空公司。 / Whether baggage is checked through needs to be confirmed at check-in. Please check with the airline in advance.' : 
+                                        '您的行李不直挂，需要在转机时提取并重新办理托运。 / Your baggage is not checked through. You need to collect and recheck it during transit.'}
+                                    <br>
+                                    <strong>具体情况以机场现场为准，请您合理安排转机时间。 / Please refer to the actual situation at the airport and arrange your transit time accordingly.</strong>
+                                </p>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    `).join('')}
+
+                    <!-- 温馨提示 -->
+                    <div class="notice-section">
+                        <h3><i class="fas fa-info-circle"></i> 温馨提示 / Important Notes</h3>
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-clock"></i></div>
+                                <div class="notice-text">请至少提前3小时到达机场办理值机手续 / Please arrive at least 3 hours before departure for check-in</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-ban"></i></div>
+                                <div class="notice-text">随身行李请勿携带违禁物品 / No prohibited items in carry-on luggage</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-passport"></i></div>
+                                <div class="notice-text">请确保护照有效期在6个月以上 / Ensure your passport is valid for at least 6 months</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-plane-departure"></i></div>
+                                <div class="notice-text">国际航班请提前60分钟到达登机口 / Arrive at boarding gate 60 minutes before international flights</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-clock"></i></div>
+                                <div class="notice-text">所有航班时间均为当地时间 / All flight times are in local time</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-suitcase"></i></div>
+                                <div class="notice-text">请确认行李额度符合航空公司规定 / Confirm baggage allowance meets airline requirements</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 打印按钮 -->
+                    <div class="print-actions">
+                        <button class="print-button" onclick="window.print()">
+                            <i class="fas fa-print"></i> 打印行程单 / Print Itinerary
+                        </button>
+                    </div>
+                </div>
+            </body>
+            </html>
+            `;
+        }
+        
+        // 生成全英文版行程单 - 修改版
+        function generateEnItinerary(bookingCode, passengers, flights) {
+            return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Itinerary - ${bookingCode}</title>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                <meta charset="UTF-8">
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        background: white;
+                        color: #2c3e50;
+                        line-height: 1.6;
+                    }
+                    
+                    .itinerary-container {
+                        max-width: 1000px;
+                        margin: 0 auto;
+                        background: white;
+                        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+                        overflow: hidden;
+                        position: relative;
+                    }
+                    
+                    .itinerary-container::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 6px;
+                        background: linear-gradient(90deg, #1a4b8c, #2980b9, #27ae60);
+                    }
+                    
+                    .logo-container {
+                        text-align: center;
+                        padding: 2.5rem 2rem 1.5rem;
+                        background: linear-gradient(135deg, #1a4b8c 0%, #2980b9 100%);
+                        color: white;
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    .logo-container::after {
+                        content: '';
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 4px;
+                        background: rgba(255,255,255,0.3);
+                    }
+                    
+                    .header-content h1 {
+                        color: white;
+                        margin: 0 0 0.5rem 0;
+                        font-size: 2.5rem;
+                        font-weight: 700;
+                    }
+                    
+                    .header-content p {
+                        color: rgba(255,255,255,0.9);
+                        margin: 0;
+                        font-size: 1.1rem;
+                    }
+                    
+                    /* 修改后的预订信息样式 */
+                    .booking-info {
+                        background: #f8f9fa;
+                        padding: 1.5rem 2rem;
+                        margin: 0;
+                        border-bottom: 1px solid #bdc3c7;
+                        text-align: center;
+                    }
+                    
+                    .booking-code {
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                        color: #1a4b8c;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 0.5rem;
+                    }
+                    
+                    .section-header {
+                        padding: 1.5rem 2rem 0.5rem;
+                        color: #1a4b8c;
+                        font-size: 1.4rem;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.7rem;
+                        border-bottom: 2px solid #e8f4fd;
+                        margin: 0 2rem;
+                    }
+                    
+                    .passenger-card {
+                        margin: 1.5rem 2rem;
+                        padding: 2rem;
+                        background: white;
+                        border: 1px solid #e1e8ed;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                        position: relative;
+                    }
+                    
+                    .passenger-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 4px;
+                        height: 100%;
+                        background: #1a4b8c;
+                        border-radius: 4px 0 0 4px;
+                    }
+                    
+                    .passenger-info-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                        gap: 1.5rem;
+                    }
+                    
+                    .info-item {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.5rem;
+                    }
+                    
+                    .info-label {
+                        font-size: 0.9rem;
+                        color: #7f8c8d;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                    }
+                    
+                    .info-value {
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        color: #2c3e50;
+                    }
+                    
+                    .flight-card {
+                        margin: 1.5rem 2rem;
+                        padding: 2rem;
+                        background: white;
+                        border: 1px solid #e1e8ed;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                        position: relative;
+                    }
+                    
+                    .flight-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 4px;
+                        height: 100%;
+                        background: #1a4b8c;
+                        border-radius: 4px 0 0 4px;
+                    }
+                    
+                    .flight-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 1.5rem;
+                        padding-bottom: 1rem;
+                        border-bottom: 1px solid #e1e8ed;
+                    }
+                    
+                    .airline-info {
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                    }
+                    
+                    .airline-icon {
+                        width: 40px;
+                        height: 40px;
+                        background: #e8f4fd;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #1a4b8c;
+                        font-size: 1.2rem;
+                    }
+                    
+                    .airline-details h3 {
+                        margin: 0;
+                        color: #1a4b8c;
+                        font-size: 1.3rem;
+                    }
+                    
+                    .airline-details p {
+                        margin: 0.2rem 0 0 0;
+                        color: #7f8c8d;
+                        font-size: 0.95rem;
+                    }
+                    
+                    .cabin-badge {
+                        background: #e8f4fd;
+                        color: #1a4b8c;
+                        padding: 0.5rem 1rem;
+                        border-radius: 20px;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .flight-timeline {
+                        display: grid;
+                        grid-template-columns: 1fr auto 1fr;
+                        gap: 2rem;
+                        align-items: center;
+                        margin: 2rem 0;
+                        padding: 1.5rem;
+                        background: #f8fafc;
+                        border-radius: 10px;
+                        position: relative;
+                    }
+                    
+                    .timeline-connector {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 0.5rem;
+                    }
+                    
+                    .flight-duration {
+                        font-size: 0.9rem;
+                        color: #7f8c8d;
+                        text-align: center;
+                    }
+                    
+                    .flight-arrow {
+                        font-size: 1.8rem;
+                        color: #1a4b8c;
+                    }
+                    
+                    .airport-info {
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    
+                    .airport-info.arrival {
+                        text-align: right;
+                        align-items: flex-end;
+                    }
+                    
+                    .airport-name {
+                        font-size: 1.3rem;
+                        font-weight: 700;
+                        color: #2c3e50;
+                        margin-bottom: 0.5rem;
+                    }
+                    
+                    .airport-time {
+                        font-size: 1.5rem;
+                        font-weight: 600;
+                        color: #1a4b8c;
+                        margin-bottom: 0.3rem;
+                    }
+                    
+                    .airport-date {
+                        font-size: 1rem;
+                        color: #7f8c8d;
+                    }
+                    
+                    .time-note {
+                        font-size: 0.85rem;
+                        color: #7f8c8d;
+                        font-style: italic;
+                        margin-top: 0.5rem;
+                    }
+                    
+                    .baggage-section {
+                        margin-top: 1.5rem;
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                        gap: 1rem;
+                    }
+                    
+                    .baggage-info, .carry-on-baggage-info {
+                        padding: 1.2rem;
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                    }
+                    
+                    .baggage-info {
+                        background: #e8f5e8;
+                        border-left: 4px solid #27ae60;
+                    }
+                    
+                    .carry-on-baggage-info {
+                        background: #e3f2fd;
+                        border-left: 4px solid #1a4b8c;
+                    }
+                    
+                    .baggage-icon {
+                        font-size: 1.5rem;
+                        flex-shrink: 0;
+                    }
+                    
+                    .baggage-info .baggage-icon {
+                        color: #27ae60;
+                    }
+                    
+                    .carry-on-baggage-info .baggage-icon {
+                        color: #1a4b8c;
+                    }
+                    
+                    .baggage-details h4 {
+                        margin: 0 0 0.3rem 0;
+                        font-size: 1rem;
+                    }
+                    
+                    .baggage-details p {
+                        margin: 0;
+                        font-size: 0.95rem;
+                        color: #2c3e50;
+                    }
+                    
+                    .baggage-through-notice {
+                        margin: 1.5rem 0 0 0;
+                        padding: 1.5rem;
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                    }
+                    
+                    .baggage-through-yes {
+                        background: #e8f5e9;
+                        border: 1px solid #a5d6a7;
+                        color: #2e7d32;
+                    }
+                    
+                    .baggage-through-maybe {
+                        background: #fff3e0;
+                        border: 1px solid #ffcc80;
+                        color: #ef6c00;
+                    }
+                    
+                    .baggage-through-no {
+                        background: #ffebee;
+                        border: 1px solid #ef9a9a;
+                        color: #c62828;
+                    }
+                    
+                    .baggage-through-icon {
+                        font-size: 1.8rem;
+                        flex-shrink: 0;
+                    }
+                    
+                    .baggage-through-content h4 {
+                        margin: 0 0 0.5rem 0;
+                        font-size: 1.1rem;
+                    }
+                    
+                    .baggage-through-content p {
+                        margin: 0;
+                        font-size: 0.95rem;
+                        line-height: 1.5;
+                    }
+                    
+                    .notice-section {
+                        margin: 2rem;
+                        padding: 2rem;
+                        background: #f8f9fa;
+                        border: 1px solid #3498db;
+                        border-radius: 10px;
+                        color: #2c3e50;
+                    }
+                    
+                    .notice-section h3 {
+                        margin-top: 0;
+                        color: #1a4b8c;
+                        font-size: 1.3rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.7rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    
+                    .notice-list {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                        gap: 1rem;
+                    }
+                    
+                    .notice-item {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 0.8rem;
+                        padding: 0.8rem 0;
+                    }
+                    
+                    .notice-icon {
+                        color: #1a4b8c;
+                        font-size: 1.1rem;
+                        margin-top: 0.2rem;
+                        flex-shrink: 0;
+                    }
+                    
+                    .notice-text {
+                        font-size: 0.95rem;
+                        line-height: 1.5;
+                    }
+                    
+                    .print-actions {
+                        text-align: center;
+                        padding: 2rem;
+                        border-top: 1px solid #e1e8ed;
+                    }
+                    
+                    .print-button {
+                        padding: 1rem 2.5rem;
+                        background: #1a4b8c;
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 0.7rem;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 15px rgba(26, 75, 140, 0.3);
+                    }
+                    
+                    .print-button:hover {
+                        background: #153a6d;
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 18px rgba(26, 75, 140, 0.4);
+                    }
+                    
+                    @media print {
+                        body {
+                            background: white !important;
+                            font-size: 12pt;
+                            line-height: 1.4;
+                        }
+                        
+                        .itinerary-container {
+                            box-shadow: none !important;
+                            border: 1px solid #ddd !important;
+                        }
+                        
+                        .flight-card {
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+                        
+                        .notice-section {
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+                        
+                        h1, h2, h3 {
+                            color: #000 !important;
+                        }
+                        
+                        .baggage-info, .carry-on-baggage-info {
+                            background: #f9f9f9 !important;
+                            border: 1px solid #ddd !important;
+                        }
+                        
+                        .print-actions {
+                            display: none !important;
+                        }
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .flight-timeline {
+                            grid-template-columns: 1fr;
+                            gap: 1rem;
+                        }
+                        
+                        .airport-info.arrival {
+                            text-align: left;
+                            align-items: flex-start;
+                        }
+                        
+                        .timeline-connector {
+                            flex-direction: row;
+                            justify-content: center;
+                        }
+                        
+                        .flight-arrow {
+                            transform: rotate(90deg);
+                        }
+                        
+                        .passenger-info-grid {
+                            grid-template-columns: 1fr;
+                        }
+                        
+                        .baggage-section {
+                            grid-template-columns: 1fr;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="itinerary-container">
+                    <!-- 顶部LOGO和标题 -->
+                    <div class="logo-container">
+                        <div class="header-content">
+                            <h1>E-Ticket Itinerary</h1>
+                            <p>Flight Booking Confirmation</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 预订信息 - 修改版 -->
+                    <div class="booking-info">
+                        <div class="booking-code">
+                            <i class="fas fa-barcode"></i> Booking Code: ${bookingCode}
+                        </div>
+                    </div>
+
+                    <!-- 乘客信息 -->
+                    <div class="section-header">
+                        <i class="fas fa-users"></i> Passenger Information
+                    </div>
+                    ${passengers.map((p, index) => `
+                    <div class="passenger-card">
+                        <div class="passenger-info-grid">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-user"></i>
+                                    Passenger
+                                </div>
+                                <div class="info-value">${p.name}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-passport"></i>
+                                    ID Number
+                                </div>
+                                <div class="info-value">${p.passport}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-ticket-alt"></i>
+                                    E-Ticket Number
+                                </div>
+                                <div class="info-value">${p.ticket}</div>
+                            </div>
+                        </div>
+                    </div>
+                    `).join('')}
+
+                    <!-- 航班信息 -->
+                    <div class="section-header">
+                        <i class="fas fa-plane"></i> Flight Details
+                    </div>
+                    ${flights.map((f, index) => `
+                    <div class="flight-card">
+                        <div class="flight-header">
+                            <div class="airline-info">
+                                <div class="airline-icon">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <div class="airline-details">
+                                    <h3>${f.airline}</h3>
+                                    <p>Flight No. ${f.number}</p>
+                                </div>
+                            </div>
+                            <div class="cabin-badge">
+                                <i class="fas fa-couch"></i> ${f.cabinClass}
+                            </div>
+                        </div>
+
+                        <!-- 航班时间轴 -->
+                        <div class="flight-timeline">
+                            <div class="airport-info departure">
+                                <div class="airport-name">${f.departure}</div>
+                                <div class="airport-time">${f.departTime.split(' ')[1]}</div>
+                                <div class="airport-date">${f.departTime.split(' ')[0]}</div>
+                                <div class="time-note">Local Time</div>
+                            </div>
+                            
+                            <div class="timeline-connector">
+                                <div class="flight-arrow">
+                                    <i class="fas fa-long-arrow-alt-right"></i>
+                                </div>
+                                <div class="flight-duration">
+                                    ${calculateFlightDuration(f.departTime, f.arriveTime)}
+                                </div>
+                            </div>
+                            
+                            <div class="airport-info arrival">
+                                <div class="airport-name">${f.arrival}</div>
+                                <div class="airport-time">${f.arriveTime.split(' ')[1]}</div>
+                                <div class="airport-date">${f.arriveTime.split(' ')[0]}</div>
+                                <div class="time-note">Local Time</div>
+                            </div>
+                        </div>
+
+                        <!-- 行李信息 -->
+                        ${(f.baggage || f.carryOnBaggage) ? `
+                        <div class="baggage-section">
+                            ${f.baggage ? `
+                            <div class="baggage-info">
+                                <div class="baggage-icon">
+                                    <i class="fas fa-suitcase"></i>
+                                </div>
+                                <div class="baggage-details">
+                                    <h4>Checked Baggage</h4>
+                                    <p>${f.baggage}</p>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            ${f.carryOnBaggage ? `
+                            <div class="carry-on-baggage-info">
+                                <div class="baggage-icon">
+                                    <i class="fas fa-briefcase"></i>
+                                </div>
+                                <div class="baggage-details">
+                                    <h4>Carry-on Baggage</h4>
+                                    <p>${f.carryOnBaggage}</p>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        ` : ''}
+
+                        <!-- 行李直挂提示 -->
+                        ${index < flights.length - 1 && f.baggageThrough ? `
+                        <div class="baggage-through-notice ${f.baggageThrough === '行李直挂' ? 'baggage-through-yes' : f.baggageThrough === '行李是否直挂以机场现场为准' ? 'baggage-through-maybe' : 'baggage-through-no'}">
+                            <div class="baggage-through-icon">
+                                ${f.baggageThrough === '行李直挂' ? '<i class="fas fa-check-circle"></i>' : f.baggageThrough === '行李是否直挂以机场现场为准' ? '<i class="fas fa-question-circle"></i>' : '<i class="fas fa-times-circle"></i>'}
+                            </div>
+                            <div class="baggage-through-content">
+                                <h4>Baggage Through Check-in</h4>
+                                <p>
+                                    ${f.baggageThrough === '行李直挂' ? 
+                                        'Your baggage will be checked through to your final destination.' : 
+                                        f.baggageThrough === '行李是否直挂以机场现场为准' ? 
+                                        'Whether baggage is checked through needs to be confirmed at check-in. Please check with the airline in advance.' : 
+                                        'Your baggage is not checked through. You need to collect and recheck it during transit.'}
+                                    <br>
+                                    <strong>Please refer to the actual situation at the airport and arrange your transit time accordingly.</strong>
+                                </p>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    `).join('')}
+
+                    <!-- 温馨提示 -->
+                    <div class="notice-section">
+                        <h3><i class="fas fa-info-circle"></i> Important Notes</h3>
+                        <div class="notice-list">
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-clock"></i></div>
+                                <div class="notice-text">Please arrive at least 3 hours before departure for check-in</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-ban"></i></div>
+                                <div class="notice-text">No prohibited items in carry-on luggage</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-passport"></i></div>
+                                <div class="notice-text">Ensure your passport is valid for at least 6 months</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-plane-departure"></i></div>
+                                <div class="notice-text">Arrive at boarding gate 60 minutes before international flights</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-clock"></i></div>
+                                <div class="notice-text">All flight times are in local time</div>
+                            </div>
+                            <div class="notice-item">
+                                <div class="notice-icon"><i class="fas fa-suitcase"></i></div>
+                                <div class="notice-text">Confirm baggage allowance meets airline requirements</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 打印按钮 -->
+                    <div class="print-actions">
+                        <button class="print-button" onclick="window.print()">
+                            <i class="fas fa-print"></i> Print Itinerary
+                        </button>
+                    </div>
+                </div>
+            </body>
+            </html>
+            `;
+        }
+    </script>
+</body>
+</html>

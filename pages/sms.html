@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>短信模板管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --fixed-color: #8e44ad;
+            --background: #f8f9fa;
+            --text-color: #34495e;
+            --border-radius: 12px;
+            --shadow-sm: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-md: 0 8px 25px rgba(0,0,0,0.12);
+            --shadow-lg: 0 15px 35px rgba(0,0,0,0.15);
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ec 100%);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 4rem);
+            transition: var(--transition);
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            background: linear-gradient(135deg, #3498db, #8e44ad);
+            border-radius: 0;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .page-header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            animation: shimmer 8s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(30deg) translateX(0); }
+            100% { transform: rotate(30deg) translateX(-50px); }
+        }
+
+        .page-header h1 {
+            font-size: 2.4rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-weight: 700;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 2;
+            font-weight: 300;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            width: 40%;
+            min-width: 350px;
+            padding: 1.8rem;
+            border-right: 1px solid rgba(234,234,234,0.8);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            background: rgba(248,249,250,0.5);
+        }
+
+        .right-panel {
+            width: 60%;
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #f8f9fa 0%, #f0f2f5 100%);
+        }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.8rem;
+            gap: 1rem;
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .home-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #2573a7);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .create-btn {
+            background: linear-gradient(135deg, var(--success-color), #219653);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .create-btn:hover {
+            background: linear-gradient(135deg, #219653, #1e8449);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 1.2rem 3.5rem;
+            border: 2px solid rgba(52,152,219,0.15);
+            border-radius: 30px;
+            margin-bottom: 1.8rem;
+            background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%237f8c8d" d="M18 10.5a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0zm-1.06 6.303l4.242 4.243a1 1 0 0 1-1.414 1.414l-4.243-4.242a9 9 0 1 1 1.414-1.414z"/></svg>') no-repeat 1.5rem center/22px;
+            font-size: 16px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 4px rgba(52,152,219,0.25);
+            transform: translateY(-2px);
+        }
+
+        .template-card {
+            background: white;
+            border-radius: 14px;
+            padding: 1.8rem;
+            margin-bottom: 1.2rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            cursor: pointer;
+            border-left: 5px solid #3498db;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(234,234,234,0.8);
+        }
+
+        .template-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(52,152,219,0.05), transparent);
+            transition: left 0.6s;
+        }
+
+        .template-card:hover::before {
+            left: 100%;
+        }
+
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-left-color: #e74c3c;
+        }
+
+        .template-card.active {
+            border-left-color: #e74c3c;
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .type-tag {
+            background: linear-gradient(135deg, #e6f7ff, #d0ebff);
+            color: #1890ff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            border: 1px solid #91d5ff;
+            display: inline-block;
+            margin-right: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .scene-tag {
+            background: linear-gradient(135deg, #f6ffed, #e6ffd1);
+            color: #52c41a;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            border: 1px solid #b7eb8f;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .remark-text {
+            color: #8c8c8c;
+            background: #fafafa;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-top: 1.2rem;
+            display: inline-block;
+            border-left: 4px solid #3498db;
+            font-size: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 1.5rem;
+        }
+
+        .edit-section, .preview-section {
+            padding: 1.8rem;
+            background: white;
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm);
+            flex: 1;
+            transition: var(--transition);
+            border: 1px solid rgba(234,234,234,0.8);
+        }
+
+        .preview-section {
+            background: linear-gradient(135deg, #f8f9fa, #f0f2f5);
+            cursor: pointer;
+            white-space: pre-wrap;
+            position: relative;
+            min-height: 200px;
+            border: 1px solid rgba(234,234,234,0.8);
+            transition: var(--transition);
+        }
+
+        .preview-section:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .preview-section::before {
+            content: "预览区域 - 点击复制";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 1.8rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #7f8c8d, #6c7b7d);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .editable-input {
+            flex: 1;
+            padding: 1.2rem;
+            border: 2px solid rgba(52,152,219,0.2);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: var(--transition);
+            background: rgba(248,249,250,0.5);
+        }
+
+        .editable-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 4px rgba(52,152,219,0.2);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .ctrl-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .add-btn { 
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9); 
+            color: white; 
+        }
+
+        .add-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #2573a7);
+            transform: scale(1.08);
+            box-shadow: var(--shadow-md);
+        }
+
+        .del-btn { 
+            background: linear-gradient(135deg, var(--accent-color), #c0392b); 
+            color: white; 
+        }
+
+        .del-btn:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: scale(1.08);
+            box-shadow: var(--shadow-md);
+        }
+
+        #modalBackdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        #createTemplateModal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 650px;
+            z-index: 1000;
+            display: none;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(234,234,234,0.8);
+            animation: modalAppear 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -48%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        #copyNotification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1100;
+            font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #95a5a6;
+            border: 2px dashed #dfe6e9;
+            border-radius: 16px;
+            background: rgba(249,249,249,0.7);
+            margin-top: 2rem;
+            transition: var(--transition);
+        }
+
+        .empty-state:hover {
+            border-color: #3498db;
+            background: rgba(249,249,249,0.9);
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 1.2rem;
+            opacity: 0.6;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid rgba(240,240,240,0.8);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .field-group {
+            margin-bottom: 1.8rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f9f9f9, #f5f5f5);
+            border-radius: 12px;
+            border: 1px solid rgba(234,234,234,0.8);
+            transition: var(--transition);
+        }
+
+        .field-group:hover {
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.8rem;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #f0f7ff, #e6f2ff);
+            border-radius: 12px;
+            font-size: 14px;
+            border: 1px solid rgba(52,152,219,0.2);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            padding: 0.5rem;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .info-text {
+            background: linear-gradient(135deg, #f8f9fa, #f0f2f5);
+            padding: 1.2rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary-color);
+            margin-top: 1.2rem;
+            font-size: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .template-actions {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .template-card:hover .template-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+
+        .action-btn:hover {
+            background: white;
+            transform: scale(1.15);
+            box-shadow: var(--shadow-md);
+        }
+
+        .fixed-tag {
+            background: linear-gradient(135deg, #f9f0ff, #f4e6ff);
+            color: var(--fixed-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            border: 1px solid #d9c8f0;
+            display: inline-block;
+            margin-right: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .right-panel-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: #95a5a6;
+            flex-direction: column;
+            padding: 3rem;
+            background: rgba(248,249,250,0.5);
+            border-radius: 14px;
+            border: 2px dashed #dfe6e9;
+            transition: var(--transition);
+        }
+
+        .right-panel-placeholder:hover {
+            border-color: #3498db;
+            background: rgba(248,249,250,0.8);
+        }
+
+        .right-panel-placeholder i {
+            font-size: 4.5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .template-list-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* 变量高亮显示优化 */
+        .preview-section .variable-main {
+            color: #e74c3c;
+            background: linear-gradient(135deg, #ffeaea, #ffd6d6);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            border: 1px solid #f5b7b1;
+            box-shadow: 0 2px 4px rgba(231, 76, 60, 0.1);
+        }
+
+        .preview-section .variable-custom {
+            color: #27ae60;
+            background: linear-gradient(135deg, #eafaf1, #e1f7e9);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            border: 1px solid #a9dfbf;
+            box-shadow: 0 2px 4px rgba(39, 174, 96, 0.1);
+        }
+
+        .preview-section .variable-fixed {
+            color: #8e44ad;
+            background: linear-gradient(135deg, #f4ecf7, #eee3f4);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 1px solid #d2b4de;
+            box-shadow: 0 2px 4px rgba(142, 68, 173, 0.1);
+        }
+
+        .preview-section .variable-empty {
+            color: #95a5a6;
+            background: linear-gradient(135deg, #f8f9fa, #f0f2f5);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-style: italic;
+            border: 1px dashed #bdc3c7;
+        }
+
+        /* 公告弹窗样式 */
+        #announcementModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .announcement-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(234,234,234,0.8);
+            animation: modalAppear 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .announcement-title {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .announcement-close {
+            cursor: pointer;
+            font-size: 1.8rem;
+            color: #95a5a6;
+            transition: var(--transition);
+            padding: 0.5rem;
+        }
+
+        .announcement-close:hover {
+            color: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .announcement-body {
+            line-height: 1.8;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+        }
+
+        .announcement-body p {
+            margin-bottom: 1rem;
+        }
+
+        .announcement-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .announcement-btn {
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .announcement-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #2573a7);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .left-panel {
+                border-right: none;
+                border-bottom: 1px solid rgba(234,234,234,0.8);
+                max-height: 50vh;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .container {
+                height: calc(100vh - 2rem);
+            }
+            
+            .nav-controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .page-header {
+                padding: 2rem 1rem;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .template-content {
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .template-content .fixed {
+            color: var(--fixed-color);
+            font-weight: 600;
+            background: linear-gradient(135deg, #f9f0ff, #f4e6ff);
+            padding: 2px 6px;
+            border-radius: 5px;
+            border: 1px solid #d9c8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <h1><i class="fas fa-sms"></i> 短信模板管理系统</h1>
+            <p>专业内容管理 · 实时协同编辑 · 智能变量识别</p>
+        </header>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="nav-controls">
+                    <a href="#">
+                        <button class="home-btn">
+                            <i class="fas fa-arrow-left"></i> 返回主页
+                        </button>
+                    </a>
+                    <button onclick="showCreateModal()" class="create-btn">
+                        <i class="fas fa-plus"></i>
+                        新建模板
+                    </button>
+                </div>
+                
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-value" id="template-count">0</div>
+                        <div class="stat-label">模板总数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="variable-count">0</div>
+                        <div class="stat-label">变量总数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="saved-count">0</div>
+                        <div class="stat-label">今日保存</div>
+                    </div>
+                </div>
+
+                <input type="text" class="search-box" id="searchInput" placeholder="输入关键词搜索模板...">
+                
+                <div class="template-list-container" id="template-list">
+                    <!-- 模板列表将通过JS动态生成 -->
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div id="workspace" class="workspace" style="display: none;">
+                    <div class="edit-section">
+                        <button class="back-btn" onclick="closeWorkspace()"><i class="fas fa-arrow-left"></i> 返回列表</button>
+                        <div class="section-title">编辑模板变量</div>
+                        <div id="editor-content"></div>
+                    </div>
+                    <div class="preview-section"></div>
+                </div>
+                
+                <div id="right-panel-placeholder" class="right-panel-placeholder">
+                    <i class="fas fa-sms"></i>
+                    <h3>选择模板开始编辑</h3>
+                    <p>从左侧选择一个模板，或创建新模板</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公告弹窗 -->
+    <div id="announcementModal">
+        <div class="announcement-content">
+            <div class="announcement-header">
+                <h2 class="announcement-title">
+                    <i class="fas fa-bullhorn" style="color: #3498db;"></i> 系统公告
+                </h2>
+                <span class="announcement-close" onclick="closeAnnouncement()">&times;</span>
+            </div>
+            
+            <div class="announcement-body">
+                <p>短信模板后续会增加，短信模板也可以通过【新建模板】增加，如不知道怎么操作，来咨询哦~</p>
+                <p>对于自己新增的模板如果电脑关机或异常，手工增加的模板会消失~</p>
+                <p>对于常用的模板如果使用频率很高，大家可以反馈给我增加进去~</p>
+                <p>短信模版也请大家仔细核对无误后在发送~</p>
+                <p>其他功能后续继续完善。</p>
+            </div>
+            
+            <div class="announcement-footer">
+                <button class="announcement-btn" onclick="closeAnnouncement()">
+                    我知道了
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalBackdrop"></div>
+    <div id="createTemplateModal">
+        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
+            <h2><i class="fas fa-plus-circle"></i> 新建模板</h2>
+            <span onclick="closeCreateModal()" style="cursor:pointer; font-size:1.5em;">&times;</span>
+        </div>
+        <input type="text" id="templateType" class="editable-input" placeholder="类型（必填）" style="margin-bottom:1rem;">
+        <input type="text" id="templateScene" class="editable-input" placeholder="使用场景" style="margin-bottom:1rem;">
+        <textarea id="templateContent" class="editable-input" placeholder="模板内容（必填，使用「」标记变量）" style="height:150px; margin-bottom:1rem;"></textarea>
+        <input type="text" id="templateRemark" class="editable-input" placeholder="备注说明">
+        <div class="info-text">
+            <i class="fas fa-info-circle"></i> 提示：在模板内容中使用直角引号「」来标记变量，例如：「姓名」、「日期」
+        </div>
+        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1.5rem;">
+            <button class="del-btn" onclick="closeCreateModal()">取消</button>
+            <button class="add-btn" onclick="saveNewTemplate()">保存</button>
+        </div>
+    </div>
+
+    <div id="copyNotification"></div>
+
+    <script>
+        // 定义固定关键词
+        const FIXED_KEYWORDS = ["APP", "客服", "机票在线客服", "选择机票订单"];
+        
+        // 替换函数：将中文括号【】替换为直角引号「」
+        function replaceBrackets(str) {
+            return str.replace(/【/g, '「').replace(/】/g, '」');
+        }
+
+        // 初始化模板数据（已替换括号）
+        let templates = [];
+        let filteredTemplates = [];
+        let currentTemplate = null;
+        let currentTemplateIndex = null;
+        let dailySaveCount = 0;
+        let activeTemplateCard = null;
+
+        // 从localStorage加载数据
+        function loadTemplates() {
+            const saved = localStorage.getItem('sms_templates');
+            if (saved) {
+                templates = JSON.parse(saved);
+            } else {
+                // 初始模板数据 - 包含所有原始模板
+                templates = [
+                    {
+                        type: "航班变动（预约）",
+                        scene: "出票中航变",
+                        content: replaceBrackets("航司告知航班变动，变更为「日期」，「起降时间」，「航班号」航班。目前您的订单尚未出票，您可操作退款后重新购买其他航班。如确认继续乘坐，请耐心等待，我们将在「预约时间」后联系您确认出票事宜。如因多次回电未能联系上您，如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "航变处理模板"
+                    },
+                    {
+                        type: "航班变动",
+                        scene: "出票中航变",
+                        content: replaceBrackets("航司告知航班变动，变更为「日期」，「起降时间」，「航班号」航班。目前您的订单尚未出票，您可操作退款后重新购买其他航班。如确认继续乘坐，请尽快联系去哪儿客服确认出票。如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "航变处理模板"
+                    },
+                    {
+                        type: "航班取消",
+                        scene: "出票中航变",
+                        content: replaceBrackets("航司告知航班取消无保护航班，您预定的原航班无法出票，故您的订单已取消，已支付机票款预计1-7个工作日原路退回，建议您重新购买其他航班出行。如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "航班取消通知"
+                    },
+                    {
+                        type: "失信人",
+                        scene: "无法出票",
+                        content: replaceBrackets("因乘机人「姓名」是全国法院失信被执行人，按国家规定无法乘坐飞机，故您的订单已取消，已支付机票款项预计1-7个工作日原路退回，建议您选择其他交通工具出行。如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "失信人通知"
+                    },
+                    {
+                        type: "失信人「多人」未出",
+                        scene: "无法出票",
+                        content: replaceBrackets("因乘机人「姓名」是全国法院失信被执行人，按国家规定无法乘坐飞机，「姓名」无法出票。其余乘机人均未出票，机票价格实时变动，此期间如机票产生差价需补差价后出票，请您尽快联系去哪儿网确认。如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "失信人通知"
+                    },
+                    {
+                        type: "失信人「多人」已出",
+                        scene: "无法出票",
+                        content: replaceBrackets("因乘机人「姓名」是全国法院失信被执行人，按国家规定无法乘坐飞机，「姓名」无法出票，乘机人「姓名」已正常出票，可正常出行，如您不乘坐可提交自愿退票申请，具体退款金额以审核为准。如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "失信人通知"
+                    },
+                    {
+                        type: "姓名过长",
+                        scene: "无法出票",
+                        content: replaceBrackets("因航司对于乘机人姓名有字符限制，需向您核实乘机人 「姓名」缩写方式 ，因联系不到您，无法确认。烦请尽快联系去哪儿网确认，以避免票价变动或是航班无位耽误到您的行程，如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "姓名过长通知"
+                    },
+                    {
+                        type: "航班无位（预约）",
+                        scene: "无法出票",
+                        content: replaceBrackets("经核实您预定的航班，目前全航班无位，需与您协商换航班出行，协商航班信息：「日期」，「起将时间」，「起降机场」，「航班号」，由于联系不上您，避免耽误您的行程，请您尽快联系我们，在此期间我们会继续为您尝试出票，如您愿意取消出票，也可以在APP取消订单申请退款。请耐心等待，我们将在「预约时间」后联系您确认出票事宜，如我处长时间未能与您取得联系，如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "无法出票通知"
+                    },
+                    {
+                        type: "航班无位",
+                        scene: "无法出票",
+                        content: replaceBrackets("经核实您预定的航班，目前全航班无位，需与您协商换航班出行，协商航班信息：「日期」，「起将时间」，「起降机场」，「航班号」，由于联系不上您，避免耽误您的行程，请您尽快联系我们，在此期间我们会继续为您尝试出票，如您愿意取消出票，也可以在APP取消订单申请退款。如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "无法出票通知"
+                    },
+                    {
+                        type: "儿童票",
+                        scene: "出票短信",
+                        content: replaceBrackets("已协助您补订儿童/婴儿客票，乘机人：「姓名」，票号：「客票号」，请您提前2小时到达机场办理登机手续，祝您旅途愉快！"),
+                        remark: "出票通知"
+                    },
+                    {
+                        type: "出票/改签后航变",
+                        scene: "出票/改签短信",
+                        content: replaceBrackets("目前订单已「改签/出票」完成，航司告知航班变动， 变更为「日期」，「具体时间」，「航班号」航班，请您按照航变后的时间合理安排出行。如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "出票/改签通知"
+                    },
+                    {
+                        type: "修改乘机人信息（不可改）",
+                        scene: "信息修改",
+                        content: replaceBrackets("乘机人：「姓名」提交了「改名/更改证件」申请，需将「姓名/证件」从「原信息」修改为「更改信息」，目前已为您核实航司及出票方，您的客票不符合航司修改规则，无法修改，为了不耽误您的行程，建议您退票，重新预定正确信息的行程出行。"),
+                        remark: "信息更改通知"
+                    },
+                    {
+                        type: "修改乘机人信息（可改）",
+                        scene: "信息修改",
+                        content: replaceBrackets("乘机人：「姓名」提交了「改名/更改证件」申请，我处已经协助修改完成，由「原信息」修改为「新信息」，请知悉。请您于航班起飞前4小时到达机场办理登机手续，如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "信息更改通知"
+                    },
+                    {
+                        type: "风险票",
+                        scene: "客票异常",
+                        content: replaceBrackets("乘机人：「姓名」，票号：「客票信息」，客票因「异常原因」原因无法正常出行，如您需要继续出行，请您尽快联系我司确认，以免耽误您的行程。如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "客票异常通知"
+                    },
+                    {
+                        type: "预约回访",
+                        scene: "回电",
+                        content: replaceBrackets("您反馈的：「订单号」的机票订单，关于您反馈的「类型」问题，电话暂未联系到您，当前进度为「结果」；作为该问题的专属客服，我会在「日期」，「回访时间」主动回访您跟进，请您放心将问题交给我，后续保持手机畅通，注意接听来电~"),
+                        remark: "回访通知"
+                    },
+                    {
+                        type: "儿童票",
+                        scene: "推送金额",
+                        content: replaceBrackets("姓名：「姓名」，证件号码：「身份证号码」，已为您发送儿童票/婴儿票支付链接，当前儿童票/婴儿票价格「金额」元，有效期10分钟，超时链接失效，机票价格及座位情况实时变动，后续能否添加以及价格以实际添加时为准。如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "支付通知"
+                    },
+                    {
+                        type: "协商航班",
+                        scene: "出票短信",
+                        content: replaceBrackets("已经协商出票完成，协商航班信息：「出行日期」，「起降时间」，「航班号」，「起降机场」，目前已出票完成，乘机人：「姓名」，票号：「客票信息」，请您于航班起飞前「2/4」小时到达机场办理登机手续，如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！「以此出票短信/邮件为准」"),
+                        remark: "出票通知"
+                    },
+                    {
+                        type: "出票/改签",
+                        scene: "出票/改签短信",
+                        content: replaceBrackets("已经「出票/改签」完成，「改签/出票」后的信息：「出行日期」，「起降时间」，「航班号」，「起降机场」，目前已出票完成，乘机人：「姓名」，票号：「客票信息」，请您于航班起飞前「2/4」小时到达机场办理登机手续，如有疑问您可登录去哪儿「APP」>APP首页最下方「客服」按钮>点击「机票在线客服」>点击「选择机票订单」选择您需咨询的订单进行咨询，祝您生活愉快！"),
+                        remark: "出票通知"
+                    }
+                ];
+            }
+            
+            // 加载每日保存计数
+            const savedCount = localStorage.getItem('daily_save_count');
+            if (savedCount) {
+                const data = JSON.parse(savedCount);
+                // 如果是同一天，使用保存的计数
+                if (data.date === new Date().toLocaleDateString()) {
+                    dailySaveCount = data.count;
+                }
+            }
+            
+            // 更新统计显示
+            updateStats();
+        }
+
+        // 保存数据到localStorage
+        function saveTemplates() {
+            localStorage.setItem('sms_templates', JSON.stringify(templates));
+        }
+
+        // 更新每日保存计数
+        function updateDailySaveCount() {
+            dailySaveCount++;
+            localStorage.setItem('daily_save_count', JSON.stringify({
+                date: new Date().toLocaleDateString(),
+                count: dailySaveCount
+            }));
+            updateStats();
+        }
+
+        // 更新统计显示
+        function updateStats() {
+            document.getElementById('template-count').textContent = templates.length;
+            document.getElementById('variable-count').textContent = countTotalVariables();
+            document.getElementById('saved-count').textContent = dailySaveCount;
+        }
+
+        // 计算变量总数（排除固定关键词）
+        function countTotalVariables() {
+            return templates.reduce((count, t) => {
+                // 计算所有「」的数量
+                const totalVars = (t.content.match(/「/g) || []).length;
+                // 减去固定关键词的数量
+                const fixedVars = FIXED_KEYWORDS.reduce((fixedCount, keyword) => {
+                    return fixedCount + (t.content.includes(`「${keyword}」`) ? 1 : 0);
+                }, 0);
+                return count + (totalVars - fixedVars);
+            }, 0);
+        }
+
+        // 模板解析核心方法（使用直角引号「」）
+        function parseTemplate(content) {
+            const parts = [];
+            let lastIndex = 0;
+            const regex = /「(.*?)」/g;  // 匹配「」的正则表达式
+            let match;
+            
+            while ((match = regex.exec(content)) !== null) {
+                if (match.index > lastIndex) {
+                    parts.push({ type: 'static', value: content.slice(lastIndex, match.index) });
+                }
+                
+                // 检查是否为固定关键词
+                const isFixed = FIXED_KEYWORDS.includes(match[1]);
+                
+                // 如果是固定关键词，作为静态文本处理
+                if (isFixed) {
+                    parts.push({ 
+                        type: 'static', 
+                        value: `「${match[1]}」`,
+                        fixed: true
+                    });
+                } else {
+                    parts.push({
+                        type: 'field',
+                        original: match[1],
+                        current: "",
+                        id: `field_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+                        customFields: []
+                    });
+                }
+                lastIndex = regex.lastIndex;
+            }
+            
+            if (lastIndex < content.length) {
+                parts.push({ type: 'static', value: content.slice(lastIndex) });
+            }
+            return parts;
+        }
+
+        // 工作区渲染方法
+        function renderWorkspace() {
+            const editArea = document.getElementById('editor-content');
+            let htmlContent = '';
+            
+            // 添加模板类型和场景信息
+            htmlContent += `
+                <div class="field-group" style="margin-bottom: 2rem; background: #f0f7ff;">
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">模板类型</label>
+                            <div style="font-size: 1.1rem; font-weight: 500;">${templates[currentTemplateIndex].type}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">使用场景</label>
+                            <div style="font-size: 1.1rem; font-weight: 500;">${templates[currentTemplateIndex].scene}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 添加模板内容（固定关键词作为静态文本）
+            htmlContent += `
+                <div class="field-group">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 1rem; font-weight: 500;">模板内容</label>
+                        <div class="template-content">
+            `;
+            
+            // 渲染模板内容，固定关键词特殊显示
+            currentTemplate.forEach(part => {
+                if (part.type === 'static') {
+                    if (part.fixed) {
+                        htmlContent += `<span class="fixed">${part.value}</span>`;
+                    } else {
+                        htmlContent += part.value;
+                    }
+                } else if (part.type === 'field') {
+                    htmlContent += `「${part.original}」`;
+                }
+            });
+            
+            htmlContent += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 添加可编辑字段
+            htmlContent += '<div class="section-title">编辑变量</div>';
+            
+            currentTemplate.forEach(part => {
+                if (part.type === 'field') {
+                    const placeholder = /时间/.test(part.original) ? 'placeholder="YYYY-MM-DD HH:mm"' : '';
+                    htmlContent += `
+                        <div class="field-group">
+                            <div style="margin:1rem 0;">
+                                <label style="display:block; margin-bottom:0.5rem; font-weight:500;">${part.original}</label>
+                                <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;">
+                                    <input class="editable-input" 
+                                           data-id="${part.id}"
+                                           value="${part.current.replace(/"/g, '&quot;')}"
+                                           ${placeholder}>
+                                    <button class="ctrl-btn add-btn" 
+                                            onclick="addCustomField('${part.id}')">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                ${part.customFields.map(f => `
+                                    <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;">
+                                        <input class="editable-input" 
+                                               value="${f.value.replace(/"/g, '&quot;')}"
+                                               data-parent="${part.id}"
+                                               data-field-id="${f.id}">
+                                        <button class="ctrl-btn del-btn" 
+                                                onclick="removeField('${part.id}', '${f.id}')">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            editArea.innerHTML = htmlContent;
+            updatePreview();
+            setupEventListeners();
+            highlightFilledFields(); // 初始化高亮显示
+        }
+
+        // 预览更新方法（使用直角引号「」）
+        function updatePreview() {
+            let rawText = '';
+            let formattedHTML = '';
+            
+            currentTemplate.forEach(part => {
+                if (part.type === 'static') {
+                    rawText += part.value;
+                    if (part.fixed) {
+                        formattedHTML += `<span class="variable-fixed">${part.value}</span>`;
+                    } else {
+                        formattedHTML += part.value;
+                    }
+                } else if (part.type === 'field') {
+                    const mainValue = part.current.trim();
+                    if (mainValue) {
+                        rawText += `「${mainValue}」`;
+                        formattedHTML += `<span class="variable-main">「${mainValue}」</span>`;
+                    } else {
+                        rawText += `「${part.original}」`;
+                        formattedHTML += `<span class="variable-empty">「${part.original}」</span>`;
+                    }
+                    
+                    // 处理自定义字段
+                    part.customFields.forEach(field => {
+                        const fieldValue = field.value.trim();
+                        if (fieldValue) {
+                            rawText += `「${fieldValue}」`;
+                            formattedHTML += `<span class="variable-custom">「${fieldValue}」</span>`;
+                        }
+                    });
+                }
+            });
+
+            const preview = document.querySelector('.preview-section');
+            preview.innerHTML = formattedHTML || '<div style="color:#95a5a6; text-align:center; padding:3rem;">填写内容后预览将在此处显示</div>';
+            preview.dataset.rawText = rawText;
+        }
+
+        // 初始化加载
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTemplates();
+            renderTemplates();
+            document.getElementById('searchInput').addEventListener('input', filterTemplates);
+            
+            // 检查是否需要显示公告
+            checkAnnouncement();
+        });
+
+        // 公告弹窗控制
+        function showAnnouncement() {
+            document.getElementById('announcementModal').style.display = 'block';
+        }
+
+        function closeAnnouncement() {
+            document.getElementById('announcementModal').style.display = 'none';
+            // 设置标记，表示用户已经看过公告
+            localStorage.setItem('announcement_seen', 'true');
+        }
+
+        // 检查是否需要显示公告
+        function checkAnnouncement() {
+            const announcementSeen = localStorage.getItem('announcement_seen');
+            if (!announcementSeen) {
+                // 延迟显示，确保页面加载完成
+                setTimeout(showAnnouncement, 500);
+            }
+        }
+
+        // 模态框控制
+        function showCreateModal() {
+            document.getElementById('modalBackdrop').style.display = 'block';
+            document.getElementById('createTemplateModal').style.display = 'block';
+        }
+
+        function closeCreateModal() {
+            document.getElementById('modalBackdrop').style.display = 'none';
+            document.getElementById('createTemplateModal').style.display = 'none';
+        }
+
+        // 模板保存方法
+        function saveNewTemplate() {
+            const newTemplate = {
+                type: document.getElementById('templateType').value.trim(),
+                scene: document.getElementById('templateScene').value.trim(),
+                content: document.getElementById('templateContent').value.trim(),
+                remark: document.getElementById('templateRemark').value.trim()
+            };
+
+            if (!newTemplate.type || !newTemplate.content) {
+                showNotification('类型和内容为必填项', 'error');
+                return;
+            }
+
+            if(currentTemplateIndex !== null) {
+                templates[currentTemplateIndex] = newTemplate;
+            } else {
+                templates.push(newTemplate);
+            }
+            
+            saveTemplates();
+            updateDailySaveCount();
+            renderTemplates();
+            closeCreateModal();
+            resetFormFields();
+            showNotification('模板保存成功！');
+        }
+
+        // 表单重置
+        function resetFormFields() {
+            ['templateType', 'templateScene', 'templateContent', 'templateRemark'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            currentTemplateIndex = null;
+        }
+
+        // 通知系统
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('copyNotification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            notification.style.backgroundColor = type === 'error' ? '#e74c3c' : '#2ecc71';
+            setTimeout(() => notification.style.display = 'none', 2000);
+        }
+
+        // 模板列表渲染
+        function renderTemplates(filtered = templates) {
+            filteredTemplates = filtered;
+            const container = document.getElementById('template-list');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>未找到匹配模板</h3>
+                        <p>尝试不同的搜索词或创建新模板</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map((t, filteredIndex) => {
+                // 使用更鲜明的颜色渲染模板
+                const contentWithHighlight = t.content
+                    .replace(/「(APP|客服|机票在线客服|选择机票订单)」/g, '<span class="fixed-tag" style="background:#f4ecf7; color:#8e44ad; padding:2px 4px; border-radius:4px; border:1px solid #d2b4de;">「$1」</span>')
+                    .replace(/「/g, '<span style="color:#e74c3c; background:#ffeaea; padding:2px 4px; border-radius:4px; border:1px solid #f5b7b1;">「')
+                    .replace(/」/g, '」</span>');
+                    
+                return `
+                    <div class="template-card" 
+                         onclick="openTemplate(${filteredIndex})"
+                         id="template-card-${filteredIndex}">
+                         <div class="template-actions">
+                            <button class="action-btn" onclick="editTemplate(event, ${filteredIndex})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" onclick="deleteTemplate(event, ${filteredIndex})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div style="display:flex; gap:1rem; margin-bottom:1rem; flex-wrap:wrap;">
+                            <div class="type-tag">${t.type}</div>
+                            <div class="scene-tag">${t.scene}</div>
+                        </div>
+                        <div class="template-content">${contentWithHighlight}</div>
+                        ${t.remark ? `<div class="remark-text">备注：${t.remark}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 打开模板方法
+        function openTemplate(filteredIndex) {
+            if (filteredIndex < 0 || filteredIndex >= filteredTemplates.length) {
+                showNotification('无效的模板索引', 'error');
+                return;
+            }
+
+            // 移除之前激活的卡片
+            if (activeTemplateCard) {
+                activeTemplateCard.classList.remove('active');
+            }
+            
+            // 设置当前激活的卡片
+            activeTemplateCard = document.getElementById(`template-card-${filteredIndex}`);
+            if (activeTemplateCard) {
+                activeTemplateCard.classList.add('active');
+            }
+
+            const t = filteredTemplates[filteredIndex];
+            const originalIndex = templates.findIndex(item => 
+                item.type === t.type && 
+                item.scene === t.scene && 
+                item.content === t.content
+            );
+            
+            if (originalIndex === -1) {
+                showNotification('模板数据异常', 'error');
+                return;
+            }
+
+            currentTemplateIndex = originalIndex;
+            currentTemplate = parseTemplate(templates[originalIndex].content);
+            
+            // 显示工作区，隐藏占位符
+            document.getElementById('workspace').style.display = 'flex';
+            document.getElementById('right-panel-placeholder').style.display = 'none';
+            
+            renderWorkspace();
+        }
+
+        // 编辑模板
+        function editTemplate(event, index) {
+            event.stopPropagation();
+            const template = filteredTemplates[index];
+            document.getElementById('templateType').value = template.type;
+            document.getElementById('templateScene').value = template.scene;
+            document.getElementById('templateContent').value = template.content;
+            document.getElementById('templateRemark').value = template.remark || '';
+            
+            const originalIndex = templates.findIndex(t => 
+                t.type === template.type && 
+                t.scene === template.scene && 
+                t.content === template.content
+            );
+            
+            if (originalIndex !== -1) {
+                currentTemplateIndex = originalIndex;
+            }
+            
+            showCreateModal();
+        }
+
+        // 删除模板
+        function deleteTemplate(event, filteredIndex) {
+            event.stopPropagation();
+            if (!confirm('确定要删除这个模板吗？')) return;
+            
+            const t = filteredTemplates[filteredIndex];
+            const originalIndex = templates.findIndex(item => 
+                item.type === t.type && 
+                item.scene === t.scene && 
+                item.content === t.content
+            );
+            
+            if (originalIndex !== -1) {
+                templates.splice(originalIndex, 1);
+                saveTemplates();
+                updateStats();
+                renderTemplates();
+                showNotification('模板已删除');
+                
+                // 如果删除的是当前正在编辑的模板，关闭工作区
+                if (currentTemplateIndex === originalIndex) {
+                    closeWorkspace();
+                }
+            }
+        }
+
+        // 工作区控制
+        function closeWorkspace() {
+            document.getElementById('workspace').style.display = 'none';
+            document.getElementById('right-panel-placeholder').style.display = 'flex';
+            currentTemplateIndex = null;
+            
+            // 移除激活状态
+            if (activeTemplateCard) {
+                activeTemplateCard.classList.remove('active');
+                activeTemplateCard = null;
+            }
+        }
+
+        // 模板过滤
+        function filterTemplates() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = templates.filter(t => 
+                t.type.toLowerCase().includes(keyword) ||
+                t.scene.toLowerCase().includes(keyword) ||
+                t.content.toLowerCase().includes(keyword)
+            );
+            renderTemplates(filtered);
+        }
+
+        // 事件监听设置
+        function setupEventListeners() {
+            document.querySelectorAll('.editable-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const target = this.dataset.id ? 
+                        currentTemplate.find(p => p.id === this.dataset.id) :
+                        currentTemplate.find(p => p.id === this.dataset.parent)?.customFields.find(f => f.id === this.dataset.fieldId);
+                    
+                    if (target) {
+                        if (this.dataset.id) target.current = this.value;
+                        else target.value = this.value;
+                        updatePreview();
+                        highlightFilledFields(); // 添加高亮更新
+                    }
+                });
+            });
+
+            document.querySelector('.preview-section').addEventListener('click', async () => {
+                const rawText = document.querySelector('.preview-section').dataset.rawText;
+                if (!rawText) return;
+                
+                try {
+                    await navigator.clipboard.writeText(rawText);
+                    showNotification('内容已复制到剪贴板');
+                } catch {
+                    // 兼容性处理
+                    const textArea = document.createElement('textarea');
+                    textArea.value = rawText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showNotification('内容已复制到剪贴板');
+                }
+            });
+        }
+
+        // 自定义字段管理
+        function addCustomField(parentId) {
+            const parent = currentTemplate.find(p => p.id === parentId);
+            if (parent) {
+                parent.customFields.push({
+                    value: '',
+                    id: `sub_${Date.now()}_${Math.random().toString(36).slice(2,7)}`
+                });
+                renderWorkspace();
+            }
+        }
+
+        function removeField(parentId, fieldId) {
+            const parent = currentTemplate.find(p => p.id === parentId);
+            if (parent) {
+                parent.customFields = parent.customFields.filter(f => f.id !== fieldId);
+                renderWorkspace();
+            }
+        }
+
+        // 添加一个函数来高亮显示所有已填写的字段
+        function highlightFilledFields() {
+            const inputs = document.querySelectorAll('.editable-input');
+            inputs.forEach(input => {
+                if (input.value.trim()) {
+                    input.style.borderColor = '#27ae60';
+                    input.style.backgroundColor = '#f6ffed';
+                } else {
+                    input.style.borderColor = 'rgba(52,152,219,0.2)';
+                    input.style.backgroundColor = 'white';
+                }
+            });
+        }
+
+        // 初始加载数据
+        loadTemplates();
+    </script>
+</body>
+</html>

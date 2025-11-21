@@ -1,0 +1,1465 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>民航指令生成系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3a7bd5;
+            --secondary: #4a9ff5;
+            --accent: #FF9A44;
+            --danger: #ff6b6b;
+            --success: #1dd1a1;
+            --background: #f8fafc;
+            --text: #2d3748;
+            --radius: 14px;
+            --card-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 25px;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            grid-column: 1 / 3;
+            padding: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), #3a6073);
+            color: white;
+            text-align: center;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.8rem;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header::after {
+            content: "✈️ 智能生成民航指令，支持身份证/护照双模式";
+            display: block;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .work-area, .result-area {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            border: 1px solid #eef2f7;
+        }
+
+        .work-area:hover, .result-area:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .result-area {
+            border-left: 3px solid var(--primary);
+            background: #ffffff;
+        }
+
+        .text-recognizer-box {
+            background: linear-gradient(to bottom right, #f8fafc, #edf2f7);
+            padding: 1.8rem;
+            border-radius: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            margin-bottom: 1.8rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        #textRecognizer {
+            width: 100%;
+            height: 140px;
+            padding: 1.2rem;
+            border: 2px dashed #d1d9e6;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 0.8rem;
+            background: #ffffff;
+            transition: all 0.3s;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        #textRecognizer:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(58, 123, 213, 0.15);
+            outline: none;
+        }
+
+        .recognition-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #parseTextBtn, #clearRecognizerBtn {
+            padding: 0.8rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(58, 123, 213, 0.2);
+        }
+
+        #clearRecognizerBtn {
+            background: #edf2f7;
+            color: #4a5568;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        #parseTextBtn:hover, #clearRecognizerBtn:hover {
+            opacity: 0.92;
+            transform: translateY(-2px);
+        }
+
+        #parseTextBtn:hover {
+            box-shadow: 0 6px 10px rgba(58, 123, 213, 0.3);
+        }
+
+        .form-section {
+            padding: 1.5rem 0;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.6rem;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 1px solid #d1d9e6;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: #ffffff;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(58, 123, 213, 0.15);
+            outline: none;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(58, 123, 213, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .doc-type-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 6px;
+        }
+
+        .doc-tab {
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.3s;
+            font-weight: 600;
+            flex: 1;
+            text-align: center;
+        }
+
+        .doc-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(58, 123, 213, 0.25);
+        }
+
+        .doc-section {
+            display: none;
+        }
+
+        .doc-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .passengers-container {
+            margin: 1.8rem 0;
+            max-height: 450px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .passenger-card {
+            background: white;
+            border-radius: 14px;
+            padding: 1.8rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .passenger-card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border-color: #cbd5e0;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 28px;
+            height: 28px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            box-shadow: 0 3px 6px rgba(239, 68, 68, 0.3);
+            transition: all 0.2s;
+            z-index: 2;
+        }
+
+        .remove-btn:hover {
+            transform: scale(1.1);
+        }
+
+        #output {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px dashed #d1d9e6;
+            cursor: pointer;
+            margin-top: 1.8rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.35rem;
+            line-height: 1.8;
+            overflow-y: auto;
+            max-height: 80vh;
+            flex-grow: 1;
+            transition: all 0.3s;
+            white-space: pre-wrap;
+            background-image: linear-gradient(#f8fafc 1px, transparent 1px);
+            background-size: 100% 2em;
+        }
+
+        #output:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+            background-color: rgba(58, 123, 213, 0.1);
+            padding: 0.1em 0.3em;
+            border-radius: 4px;
+        }
+
+        .child-highlight {
+            color: #e74c3c;
+            font-weight: 700;
+            background-color: rgba(231, 76, 60, 0.12);
+            padding: 0.1em 0.4em;
+            border-radius: 4px;
+            border: 1px dashed rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+
+        .add-btn, .clear-btn {
+            width: 100%;
+            padding: 1.1rem;
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 600;
+            transition: all 0.25s;
+            font-size: 1.05rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, var(--primary), #4a9ff5);
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, var(--danger), #ff8e8e);
+        }
+
+        .add-btn:hover, .clear-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .child-tip {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            height: 20px;
+            visibility: hidden;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .child-tip:not(:empty) {
+            visibility: visible;
+        }
+
+        .error-tip {
+            color: var(--danger);
+            font-size: 0.85rem;
+            height: 20px;
+            margin-top: 6px;
+            visibility: hidden;
+            font-weight: 500;
+        }
+        .error-tip:not(:empty) {
+            visibility: visible;
+        }
+
+        .duplicate-tip {
+            color: #d32f2f;
+            font-size: 0.85rem;
+            height: 20px;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .gender-group {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 6px;
+            display: inline-flex;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .gender-option {
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .gender-option.selected {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 3px 6px rgba(58, 123, 213, 0.3);
+        }
+
+        .gender-option input[type="radio"] {
+            display: none;
+        }
+
+        .custom-alert {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+
+        .alert-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            min-width: 450px;
+            max-width: 90vw;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 1px solid #e2e8f0;
+        }
+
+        .alert-buttons {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1.2rem;
+            justify-content: flex-end;
+        }
+
+        .alert-buttons button {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        #alertCopy {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(58, 123, 213, 0.3);
+        }
+
+        #alertCopy:hover {
+            background: #2a6bc7;
+        }
+
+        #alertConfirm {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        #alertConfirm:hover {
+            background: #e2e8f0;
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+            }
+            
+            .header {
+                grid-column: 1;
+            }
+            
+            .work-area {
+                grid-column: 1;
+            }
+            
+            .result-area {
+                grid-column: 1;
+                border-left: none;
+                border-top: 3px solid var(--primary);
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 15px;
+            }
+            
+            .input-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem;
+            }
+            
+            .passenger-card {
+                padding: 1.5rem;
+                margin-bottom: 1.2rem;
+            }
+            
+            #command {
+                font-size: 1rem;
+                padding: 1.2rem;
+            }
+            
+            .doc-type-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .doc-tab {
+                flex: 1;
+                text-align: center;
+                padding: 0.8rem;
+                font-size: 0.95rem;
+            }
+            
+            #textRecognizer {
+                height: 120px;
+            }
+        }
+
+        .section-title {
+            font-size: 1.35rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid rgba(58, 123, 213, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            background: rgba(58, 123, 213, 0.15);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .recognition-result {
+            margin-top: 1.2rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            font-size: 1.1rem;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 8px rgba(58, 123, 213, 0.25);
+            transition: all 0.2s;
+            margin-bottom: 25px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(58, 123, 213, 0.3);
+            background: #2a6bc7;
+        }
+
+        .copy-feedback {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 6px 15px rgba(58, 123, 213, 0.4);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+<div style="margin-bottom: 25px;">
+    <a href="#">
+        <button class="back-button">
+            <i class="fas fa-arrow-left"></i> 返回主页
+        </button>
+    </a>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1>民航指令生成系统</h1>
+    </div>
+
+    <div class="work-area">
+        <h3 class="section-title"><i class="fas fa-font"></i>文字识别区（自由格式粘贴）</h3>
+        <div class="text-recognizer-box">
+            <textarea 
+                id="textRecognizer"
+                placeholder="可粘贴任意格式文本，系统将自动识别：&#10;&#10;乘机人：张珊&#10;身份证：371323199912020837&#10;航班号：EU121&#10;&#10;乘机人1：&#10;姓名:李四&#10;证件号码：11010119900307761X&#10;航班：CA235&#10;&#10;乘机人2：&#10;姓名 王五 身份证号码 310105198512120318&#10;航班 G5334"
+            ></textarea>
+            
+            <div class="recognition-actions">
+                <div>
+                    <button id="parseTextBtn">
+                        <i class="fas fa-magic"></i> 智能识别
+                    </button>
+                    <button id="clearRecognizerBtn">
+                        <i class="fas fa-trash-alt"></i> 一键清空
+                    </button>
+                </div>
+            </div>
+
+            <div class="recognition-result" id="recognitionResult"></div>
+        </div>
+
+        <h3 class="section-title"><i class="fas fa-info-circle"></i>基本信息</h3>
+        <div class="input-grid">
+            <div class="input-group">
+                <label><i class="fas fa-plane"></i>航空公司代码</label>
+                <input type="text" id="airline" placeholder="CA" required pattern="[A-Za-z0-9]{2}">
+                <div class="error-tip"></div>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-mobile-alt"></i>旅客手机号</label>
+                <input type="tel" id="phone" placeholder="13800138000" required>
+                <div class="error-tip"></div>
+            </div>
+        </div>
+
+        <h3 class="section-title"><i class="fas fa-users"></i>旅客信息填写区</h3>
+        <div class="passengers-container" id="passengers-container"></div>
+
+        <div class="btn-group">
+            <button class="add-btn" id="addPassengerBtn">
+                <i class="fas fa-plus"></i> 添加旅客
+            </button>
+            <button class="clear-btn" id="clearAllBtn">
+                <i class="fas fa-trash-alt"></i> 一键清空
+            </button>
+        </div>
+    </div>
+
+    <div class="result-area">
+        <h3 class="section-title"><i class="fas fa-code"></i>生成指令</h3>
+        <div id="output">
+            <pre id="command">请填写旅客信息</pre>
+        </div>
+    </div>
+</div>
+
+<div class="copy-feedback" id="copyFeedback"></div>
+
+<div id="customAlert" class="custom-alert">
+    <div class="alert-content">
+        <div id="alertMessage" style="line-height: 1.6; white-space: pre-wrap; font-size: 1.1rem;"></div>
+        <div class="alert-buttons">
+            <button id="alertCopy">使用备注</button>
+            <button id="alertConfirm">保持原样</button>
+        </div>
+    </div>
+</div>
+
+<template id="passenger-template">
+    <div class="passenger-card">
+        <button class="remove-btn">×</button>
+        <div class="doc-type-tabs">
+            <div class="doc-tab active" data-type="idCard">身份证</div>
+            <div class="doc-tab" data-type="passport">护照</div>
+        </div>
+
+        <div class="doc-section idCard-section active">
+            <div class="input-group">
+                <label><i class="fas fa-user"></i>旅客姓名</label>
+                <input type="text" class="id-name" required>
+                <button class="copy-btn" data-copy="name">
+                    <i class="fas fa-copy"></i> 复制
+                </button>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-id-card"></i>身份证号</label>
+                <input type="text" class="id-number" required>
+                <button class="copy-btn" data-copy="id">
+                    <i class="fas fa-copy"></i> 复制
+                </button>
+                <div class="child-tip"></div>
+                <div class="error-tip"></div>
+                <div class="duplicate-tip"></div>
+            </div>
+        </div>
+
+        <div class="doc-section passport-section">
+            <div class="input-grid">
+                <div class="input-group">
+                    <label><i class="fas fa-passport"></i>证件类型</label>
+                    <select class="doc-type-select">
+                        <option value="P">护照</option>
+                        <option value="A">港澳居民来往内地通行证</option>
+                        <option value="A">台湾居民来往大陆通行证</option>
+                        <option value="A">港澳通行证</option>
+                        <option value="A">大陆居民来往台湾通行证</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-user"></i>英文姓名</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <input type="text" class="surname" placeholder="姓（拼音）" required>
+                        <input type="text" class="givenname" placeholder="名（拼音）" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-passport"></i>证件号码</label>
+                    <input type="text" class="passport-number" required>
+                    <div class="error-tip"></div>
+                    <div class="duplicate-tip"></div>
+                </div>
+            </div>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label><i class="fas fa-calendar-day"></i>出生日期</label>
+                    <input type="text" class="birth-date" placeholder="YYYYMMDD 或 YYYY-MM-DD" required>
+                    <div class="child-tip"></div>
+                    <div class="error-tip"></div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-calendar-day"></i>有效期</label>
+                    <input type="text" class="expiry-date" placeholder="YYYYMMDD 或 YYYY-MM-DD" required>
+                    <div class="error-tip"></div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-flag"></i>国籍</label>
+                    <input type="text" class="nationality" value="中国" required>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-globe"></i>签发地</label>
+                    <input type="text" class="issuing-country" value="中国" required>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-venus-mars"></i>性别</label>
+                    <div class="gender-group">
+                        <label class="gender-option selected">
+                            <input type="radio" name="gender" value="M" checked> 男
+                        </label>
+                        <label class="gender-option">
+                            <input type="radio" name="gender" value="F"> 女
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+       const countryCodeMap = {
+            '中国': 'CN', '中國': 'CN', 'china': 'CN',
+            '中国香港': 'HK', '香港': 'HK', 'hong kong': 'HK',
+            '中国台湾': 'TW', '台灣': 'TW', 'taiwan': 'TW',
+            '中国澳门': 'MO', '澳門': 'MO', 'macao': 'MO',
+            '美国': 'US', '美國': 'US', 'usa': 'US',
+            '日本': 'JP', 'japan': 'JP',
+            '韩国': 'KR', '韓國': 'KR', 'korea': 'KR',
+            '英国': 'GB', '英國': 'GB', 'uk': 'GB',
+            '法国': 'FR', 'france': 'FR',
+            '德国': 'DE', 'germany': 'DE',
+            '加拿大': 'CA', 'canada': 'CA',
+            '澳大利亚': 'AU', 'australia': 'AU',
+            '新西兰': 'NZ', 'new zealand': 'NZ',
+            '新加坡': 'SG', 'singapore': 'SG',
+            '马来西亚': 'MY', 'malaysia': 'MY',
+            '泰国': 'TH', 'thailand': 'TH',
+            '越南': 'VN', 'vietnam': 'VN',
+            '印度': 'IN', 'india': 'IN',
+            '俄罗斯': 'RU', 'russia': 'RU',
+            '意大利': 'IT', 'italy': 'IT',
+            '西班牙': 'ES', 'spain': 'ES',
+            '荷兰': 'NL', 'netherlands': 'NL',
+            '瑞士': 'CH', 'switzerland': 'CH',
+            '瑞典': 'SE', 'sweden': 'SE',
+            '丹麦': 'DK', 'denmark': 'DK',
+            '挪威': 'NO', 'norway': 'NO',
+            '芬兰': 'FI', 'finland': 'FI',
+            '比利时': 'BE', 'belgium': 'BE',
+            '奥地利': 'AT', 'austria': 'AT',
+            '葡萄牙': 'PT', 'portugal': 'PT',
+            '希腊': 'GR', 'greece': 'GR',
+            '土耳其': 'TR', 'turkey': 'TR',
+            '巴西': 'BR', 'brazil': 'BR',
+            '阿根廷': 'AR', 'argentina': 'AR',
+            '墨西哥': 'MX', 'mexico': 'MX',
+            '南非': 'ZA', 'south africa': 'ZA',
+            '埃及': 'EG', 'egypt': 'EG',
+            '阿联酋': 'AE', 'united arab emirates': 'AE',
+            '沙特阿拉伯': 'SA', 'saudi arabia': 'SA',
+            '印度尼西亚': 'ID', 'indonesia': 'ID',
+            '菲律宾': 'PH', 'philippines': 'PH',
+            '巴基斯坦': 'PK', 'pakistan': 'PK',
+            '孟加拉国': 'BD', 'bangladesh': 'BD',
+            '尼日利亚': 'NG', 'nigeria': 'NG',
+            '肯尼亚': 'KE', 'kenya': 'KE',
+            '摩洛哥': 'MA', 'morocco': 'MA',
+            '哥伦比亚': 'CO', 'colombia': 'CO',
+            '智利': 'CL', 'chile': 'CL',
+            '秘鲁': 'PE', 'peru': 'PE',
+            '委内瑞拉': 'VE', 'venezuela': 'VE',
+            '古巴': 'CU', 'cuba': 'CU',
+            '牙买加': 'JM', 'jamaica': 'JM',
+            '巴拿马': 'PA', 'panama': 'PA',
+            '哥斯达黎加': 'CR', 'costa rica': 'CR',
+            '乌拉圭': 'UY', 'uruguay': 'UY',
+            '巴拉圭': 'PY', 'paraguay': 'PY',
+            '厄瓜多尔': 'EC', 'ecuador': 'EC',
+            '玻利维亚': 'BO', 'bolivia': 'BO',
+            '冰岛': 'IS', 'iceland': 'IS',
+            '爱尔兰': 'IE', 'ireland': 'IE',
+            '波兰': 'PL', 'poland': 'PL',
+            '捷克': 'CZ', 'czech republic': 'CZ',
+            '匈牙利': 'HU', 'hungary': 'HU',
+            '罗马尼亚': 'RO', 'romania': 'RO',
+            '保加利亚': 'BG', 'bulgaria': 'BG',
+            '克罗地亚': 'HR', 'croatia': 'HR',
+            '塞尔维亚': 'RS', 'serbia': 'RS',
+            '斯洛伐克': 'SK', 'slovakia': 'SK',
+            '斯洛文尼亚': 'SI', 'slovenia': 'SI',
+            '爱沙尼亚': 'EE', 'estonia': 'EE',
+            '拉脱维亚': 'LV', 'latvia': 'LV',
+            '立陶宛': 'LT', 'lithuania': 'LT',
+            '乌克兰': 'UA', 'ukraine': 'UA',
+            '白俄罗斯': 'BY', 'belarus': 'BY',
+            '哈萨克斯坦': 'KZ', 'kazakhstan': 'KZ',
+            '乌兹别克斯坦': 'UZ', 'uzbekistan': 'UZ',
+            '吉尔吉斯斯坦': 'KG', 'kyrgyzstan': 'KG',
+            '塔吉克斯坦': 'TJ', 'tajikistan': 'TJ',
+            '土库曼斯坦': 'TM', 'turkmenistan': 'TM',
+            '阿富汗': 'AF', 'afghanistan': 'AF',
+            '伊拉克': 'IQ', 'iraq': 'IQ',
+            '伊朗': 'IR', 'iran': 'IR',
+            '以色列': 'IL', 'israel': 'IL',
+            '约旦': 'JO', 'jordan': 'JO',
+            '黎巴嫩': 'LB', 'lebanon': 'LB',
+            '阿曼': 'OM', 'oman': 'OM',
+            '卡塔尔': 'QA', 'qatar': 'QA',
+            '科威特': 'KW', 'kuwait': 'KW',
+            '巴林': 'BH', 'bahrain': 'BH',
+            '也门': 'YE', 'yemen': 'YE',
+            '叙利亚': 'SY', 'syria': 'SY',
+            '塞浦路斯': 'CY', 'cyprus': 'CY',
+            '马尔代夫': 'MV', 'maldives': 'MV',
+            '斯里兰卡': 'LK', 'sri lanka': 'LK',
+            '尼泊尔': 'NP', 'nepal': 'NP',
+            '不丹': 'BT', 'bhutan': 'BT',
+            '缅甸': 'MM', 'myanmar': 'MM',
+            '老挝': 'LA', 'laos': 'LA',
+            '柬埔寨': 'KH', 'cambodia': 'KH',
+            '文莱': 'BN', 'brunei': 'BN',
+            '东帝汶': 'TL', 'timor-leste': 'TL',
+            '蒙古': 'MN', 'mongolia': 'MN',
+            '朝鲜': 'KP', 'north korea': 'KP',
+            '斐济': 'FJ', 'fiji': 'FJ',
+            '巴布亚新几内亚': 'PG', 'papua new guinea': 'PG',
+            '所罗门群岛': 'SB', 'solomon islands': 'SB',
+            '瓦努阿图': 'VU', 'vanuatu': 'VU',
+            '萨摩亚': 'WS', 'samoa': 'WS',
+            '汤加': 'TO', 'tonga': 'TO',
+            '基里巴斯': 'KI', 'kiribati': 'KI',
+            '马绍尔群岛': 'MH', 'marshall islands': 'MH',
+            '密克罗尼西亚': 'FM', 'micronesia': 'FM',
+            '帕劳': 'PW', 'palau': 'PW',
+            '瑙鲁': 'NR', 'nauru': 'NR',
+            '图瓦卢': 'TV', 'tuvalu': 'TV',
+            '库克群岛': 'CK', 'cook islands': 'CK',
+            '纽埃': 'NU', 'niue': 'NU',
+            '托克劳': 'TK', 'tokelau': 'TK',
+            '关岛': 'GU', 'guam': 'GU',
+            '北马里亚纳群岛': 'MP', 'northern mariana islands': 'MP',
+            '波多黎各': 'PR', 'puerto rico': 'PR',
+            '美属维尔京群岛': 'VI', 'u.s. virgin islands': 'VI',
+            '英属维尔京群岛': 'VG', 'british virgin islands': 'VG',
+            '开曼群岛': 'KY', 'cayman islands': 'KY',
+            '百慕大': 'BM', 'bermuda': 'BM',
+            '格陵兰': 'GL', 'greenland': 'GL',
+            '法属波利尼西亚': 'PF', 'french polynesia': 'PF',
+            '新喀里多尼亚': 'NC', 'new caledonia': 'NC',
+            '瓦利斯和富图纳': 'WF', 'wallis and futuna': 'WF',
+            '马约特': 'YT', 'mayotte': 'YT',
+            '留尼汪': 'RE', 'réunion': 'RE',
+            '圣皮埃尔和密克隆': 'PM', 'saint pierre and miquelon': 'PM',
+            '法属圭亚那': 'GF', 'french guiana': 'GF',
+            '法属南部领地': 'TF', 'french southern territories': 'TF',
+            '南极洲': 'AQ', 'antarctica': 'AQ'
+        };
+
+        const monthAbbr = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+        let passengerCount = 0;
+        let currentPassengerIndex = 1;
+
+        // 文字识别功能
+        document.getElementById('parseTextBtn').addEventListener('click', function() {
+            const text = document.getElementById('textRecognizer').value;
+            
+            // 识别航空公司代码
+            const airlinePattern = /(?:航班号|航班|Flight|Airline)[:：\s]*([A-Za-z0-9]{2})/i;
+            const airlineMatch = airlinePattern.exec(text);
+            const airlineCode = airlineMatch ? airlineMatch[1].toUpperCase() : '';
+            
+            if (airlineCode) {
+                document.getElementById('airline').value = airlineCode;
+            }
+
+            // 识别旅客信息
+            const pattern = /(?:乘机人|乘机人\d+|姓名|乘机人N)[:：\s]*([\u4e00-\u9fa5·]{2,})[\s\S]*?(?:身份证|身份证号码|证件号码)[:：\s]*(\d{17}[\dXx])/gi;
+            const matches = [];
+            
+            let match;
+            while ((match = pattern.exec(text)) !== null) {
+                matches.push({
+                    name: match[1].replace(/\s/g, '').trim(),
+                    id: match[2].toUpperCase().replace(/\s/g, '')
+                });
+            }
+
+            // 清空现有旅客并添加识别到的旅客
+            const container = document.getElementById('passengers-container');
+            container.innerHTML = '';
+            matches.forEach((item, index) => {
+                const card = createPassengerCard();
+                card.querySelector('.doc-tab[data-type="idCard"]').click();
+                card.querySelector('.id-name').value = item.name;
+                card.querySelector('.id-number').value = item.id;
+                card.querySelector('.id-number').dispatchEvent(new Event('input'));
+                container.appendChild(card);
+            });
+
+            if(matches.length === 0 && !document.getElementById('passengers-container').innerHTML) {
+                document.getElementById('passengers-container').appendChild(createPassengerCard());
+            }
+
+            if(matches.length === 0) {
+                alert('未识别到有效信息！');
+            } else {
+                const resultElement = document.getElementById('recognitionResult');
+                resultElement.textContent = `成功识别 ${matches.length} 位旅客`;
+                resultElement.style.backgroundColor = '#E6F7EE';
+                resultElement.style.color = '#228B22';
+                resultElement.style.display = 'block';
+                resultElement.style.border = '1px solid #228B22';
+                resultElement.style.marginTop = '10px';
+
+                setTimeout(() => {
+                    resultElement.style.display = 'none';
+                }, 3000);
+
+                generateCommand();
+            }
+        });
+
+        // 清空识别区
+        document.getElementById('clearRecognizerBtn').addEventListener('click', () => {
+            document.getElementById('textRecognizer').value = '';
+        });
+
+        // 创建旅客卡片
+        function createPassengerCard() {
+            const template = document.getElementById('passenger-template');
+            const clone = document.importNode(template.content, true);
+            const card = clone.querySelector('.passenger-card');
+            const pid = `passenger-${++passengerCount}`;
+
+            card.dataset.pid = pid;
+            
+            // 绑定性别单选按钮
+            const radios = card.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => {
+                radio.name = `gender-${pid}`;
+            });
+
+            // 绑定身份证验证
+            const idNumberInput = card.querySelector('.id-number');
+            idNumberInput.addEventListener('input', function() {
+                validateInput(this, '^\\d{17}[\\dXx]$', '需有效18位身份证号');
+                checkDuplicateDocuments(card);
+                generateCommand();
+            });
+
+            // 绑定护照验证
+            const passportInput = card.querySelector('.passport-number');
+            passportInput.addEventListener('input', function() {
+                validateInput(this, '^[A-Z0-9]{6,20}$', '需有效证件号码');
+                checkDuplicateDocuments(card);
+                generateCommand();
+            });
+
+            bindCardEvents(card);
+            bindCopyButtons(card);
+            return card;
+        }
+
+        function bindCardEvents(card) {
+            // 删除按钮
+            card.querySelector('.remove-btn').addEventListener('click', () => {
+                if(document.querySelectorAll('.passenger-card').length > 1) {
+                    card.remove();
+                    generateCommand();
+                }
+            });
+
+            // 证件类型切换
+            card.querySelectorAll('.doc-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    card.querySelectorAll('.doc-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    card.querySelectorAll('.doc-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    card.querySelector(`.${tab.dataset.type}-section`).classList.add('active');
+                    generateCommand();
+                });
+            });
+
+            // 输入事件
+            card.querySelectorAll('input, select').forEach(element => {
+                element.addEventListener('input', generateCommand);
+            });
+
+            card.querySelector('.doc-type-select').addEventListener('change', generateCommand);
+
+            // 性别选择
+            card.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const parent = this.closest('.gender-group');
+                    parent.querySelectorAll('.gender-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.closest('.gender-option').classList.add('selected');
+                    generateCommand();
+                });
+            });
+        }
+
+        // 复制按钮绑定
+        function bindCopyButtons(card) {
+            card.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.dataset.copy;
+                    let textToCopy = '';
+                    
+                    if (type === 'name') {
+                        textToCopy = card.querySelector('.id-name').value;
+                    } else if (type === 'id') {
+                        textToCopy = card.querySelector('.id-number').value;
+                    }
+                    
+                    if (textToCopy) {
+                        navigator.clipboard.writeText(textToCopy)
+                            .then(() => {
+                                showFeedback(`${type === 'name' ? '旅客姓名' : '身份证号'}已复制`);
+                                this.style.backgroundColor = 'var(--primary)';
+                                this.style.color = 'white';
+                                setTimeout(() => {
+                                    this.style.backgroundColor = '';
+                                    this.style.color = '';
+                                }, 500);
+                            })
+                            .catch(err => console.error('复制失败:', err));
+                    }
+                });
+            });
+        }
+
+        // 添加旅客按钮
+        document.getElementById('addPassengerBtn').addEventListener('click', () => {
+            document.getElementById('passengers-container').appendChild(createPassengerCard());
+            generateCommand();
+        });
+
+        // 清空全部按钮
+        document.getElementById('clearAllBtn').addEventListener('click', () => {
+            const container = document.getElementById('passengers-container');
+            container.innerHTML = '';
+            container.appendChild(createPassengerCard());
+            document.getElementById('airline').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('textRecognizer').value = '';
+            generateCommand();
+        });
+
+        // 复制指令
+        document.getElementById('output').addEventListener('click', copyCommand);
+
+        // 生成指令
+        function generateCommand() {
+            const airline = document.getElementById('airline').value.trim().toUpperCase();
+            const phone = document.getElementById('phone').value.trim();
+            let isValid = true;
+
+            const passengers = Array.from(document.querySelectorAll('.passenger-card')).map((card, index) => {
+                const isPassport = card.querySelector('.doc-tab[data-type="passport"]').classList.contains('active');
+                const data = { position: index + 1, isChild: false, age: 99, isDuplicate: false };
+
+                try {
+                    if(isPassport) {
+                        data.type = 'passport';
+                        data.docType = card.querySelector('.doc-type-select').value;
+                        data.surname = (card.querySelector('.surname').value || '').toUpperCase();
+                        data.givenname = (card.querySelector('.givenname').value || '').toUpperCase();
+                        data.passportNo = card.querySelector('.passport-number').value || '';
+                        data.birthDate = formatDate(card.querySelector('.birth-date').value);
+                        data.expiryDate = formatDate(card.querySelector('.expiry-date').value);
+                        data.nationality = countryCode(card.querySelector('.nationality').value);
+                        data.issuingCountry = countryCode(card.querySelector('.issuing-country').value);
+                        data.gender = card.querySelector('input[type="radio"]:checked')?.value || 'M';
+                        data.age = calculateAge(card.querySelector('.birth-date').value);
+                        data.isChild = data.age < 12;
+                        
+                        if(!data.surname || !data.givenname || !data.passportNo || 
+                           !data.birthDate || !data.expiryDate || !data.nationality || !data.issuingCountry) {
+                            isValid = false;
+                        }
+                    } else {
+                        data.type = 'idCard';
+                        data.name = (card.querySelector('.id-name').value || '').trim();
+                        data.idNumber = (card.querySelector('.id-number').value || '').replace(/\s/g, '');
+                        data.age = calculateAgeFromID(data.idNumber);
+                        data.isChild = data.age < 12;
+                        
+                        if(!data.name || !/^\d{17}[\dXx]$/i.test(data.idNumber)) {
+                            isValid = false;
+                        }
+                    }
+                    
+                    data.isDuplicate = checkDuplicateDocuments(card);
+                    if(data.isDuplicate) isValid = false;
+
+                } catch (error) {
+                    isValid = false;
+                }
+                
+                card.querySelector('.child-tip').textContent = data.isChild ? `儿童旅客（${data.age}岁）` : '';
+                return data;
+            });
+
+            updateCommandDisplay(airline, phone, passengers, isValid);
+        }
+
+        // 更新指令显示
+        function updateCommandDisplay(airline, phone, passengers, isValid) {
+            const isAirlineValid = /^[A-Z0-9]{2}$/.test(airline);
+            const isPhoneValid = phone.length > 0; // 只要手机号不为空就认为有效
+            const hasDuplicate = passengers.some(p => p.isDuplicate);
+            
+            if(!isAirlineValid || !isPhoneValid || !isValid || passengers.length === 0 || hasDuplicate) {
+                let errorMessage = '请修正以下问题：\n';
+                if(hasDuplicate) errorMessage += '- 存在重复证件号码\n';
+                if(!isAirlineValid) errorMessage += '- 无效航空公司代码\n';
+                if(!isPhoneValid) errorMessage += '- 手机号不能为空\n';
+                if(passengers.length === 0) errorMessage += '- 至少需要一位旅客';
+                document.getElementById('command').textContent = errorMessage;
+                return;
+            }
+
+            let command = '';
+            command += 'NM1' + passengers.map((p, i) => {
+                const name = p.type === 'passport' ? 
+                    `${p.surname}/${p.givenname}`.replace(/\/+$/, '') : 
+                    p.name.toUpperCase();
+                return `<span class="highlight">${name}${p.isChild ? '<span class="child-highlight">CHD</span>' : ''}</span>${i < passengers.length-1 ? '1' : ''}`;
+            }).join('') + '\n';
+
+            passengers.forEach(p => {
+                if(p.type === 'passport') {
+                    const docCode = p.docType === 'P' ? 'P' : 'A';
+                    command += `SSR DOCS <span class="highlight">${airline}</span> HK1 ` +
+                        `<span class="highlight">${docCode}</span>/` +
+                        `<span class="highlight">${p.issuingCountry}</span>/` +
+                        `<span class="highlight">${p.passportNo}</span>/` +
+                        `<span class="highlight">${p.nationality}</span>/` +
+                        `<span class="highlight">${p.birthDate}</span>/` +
+                        `<span class="highlight">${p.gender}</span>/` +
+                        `<span class="highlight">${p.expiryDate}</span>/` +
+                        `<span class="highlight">${p.surname}</span>/` +
+                        `<span class="highlight">${p.givenname}</span>/P${p.position}\n`;
+                } else {
+                    const id = p.idNumber.toUpperCase();
+                    command += `SSR FOID <span class="highlight">${airline}</span> HK/NI` +
+                        `${id.substr(0,6)}<span class="highlight">${id.substr(6,8)}</span>${id.substr(14)}/P${p.position}\n`;
+                }
+            });
+
+            command += `OSI <span class="highlight">${airline}</span> CTCT<span class="highlight">18871875569</span>\n`;
+            command += `OSI <span class="highlight">${airline}</span> CTCM<span class="highlight">${phone}</span>/P1\n`;
+
+            const now = new Date();
+            now.setHours(now.getHours() + 2);
+            const timeString = now.toLocaleTimeString('en-GB', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: false 
+            }).replace(/:/g, '');
+            command += `TKTL<span class="highlight">${timeString}</span>/./PEK950\n\\`;
+
+            document.getElementById('command').innerHTML = command;
+        }
+
+        // 复制指令
+        async function copyCommand() {
+            const commandText = document.getElementById('command').textContent;
+            if (!commandText || commandText.includes('请填写')) return;
+
+            try {
+                await navigator.clipboard.writeText(commandText.replace(/<[^>]+>/g, ''));
+                showFeedback('✅ 指令已复制');
+            } catch (err) {
+                console.error('复制失败:', err);
+                showFeedback('❌ 复制失败，请手动复制');
+            }
+
+            // 检查是否需要显示备注弹窗
+            const airline = document.getElementById('airline').value.trim().toUpperCase();
+            const hasChild = Array.from(document.querySelectorAll('.passenger-card'))
+                .some(card => card.querySelector('.child-tip:not(:empty)'));
+
+            if (hasChild) {
+                let remarkContent = '';
+                switch (airline) {
+                    case 'CZ': remarkContent = 'OSI CZ ADTN 成人票号/旅客序号'; break;
+                    case 'ZH': remarkContent = 'OSI ZH ADT 成人票号'; break;
+                    case 'CA': remarkContent = '请联系航司互相备注成人儿童'; break;
+                    case 'GX':
+                    case '8L':
+                    case 'PN':
+                    case 'HU':
+                    case 'CN':
+                        remarkContent = '请使用代理人平台客票查询功能备注儿童或直接使用代理人平台补订儿童客票';
+                        break;
+                    case '3U':
+                    case 'EU': remarkContent = `OSI ${airline} ADT 成人票号`; break;
+                    case 'MF': remarkContent = 'MF航司儿童客票请在官网预订或联系代理人专线补订'; break;
+                    default:
+                        if (/^[A-Z0-9]{2}$/.test(airline)) {
+                            remarkContent = 'RMK 成人票号';
+                        }
+                }
+
+                if (remarkContent) {
+                    const alertBox = document.getElementById('customAlert');
+                    const msgBox = document.getElementById('alertMessage');
+                    msgBox.textContent = `检测到儿童旅客，请选择操作：\n\n${remarkContent}`;
+
+                    alertBox.style.display = 'block';
+
+                    const handleAction = async (useRemark) => {
+                        if (useRemark) {
+                            try {
+                                await navigator.clipboard.writeText(remarkContent);
+                                showFeedback('✅ 备注已替换');
+                            } catch (err) {
+                                console.error('替换失败:', err);
+                                showFeedback('❌ 替换失败，请手动操作');
+                            }
+                        }
+                        alertBox.style.display = 'none';
+                    };
+
+                    document.getElementById('alertCopy').onclick = () => handleAction(true);
+                    document.getElementById('alertConfirm').onclick = () => handleAction(false);
+                }
+            }
+        }
+
+        // 工具函数
+        function calculateAge(birthDate) {
+            const cleanDate = birthDate.replace(/[^0-9]/g, '');
+            if (cleanDate.length !== 8) return 99;
+            const birthYear = parseInt(cleanDate.substr(0,4));
+            const birthMonth = parseInt(cleanDate.substr(4,2)) - 1;
+            const birthDay = parseInt(cleanDate.substr(6,2));
+            const today = new Date();
+            let age = today.getFullYear() - birthYear;
+            if (today.getMonth() < birthMonth || 
+               (today.getMonth() === birthMonth && today.getDate() < birthDay)) {
+                age--;
+            }
+            return age;
+        }
+
+        function calculateAgeFromID(idNumber) {
+            if (!idNumber || idNumber.length < 14) return 99;
+            const birthYear = parseInt(idNumber.substr(6,4));
+            const birthMonth = parseInt(idNumber.substr(10,2)) - 1;
+            const birthDay = parseInt(idNumber.substr(12,2));
+            const today = new Date();
+            let age = today.getFullYear() - birthYear;
+            if (today.getMonth() < birthMonth || 
+               (today.getMonth() === birthMonth && today.getDate() < birthDay)) {
+                age--;
+            }
+            return age;
+        }
+
+        function formatDate(dateStr) {
+            const cleanDate = dateStr.replace(/[^0-9]/g, '');
+            if (cleanDate.length !== 8) return '';
+            const year = cleanDate.substr(0,4);
+            const month = parseInt(cleanDate.substr(4,2)) - 1;
+            const day = cleanDate.substr(6,2);
+            if(month < 0 || month > 11 || day < 1 || day > 31) return '';
+            return `${day}${monthAbbr[month]}${year.substr(2)}`;
+        }
+
+        function countryCode(name) {
+            return countryCodeMap[name.trim()] || name.toUpperCase();
+        }
+
+        function showFeedback(text) {
+            const fb = document.getElementById('copyFeedback');
+            fb.textContent = text;
+            fb.style.opacity = '1';
+            setTimeout(() => fb.style.opacity = '0', 2000);
+        }
+
+        function checkDuplicateDocuments(card) {
+            const allCards = document.querySelectorAll('.passenger-card');
+            const currentType = card.querySelector('.doc-tab.active').dataset.type;
+            const currentDocNumber = currentType === 'idCard' ? 
+                card.querySelector('.id-number').value.trim() :
+                card.querySelector('.passport-number').value.trim();
+
+            let isDuplicate = false;
+            let duplicates = [];
+
+            allCards.forEach(otherCard => {
+                if(otherCard === card) return;
+                
+                const type = otherCard.querySelector('.doc-tab.active').dataset.type;
+                const docNumber = type === 'idCard' ? 
+                    otherCard.querySelector('.id-number').value.trim() :
+                    otherCard.querySelector('.passport-number').value.trim();
+                
+                if(docNumber && docNumber === currentDocNumber) {
+                    isDuplicate = true;
+                    duplicates.push(otherCard);
+                }
+            });
+
+            // 显示错误提示
+            const duplicateTip = card.querySelector('.duplicate-tip');
+            if (isDuplicate) {
+                duplicateTip.textContent = '证件号码重复！';
+                duplicateTip.style.color = '#d32f2f';
+            } else {
+                duplicateTip.textContent = '';
+            }
+
+            return isDuplicate;
+        }
+
+        // 验证输入
+        function validateInput(input, pattern, errorMsg) {
+            const isValid = new RegExp(pattern).test(input.value);
+            input.parentNode.querySelector('.error-tip').textContent = isValid ? '' : errorMsg;
+            return isValid;
+        }
+
+        // 航空公司验证
+        document.getElementById('airline').addEventListener('input', function(e) {
+            validateInput(this, '^[A-Za-z0-9]{2}$', '需2位字母/数字组合');
+            generateCommand();
+        });
+
+        // 手机号验证
+        document.getElementById('phone').addEventListener('input', function(e) {
+            // 检查手机号是否为空
+            if (this.value.trim() === '') {
+                this.parentNode.querySelector('.error-tip').textContent = '手机号不能为空';
+            } else {
+                this.parentNode.querySelector('.error-tip').textContent = '';
+            }
+            generateCommand();
+        });
+
+        // 初始化第一个旅客
+        document.getElementById('passengers-container').appendChild(createPassengerCard());
+    });
+</script>
+</body>
+</html>

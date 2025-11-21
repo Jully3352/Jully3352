@@ -1,0 +1,3249 @@
+
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✈️ 民航指令生成系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+         :root {
+            --primary: #1e88e5;
+            --primary-dark: #1565c0;
+            --secondary: #42a5f5;
+            --accent: #ffb300;
+            --accent-dark: #f57c00;
+            --danger: #e53935;
+            --danger-dark: #c62828;
+            --success: #43a047;
+            --success-dark: #388e3c;
+            --background: #f0f7ff;
+            --card-bg: #ffffff;
+            --text: #0d47a1;
+            --text-light: #5c6bc0;
+            --text-muted: #7986cb;
+            --border: #bbdefb;
+            --radius: 12px;
+            --shadow: 0 6px 20px rgba(33, 150, 243, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .header {
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "✈️";
+            position: absolute;
+            font-size: 4rem;
+            opacity: 0.15;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            position: relative;
+            z-index: 2;
+            opacity: 0.95;
+            font-size: 1.05rem;
+        }
+
+        /* 红色警示标签 */
+        .child-tag {
+            color: #d32f2f;
+            font-weight: bold;
+            background-color: rgba(255, 0, 0, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px dashed #d32f2f;
+            margin-left: 4px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { background-color: rgba(255, 0, 0, 0.05); }
+            50% { background-color: rgba(255, 0, 0, 0.15); }
+            100% { background-color: rgba(255, 0, 0, 0.05); }
+        }
+
+        .recognition-toggle {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .toggle-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 0.8rem 1.8rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(255, 179, 0, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toggle-btn:hover {
+            background: var(--accent-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 179, 0, 0.3);
+        }
+
+        .text-recognizer-box {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            margin: 0 1.5rem 1.5rem;
+            display: none;
+            border: 1px solid var(--border);
+        }
+
+        #textRecognizer {
+            width: 100%;
+            height: 140px;
+            padding: 1.2rem;
+            border: 2px dashed #e3f2fd;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            background: #f8fdff;
+            transition: all 0.3s;
+        }
+
+        #textRecognizer:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+            outline: none;
+            background: white;
+        }
+
+        .recognition-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #parseTextBtn, #clearRecognizerBtn {
+            padding: 0.7rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #parseTextBtn:hover, #clearRecognizerBtn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        #clearRecognizerBtn {
+            background: #eceff1;
+            color: var(--text);
+        }
+
+        #clearRecognizerBtn:hover {
+            background: #cfd8dc;
+        }
+
+        .form-section {
+            padding: 1.5rem 2rem;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.7rem;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            background: #f8fdff;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+            outline: none;
+            background: white;
+        }
+
+        .input-tip {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 6px;
+            height: 18px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(30, 136, 229, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .doc-type-tabs {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+            background: #f1f8ff;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .doc-tab {
+            padding: 0.7rem 1.3rem;
+            border-radius: 6px;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+            flex: 1;
+            text-align: center;
+        }
+
+        .doc-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 6px rgba(30, 136, 229, 0.3);
+        }
+
+        .doc-section {
+            display: none;
+        }
+
+        .doc-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .passengers-container {
+            margin: 2rem 0;
+        }
+
+        .passenger-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(66, 165, 245, 0.1);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        
+        .passenger-card.changed {
+            border: 2px solid var(--danger);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 28px;
+            height: 28px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .remove-btn:hover {
+            background: var(--danger-dark);
+            transform: scale(1.1);
+        }
+
+        #output {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            cursor: pointer;
+            margin-top: 1.5rem;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            background: #f8fdff;
+        }
+        
+        #output.changed {
+            border: 1px solid var(--danger);
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+        
+        #output::after {
+            content: '旅客信息已变更，需重新填写成人票号';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--danger);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.9rem;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        #output.changed::after {
+            transform: translateY(0);
+        }
+
+        #command {
+            white-space: pre-wrap;
+            font-size: 1.15rem;
+            min-height: 120px;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+            background-color: rgba(66, 165, 245, 0.1);
+            padding: 0.1em 0.3em;
+            border-radius: 3px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+
+        .add-btn, .clear-btn, .refresh-btn {
+            flex: 1;
+            padding: 1rem;
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.7rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .add-btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(30, 136, 229, 0.25);
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, var(--danger), #f87171);
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(135deg, var(--danger-dark), var(--danger));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(229, 57, 53, 0.25);
+        }
+        
+        .refresh-btn {
+            background: linear-gradient(135deg, #7e57c2, #9575cd);
+        }
+
+        .refresh-btn:hover {
+            background: linear-gradient(135deg, #673ab7, #7e57c2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(126, 87, 194, 0.25);
+        }
+
+        .child-tip {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            height: 20px;
+            visibility: hidden;
+            font-weight: 500;
+        }
+
+        .child-tip:not(:empty) {
+            visibility: visible;
+        }
+        
+        /* 新增年龄显示样式 */
+        .age-tip {
+            color: var(--primary);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            height: 20px;
+            font-weight: 500;
+        }
+        
+        .age-tip.child {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .error-tip {
+            color: var(--danger);
+            font-size: 0.85rem;
+            height: 20px;
+            margin-top: 5px;
+            visibility: hidden;
+            font-weight: 500;
+        }
+        .error-tip:not(:empty) {
+            visibility: visible;
+        }
+
+        .duplicate-tip {
+            color: var(--danger);
+            font-size: 0.85rem;
+            height: 20px;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        .gender-group {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 5px;
+            display: inline-flex;
+        }
+
+        .gender-option {
+            padding: 0.7rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gender-option.selected {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 6px rgba(30, 136, 229, 0.3);
+        }
+
+        .gender-option input[type="radio"] {
+            display: none;
+        }
+
+        .custom-alert {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+        }
+
+        .alert-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            min-width: 420px;
+            max-width: 90vw;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 2px solid var(--primary);
+        }
+
+        .alert-buttons {
+            margin-top: 1.8rem;
+            display: flex;
+            gap: 1.2rem;
+            justify-content: flex-end;
+        }
+
+        .alert-buttons button {
+            padding: 0.7rem 1.7rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        #alertCopy {
+            background: var(--success);
+            color: white;
+        }
+
+        #alertCopy:hover {
+            background: var(--success-dark);
+        }
+
+        #alertConfirm {
+            background: #eceff1;
+            color: var(--text);
+        }
+
+        #alertConfirm:hover {
+            background: #cfd8dc;
+        }
+
+        .error-alert {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+        }
+
+        .error-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            min-width: 350px;
+            max-width: 90vw;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 2px solid var(--danger);
+        }
+
+        .error-buttons {
+            margin-top: 1.8rem;
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+        }
+
+        .error-buttons button {
+            padding: 0.7rem 1.7rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .error-confirm {
+            background: var(--primary);
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .error-confirm:hover {
+            background: var(--primary-dark);
+        }
+
+        .recognition-result {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .command-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+        }
+
+        .modal-content {
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            max-width: 90%;
+            width: 700px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.2);
+            border: 2px solid var(--primary);
+        }
+
+        .modal-command {
+            background: #f8fdff;
+            padding: 1.8rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            font-size: 1.2rem;
+            white-space: pre-wrap;
+            max-height: 60vh;
+            overflow-y: auto;
+            line-height: 1.6;
+            transition: all 0.2s;
+        }
+
+        .modal-command:hover {
+            background: #f0faff;
+        }
+
+        .modal-command .highlight {
+            color: var(--primary);
+            font-weight: 600;
+            background-color: rgba(66, 165, 245, 0.15);
+            padding: 0.1em 0.3em;
+            border-radius: 3px;
+        }
+        
+        .modal-command .child-tag {
+            color: #d32f2f;
+            font-weight: bold;
+            background-color: rgba(255, 0, 0, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px dashed #d32f2f;
+            margin-left: 4px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .close-modal:hover {
+            background: var(--danger-dark);
+            transform: scale(1.1);
+        }
+        
+        /* 成人信息弹窗样式 */
+        .adult-info-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+        }
+        
+        .adult-info-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            min-width: 540px;
+            max-width: 90vw;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.2);
+            border: 2px solid var(--accent);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .adult-info-header {
+            color: var(--accent-dark);
+            margin-bottom: 1.8rem;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .adult-info-item {
+            margin-bottom: 1.5rem;
+            padding: 1.2rem;
+            background: #fff9e6;
+            border-radius: 10px;
+            position: relative;
+            border: 1px solid #ffe0b2;
+        }
+        
+        .adult-info-title {
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--accent-dark);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        
+        .adult-input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .adult-input-group input {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+        }
+        
+        .adult-input-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 179, 0, 0.2);
+        }
+        
+        .adult-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.8rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .adult-btn {
+            padding: 0.9rem 1.8rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        #confirmAdultInfo {
+            background: var(--success);
+            color: white;
+        }
+
+        #confirmAdultInfo:hover {
+            background: var(--success-dark);
+            transform: translateY(-2px);
+        }
+        
+        #cancelAdultInfo {
+            background: #eceff1;
+            color: var(--text);
+        }
+
+        #cancelAdultInfo:hover {
+            background: #cfd8dc;
+            transform: translateY(-2px);
+        }
+        
+        .adult-error {
+            color: var(--danger);
+            font-size: 0.95rem;
+            margin-top: 0.8rem;
+            text-align: center;
+            height: 1.3rem;
+            font-weight: 500;
+        }
+
+        /* 成人选择样式 */
+        .adult-selection {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+        }
+        
+        .adult-selection label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        
+        .adult-selection select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #bbdefb;
+            background: white;
+        }
+        
+        .info-change-alert {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--danger);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideDown 0.5s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        @keyframes slideDown {
+            from { top: -50px; }
+            to { top: 20px; }
+        }
+
+        .copy-feedback {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 30px;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            z-index: 1000;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: #e3f2fd;
+            border-top: 1px solid #bbdefb;
+            font-size: 0.9rem;
+            color: var(--primary-dark);
+            font-weight: 500;
+        }
+        
+        .system-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            padding: 12px 15px;
+            background: #f1f8ff;
+            border-radius: 8px;
+            border: 1px dashed #bbdefb;
+        }
+        
+        /* 特殊航司规则弹窗 */
+        .rule-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10001;
+        }
+        
+        .rule-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            max-width: 90%;
+            width: 650px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.2);
+            border: 2px solid var(--accent);
+        }
+        
+        .rule-header {
+            color: var(--accent-dark);
+            margin-bottom: 1.8rem;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .rule-tip {
+            background: #fff9e6;
+            padding: 1.8rem;
+            border-radius: 10px;
+            border-left: 5px solid var(--accent);
+            margin-bottom: 1.8rem;
+            font-size: 1.15rem;
+            text-align: center;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        .rule-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.8rem;
+        }
+        
+        /* 添加成人按钮样式 */
+        #addAdultBtn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 1.2rem 0;
+            display: block;
+            width: 100%;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        #addAdultBtn:hover {
+            background: var(--success-dark);
+            transform: translateY(-2px);
+        }
+        
+        .remove-adult {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .remove-adult:hover {
+            background: var(--danger-dark);
+            transform: scale(1.1);
+        }
+        
+        .adult-info-container {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        /* 滚动条样式 */
+        .adult-info-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .adult-info-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .adult-info-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        .adult-info-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* 一键复制所有证件按钮 */
+        .copy-all-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 136, 229, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 30px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+            font-weight: 500;
+            z-index: 5;
+        }
+
+        .copy-all-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* 模态框中的复制按钮 */
+        .modal-copy-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 70px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.7rem 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .modal-copy-btn:hover {
+            background: var(--success-dark);
+            transform: translateY(-2px);
+        }
+
+        /* 旅客卡片标题 */
+        .passenger-title {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 5;
+        }
+
+        /* 旅客类型指示器 */
+        .passenger-type {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 5;
+        }
+        
+        .passenger-type.child {
+            background: var(--danger);
+        }
+        
+        /* 新增验证样式 */
+        .input-group input.error {
+            border: 2px solid #e53935;
+            background-color: rgba(229, 57, 53, 0.05);
+        }
+        
+        .validation-alert {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+        }
+        
+        .validation-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            min-width: 420px;
+            max-width: 90vw;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 2px solid #e53935;
+        }
+        
+        .validation-header {
+            color: #c62828;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .validation-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+        
+        .validation-list li {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            background: #ffebee;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .validation-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.8rem;
+        }
+        
+        #validationConfirm {
+            padding: 0.9rem 1.8rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        #validationConfirm:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .error-highlight {
+            animation: pulseError 1.5s infinite;
+        }
+        
+        @keyframes pulseError {
+            0% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(229, 57, 53, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .header h1 {
+                font-size: 1.7rem;
+            }
+            
+            .header p {
+                font-size: 0.95rem;
+            }
+            
+            .input-grid {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 1.5rem;
+            }
+            
+            .header::before {
+                font-size: 3rem;
+                right: 10px;
+            }
+            
+            .form-section {
+                padding: 1.2rem;
+            }
+            
+            .adult-input-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content, 
+            .adult-info-content,
+            .rule-content {
+                padding: 1.8rem;
+            }
+            
+            .adult-actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .rule-actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .doc-type-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .doc-tab {
+                flex: 1 0 45%;
+                padding: 0.6rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 10px;
+                background: #f5f9ff;
+            }
+            
+            .container {
+                border-radius: 8px;
+            }
+            
+            .header {
+                padding: 1.2rem;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .header::before {
+                font-size: 2.5rem;
+            }
+            
+            .text-recognizer-box {
+                padding: 1.2rem;
+                margin: 0 0.8rem 1rem;
+            }
+            
+            #textRecognizer {
+                height: 120px;
+                padding: 1rem;
+            }
+            
+            .form-section {
+                padding: 1rem;
+            }
+            
+            .passenger-card {
+                padding: 1.2rem;
+            }
+            
+            #command {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+            
+            .modal-content, 
+            .adult-info-content,
+            .rule-content {
+                padding: 1.5rem;
+                width: 95%;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+                padding: 12px;
+            }
+            
+            .copy-all-btn {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 15px;
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+        
+        /* 新增优化样式 */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.8rem;
+        }
+        
+        .airline-tip {
+            display: inline-block;
+            margin-left: 10px;
+            background: rgba(255, 179, 0, 0.1);
+            color: var(--accent-dark);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .rule-tip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+
+    </style>
+</head>
+<body>
+<div style="margin-bottom: 20px;">
+    <a href='/'>
+        <button style="padding: 10px 18px; background: var(--primary); color: white; border: none; border-radius: 30px; cursor: pointer; font-weight: 500; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <i class="fas fa-arrow-left"></i> 返回主页
+        </button>
+    </a>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1>民航指令生成系统</h1>
+        <p>✈️ 智能生成民航指令，支持身份证/护照双模式</p>
+    </div>
+
+    <div class="recognition-toggle">
+        <button id="toggleRecognizer" class="toggle-btn">
+            <i class="fas fa-chevron-down"></i> 展开文字识别区
+        </button>
+    </div>
+
+    <div class="text-recognizer-box" id="recognizerBox">
+        <h3 class="section-title"><i class="fas fa-text-height"></i> 文字识别区（自由格式粘贴）</h3>
+        <textarea 
+            id="textRecognizer"
+            placeholder="可粘贴任意格式文本，系统将自动识别：
+            
+乘机人：张珊
+身份证：371323199912020837
+航班号：EU121
+手机号：13800138000
+
+乘机人1：
+姓名:李四
+证件号码：11010119900307761X
+航班：CA235
+
+乘机人2：
+姓名 王五 身份证号码 310105198512120318
+航班 G5334"
+        ></textarea>
+        
+        <div class="recognition-actions">
+            <div>
+                <button id="parseTextBtn">
+                    <i class="fas fa-magic"></i> 智能识别
+                </button>
+                <button id="clearRecognizerBtn">
+                    <i class="fas fa-trash-alt"></i> 一键清空
+                </button>
+            </div>
+        </div>
+
+        <div class="recognition-result" id="recognitionResult"></div>
+    </div>
+
+    <div class="form-section">
+        <div class="copy-all-btn" id="copyAllBtn" style="display: none;">
+            <i class="fas fa-copy"></i> 复制所有证件信息
+        </div>
+        
+        <h3 class="section-title"><i class="fas fa-users"></i> 旅客信息填写区</h3>
+        <div class="input-grid">
+            <div class="input-group">
+                <label><i class="fas fa-plane"></i>航空公司代码 <span class="airline-tip">如：CA, CZ, MU</span></label>
+                <input type="text" id="airline" placeholder="CA" required pattern="[A-Za-z0-9]{2}">
+                <div class="error-tip"></div>
+                <div class="input-tip">格式：2位字母/数字</div>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-mobile-alt"></i>旅客手机号</label>
+                <input type="tel" id="phone" placeholder="13800138000" required pattern="1[3-9]\d{9}">
+                <div class="error-tip"></div>
+                <div class="input-tip">格式：11位手机号码</div>
+            </div>
+        </div>
+
+        <div class="passengers-container" id="passengers-container">
+            <!-- 旅客卡片将通过JavaScript动态添加 -->
+        </div>
+
+        <div class="btn-group">
+            <button class="add-btn" id="addPassengerBtn">
+                <i class="fas fa-plus"></i> 添加旅客
+            </button>
+            <button class="clear-btn" id="clearAllBtn">
+                <i class="fas fa-trash-alt"></i> 一键清空
+            </button>
+            <button class="refresh-btn" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> 刷新页面
+            </button>
+        </div>
+
+        <h3 class="section-title"><i class="fas fa-terminal"></i> 生成指令</h3>
+        <div id="output">
+            <pre id="command">请填写旅客信息</pre>
+        </div>
+        
+        <div class="system-info">
+            <i class="fas fa-info-circle"></i>
+            提示：智能识别后，填写手机号即可自动生成指令弹窗
+        </div>
+    </div>
+    
+    <div class="status-bar">
+        <div id="passengerCount">旅客数量: 0</div>
+        <div id="childCount">儿童旅客: 0</div>
+        <div id="statusMessage">状态: 就绪</div>
+    </div>
+</div>
+
+<!-- 验证错误弹窗 -->
+<div id="validationAlert" class="validation-alert">
+    <div class="validation-content">
+        <div class="validation-header">
+            <i class="fas fa-exclamation-circle"></i>
+            <h3>表单验证错误</h3>
+        </div>
+        <p>请修正以下问题后重新提交：</p>
+        <ul class="validation-list" id="validationErrorList"></ul>
+        <div class="validation-actions">
+            <button id="validationConfirm">确定</button>
+        </div>
+    </div>
+</div>
+
+<div class="info-change-alert" id="infoChangeAlert">
+    <i class="fas fa-exclamation-triangle"></i> 旅客信息已变更，需要重新填写成人票号信息
+</div>
+
+<div class="copy-feedback" id="copyFeedback"></div>
+
+<div id="customAlert" class="custom-alert">
+    <div class="alert-content">
+        <div id="alertMessage" style="line-height: 1.5; white-space: pre-wrap;"></div>
+        <div class="alert-buttons">
+            <button id="alertCopy">使用备注</button>
+            <button id="alertConfirm">保持原样</button>
+        </div>
+    </div>
+</div>
+
+<div id="errorAlert" class="error-alert">
+    <div class="error-content">
+        <div id="errorMessage"></div>
+        <div class="error-buttons">
+            <button id="errorConfirm" class="error-confirm">确定</button>
+        </div>
+    </div>
+</div>
+
+<div id="commandModal" class="command-modal">
+    <div class="modal-content">
+        <button class="close-modal">×</button>
+        <button class="modal-copy-btn" id="modalCopyBtn">
+            <i class="fas fa-copy"></i> 复制指令
+        </button>
+        <h3 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-plane"></i> 生成的民航指令
+        </h3>
+        <div class="modal-command" id="modalCommand"></div>
+        <p style="color: var(--text-muted); margin-top: 1.2rem; text-align: center; font-size: 0.95rem;">
+            点击指令内容或上方复制按钮即可复制
+        </p>
+    </div>
+</div>
+
+<!-- 新增成人信息弹窗 -->
+<div id="adultInfoModal" class="adult-info-modal">
+    <div class="adult-info-content">
+        <div class="adult-info-header">
+            <h3><i class="fas fa-child"></i> 儿童旅客需关联成人票号</h3>
+            <p id="adultInfoDesc">请为每位儿童旅客输入成人票号和成人身份证号码</p>
+        </div>
+        
+        <div class="adult-info-container" id="adultInfoContainer"></div>
+        
+        <div style="text-align:center; margin:15px 0">
+            <button id="addAdultBtn" class="add-btn">
+                <i class="fas fa-plus-circle"></i> 添加成人信息
+            </button>
+        </div>
+        
+        <div class="adult-error" id="adultError"></div>
+        
+        <div class="adult-actions">
+            <button id="confirmAdultInfo" class="adult-btn">
+                <i class="fas fa-check"></i> 确认信息
+            </button>
+            <button id="cancelAdultInfo" class="adult-btn">
+                <i class="fas fa-times"></i> 取消
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 特殊航司规则弹窗 -->
+<div id="airlineRuleModal" class="rule-modal">
+    <div class="rule-content">
+        <button class="close-modal">×</button>
+        <div class="rule-header">
+            <h3><i class="fas fa-exclamation-circle"></i> 航司儿童备注规则提示</h3>
+        </div>
+        <div class="rule-tip" id="airlineRuleTip"></div>
+        <h3 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-terminal"></i> 生成的民航指令
+        </h3>
+        <div class="modal-command" id="ruleModalCommand"></div>
+        <div class="rule-actions">
+            <button id="copyRuleCommand" class="add-btn">
+                <i class="fas fa-copy"></i> 复制指令
+            </button>
+            <button id="closeRuleModal" class="clear-btn">
+                <i class="fas fa-times"></i> 关闭
+            </button>
+        </div>
+    </div>
+</div>
+
+<template id="passenger-template">
+    <div class="passenger-card">
+        <div class="passenger-title">旅客 <span class="passenger-index">1</span></div>
+        <div class="passenger-type">成人</div>
+        <button class="remove-btn">×</button>
+        <div class="doc-type-tabs">
+            <div class="doc-tab active" data-type="idCard">身份证</div>
+            <div class="doc-tab" data-type="passport">护照</div>
+        </div>
+
+        <div class="doc-section idCard-section active">
+            <div class="input-group">
+                <label><i class="fas fa-user"></i>旅客姓名</label>
+                <input type="text" class="id-name" required>
+                <button class="copy-btn" data-copy="name">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-id-card"></i>身份证号</label>
+                <input type="text" class="id-number" required>
+                <button class="copy-btn" data-copy="id">
+                    <i class="fas fa-copy"></i>
+                </button>
+                <!-- 新增年龄显示区域 -->
+                <div class="age-tip"></div>
+                <div class="child-tip"></div>
+                <div class="error-tip"></div>
+                <div class="duplicate-tip"></div>
+            </div>
+        </div>
+
+        <div class="doc-section passport-section">
+            <div class="input-grid">
+                <div class="input-group">
+                    <label><i class="fas fa-passport"></i>证件类型</label>
+                    <select class="doc-type-select">
+                        <option value="P">护照</option>
+                        <option value="A">港澳居民来往内地通行证</option>
+                        <option value="A">台湾居民来往大陆通行证</option>
+                        <option value="A">港澳通行证</option>
+                        <option value="A">大陆居民来往台湾通行证</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-user"></i>英文姓名</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                        <input type="text" class="surname" placeholder="姓（拼音）" required>
+                        <input type="text" class="givenname" placeholder="名（拼音）" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-passport"></i>证件号码</label>
+                    <input type="text" class="passport-number" required>
+                    <div class="error-tip"></div>
+                    <div class="duplicate-tip"></div>
+                </div>
+            </div>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label><i class="fas fa-calendar-day"></i>出生日期</label>
+                    <input type="text" class="birth-date" placeholder="YYYYMMDD 或 YYYY-MM-DD" required>
+                    <div class="age-tip"></div>
+                    <div class="child-tip"></div>
+                    <div class="error-tip"></div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-calendar-day"></i>有效期</label>
+                    <input type="text" class="expiry-date" placeholder="YYYYMMDD 或 YYYY-MM-DD" required>
+                    <div class="error-tip"></div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-flag"></i>国籍</label>
+                    <input type="text" class="nationality" value="中国" required>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-globe"></i>签发地</label>
+                    <input type="text" class="issuing-country" value="中国" required>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-venus-mars"></i>性别</label>
+                    <div class="gender-group">
+                        <label class="gender-option selected">
+                            <input type="radio" name="gender" value="M" checked> 男
+                        </label>
+                        <label class="gender-option">
+                            <input type="radio" name="gender" value="F"> 女
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 调换了成人身份证和票号的顺序 -->
+<template id="adult-template">
+    <div class="adult-info-item">
+        <button class="remove-adult">×</button>
+        <div class="adult-info-title">
+            <i class="fas fa-user"></i> 成人 <span class="adult-index"></span>
+        </div>
+        <div class="adult-input-group">
+            <div>
+                <label>成人身份证号</label>
+                <input type="text" class="adult-id" placeholder="成人身份证号码" required>
+                <div class="error-tip" style="font-size:0.85rem; color:var(--danger);"></div>
+            </div>
+            <div>
+                <label>成人票号</label>
+                <input type="text" class="adult-ticket" placeholder="成人票号" required>
+                <div class="error-tip" style="font-size:0.85rem; color:var(--danger);"></div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const countryCodeMap = {
+            '中国': 'CN', '中國': 'CN', 'china': 'CN',
+            '中国香港': 'HK', '香港': 'HK', 'hong kong': 'HK',
+            '中国台湾': 'TW', '台灣': 'TW', 'taiwan': 'TW',
+            '中国澳门': 'MO', '澳門': 'MO', 'macao': 'MO',
+            '美国': 'US', '美國': 'US', 'usa': 'US',
+            '日本': 'JP', 'japan': 'JP',
+            '韩国': 'KR', '韓國': 'KR', 'korea': 'KR',
+            '英国': 'GB', '英國': 'GB', 'uk': 'GB',
+            '法国': 'FR', 'france': 'FR',
+            '德国': 'DE', 'germany': 'DE',
+            '加拿大': 'CA', 'canada': 'CA',
+            '澳大利亚': 'AU', 'australia': 'AU',
+            '新西兰': 'NZ', 'new zealand': 'NZ',
+            '新加坡': 'SG', 'singapore': 'SG',
+            '马来西亚': 'MY', 'malaysia': 'MY',
+            '泰国': 'TH', 'thailand': 'TH',
+            '越南': 'VN', 'vietnam': 'VN',
+            '印度': 'IN', 'india': 'IN',
+            '俄罗斯': 'RU', 'russia': 'RU',
+            '意大利': 'IT', 'italy': 'IT',
+            '西班牙': 'ES', 'spain': 'ES',
+            '荷兰': 'NL', 'netherlands': 'NL',
+            '瑞士': 'CH', 'switzerland': 'CH',
+            '瑞典': 'SE', 'sweden': 'SE',
+            '丹麦': 'DK', 'denmark': 'DK',
+            '挪威': 'NO', 'norway': 'NO',
+            '芬兰': 'FI', 'finland': 'FI',
+            '比利时': 'BE', 'belgium': 'BE',
+            '奥地利': 'AT', 'austria': 'AT',
+            '葡萄牙': 'PT', 'portugal': 'PT',
+            '希腊': 'GR', 'greece': 'GR',
+            '土耳其': 'TR', 'turkey': 'TR',
+            '巴西': 'BR', 'brazil': 'BR',
+            '阿根廷': 'AR', 'argentina': 'AR',
+            '墨西哥': 'MX', 'mexico': 'MX',
+            '南非': 'ZA', 'south africa': 'ZA',
+            '埃及': 'EG', 'egypt': 'EG',
+            '阿联酋': 'AE', 'united arab emirates': 'AE',
+            '沙特阿拉伯': 'SA', 'saudi arabia': 'SA',
+            '印度尼西亚': 'ID', 'indonesia': 'ID',
+            '菲律宾': 'PH', 'philippines': 'PH',
+            '巴基斯坦': 'PK', 'pakistan': 'PK',
+            '孟加拉国': 'BD', 'bangladesh': 'BD',
+            '尼日利亚': 'NG', 'nigeria': 'NG',
+            '肯尼亚': 'KE', 'kenya': 'KE',
+            '摩洛哥': 'MA', 'morocco': 'MA',
+            '哥伦比亚': 'CO', 'colombia': 'CO',
+            '智利': 'CL', 'chile': 'CL',
+            '秘鲁': 'PE', 'peru': 'PE',
+            '委内瑞拉': 'VE', 'venezuela': 'VE',
+            '古巴': 'CU', 'cuba': 'CU',
+            '牙买加': 'JM', 'jamaica': 'JM',
+            '巴拿马': 'PA', 'panama': 'PA',
+            '哥斯达黎加': 'CR', 'costarica': 'CR',
+            '乌拉圭': 'UY', 'uruguay': 'UY',
+            '巴拉圭': 'PY', 'paraguay': 'PY',
+            '厄瓜多尔': 'EC', 'ecuador': 'EC',
+            '玻利维亚': 'BO', 'bolivia': 'BO',
+            '冰岛': 'IS', 'iceland': 'IS',
+            '爱尔兰': 'IE', 'ireland': 'IE',
+            '波兰': 'PL', 'poland': 'PL',
+            '捷克': 'CZ', 'czechrepublic': 'CZ',
+            '匈牙利': 'HU', 'hungary': 'HU',
+            '罗马尼亚': 'RO', 'romania': 'RO',
+            '保加利亚': 'BG', 'bulgaria': 'BG',
+            '克罗地亚': 'HR', 'croatia': 'HR',
+            '塞尔维亚': 'RS', 'serbia': 'RS',
+            '斯洛伐克': 'SK', 'slovakia': 'SK',
+            '斯洛文尼亚': 'SI', 'slovenia': 'SI',
+            '爱沙尼亚': 'EE', 'estonia': 'EE',
+            '拉脱维亚': 'LV', 'latvia': 'LV',
+            '立陶宛': 'LT', 'lithuania': 'LT',
+            '乌克兰': 'UA', 'ukraine': 'UA',
+            '白俄罗斯': 'BY', 'belarus': 'BY',
+            '哈萨克斯坦': 'KZ', 'kazakhstan': 'KZ',
+            '乌兹别克斯坦': 'UZ', 'uzbekistan': 'UZ',
+            '吉尔吉斯斯坦': 'KG', 'kyrgyzstan': 'KG',
+            '塔吉克斯坦': 'TJ', 'tajikistan': 'TJ',
+            '土库曼斯坦': 'TM', 'turkmenistan': 'TM',
+            '阿富汗': 'AF', 'afghanistan': 'AF',
+            '伊拉克': 'IQ', 'iraq': 'IQ',
+            '伊朗': 'IR', 'iran': 'IR',
+            '以色列': 'IL', 'israel': 'IL',
+            '约旦': 'JO', 'jordan': 'JO',
+            '黎巴嫩': 'LB', 'lebanon': 'LB',
+            '阿曼': 'OM', 'oman': 'OM',
+            '卡塔尔': 'QA', 'qatar': 'QA',
+            '科威特': 'KW', 'kuwait': 'KW',
+            '巴林': 'BH', 'bahrain': 'BH',
+            '也门': 'YE', 'yemen': 'YE',
+            '叙利亚': 'SY', 'syria': 'SY',
+            '塞浦路斯': 'CY', 'cyprus': 'CY',
+            '马尔代夫': 'MV', 'maldives': 'MV',
+            '斯里兰卡': 'LK', 'srilanka': 'LK',
+            '尼泊尔': 'NP', 'nepal': 'NP',
+            '不丹': 'BT', 'bhutan': 'BT',
+            '缅甸': 'MM', 'myanmar': 'MM',
+            '老挝': 'LA', 'laos': 'LA',
+            '柬埔寨': 'KH', 'cambodia': 'KH',
+            '文莱': 'BN', 'brunei': 'BN',
+            '东帝汶': 'TL', 'timor-leste': 'TL',
+            '蒙古': 'MN', 'mongolia': 'MN',
+            '朝鲜': 'KP', 'northkorea': 'KP',
+            '斐济': 'FJ', 'fiji': 'FJ',
+            '巴布亚新几内亚': 'PG', 'papuanewguinea': 'PG',
+            '所罗门群岛': 'SB', 'solomonislands': 'SB',
+            '瓦努阿图': 'VU', 'vanuatu': 'VU',
+            '萨摩亚': 'WS', 'samoa': 'WS',
+            '汤加': 'TO', 'tonga': 'TO',
+            '基里巴斯': 'KI', 'kiribati': 'KI',
+            '马绍尔群岛': 'MH', 'marshallislands': 'MH',
+            '密克罗尼西亚': 'FM', 'micronesia': 'FM',
+            '帕劳': 'PW', 'palau': 'PW',
+            '瑙鲁': 'NR', 'nauru': 'NR',
+            '图瓦卢': 'TV', 'tuvalu': 'TV',
+            '库克群岛': 'CK', 'cookislands': 'CK',
+            '纽埃': 'NU', 'niue': 'NU',
+            '托克劳': 'TK', 'tokelau': 'TK',
+            '关岛': 'GU', 'guam': 'GU',
+            '北马里亚纳群岛': 'MP', 'northernmarianaislands': 'MP',
+            '波多黎各': 'PR', 'puertorico': 'PR',
+            '美属维尔京群岛': 'VI', 'u.s.virginislands': 'VI',
+            '英属维尔京群岛': 'VG', 'britishvirginislands': 'VG',
+            '开曼群岛': 'KY', 'caymanislands': 'KY',
+            '百慕大': 'BM', 'bermuda': 'BM',
+            '格陵兰': 'GL', 'greenland': 'GL',
+            '法属波利尼西亚': 'PF', 'frenchpolynesia': 'PF',
+            '新喀里多尼亚': 'NC', 'newcaledonia': 'NC',
+            '瓦利斯和富图纳': 'WF', 'wallisandfutuna': 'WF',
+            '马约特': 'YT', 'mayotte': 'YT',
+            '留尼汪': 'RE', 'réunion': 'RE',
+            '圣皮埃尔和密克隆': 'PM', 'saintpierreandmiquelon': 'PM',
+            '法属圭亚那': 'GF', 'frenchguiana': 'GF',
+            '法属南部领地': 'TF', 'frenchsouthernterritories': 'TF',
+            '南极洲': 'AQ', 'antarctica': 'AQ'
+        };
+
+        const monthAbbr = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+        let passengerCount = 0;
+        let currentPassengerIndex = 1;
+        let hasUsedSmartRecognition = false;
+        let originalAirline = '';
+        let originalPassengers = {};
+        
+        // 航司儿童备注规则 - 更新CA和CZ航司规则
+        const airlineMap = {
+            'CZ': { type: 'ADT', format: '成人票号/旅客序号' }, // 更新为ADT类型
+            'ZH': { type: 'ADT', format: '成人票号' },
+            '3U': { type: 'ADT', format: '成人票号' },
+            'EU': { type: 'ADT', format: '成人票号' },
+            'KN': { type: 'ADT', format: '成人票号' },
+            'CA': { type: 'CONTACT', text: '请联系航司互相备注成人儿童' }, // 更新CA规则
+            'GX': { type: 'PLATFORM', text: '请使用代理人平台客票查询功能备注儿童' },
+            '8L': { type: 'PLATFORM', text: '请使用代理人平台客票查询功能备注儿童' },
+            'PN': { type: 'PLATFORM', text: '请使用代理人平台客票查询功能备注儿童' },
+            'HU': { type: 'PLATFORM', text: '请使用代理人平台客票查询功能备注儿童' },
+            'CN': { type: 'PLATFORM', text: '请使用代理人平台客票查询功能备注儿童' },
+            'MF': { type: 'WEBSITE', text: 'MF航司儿童客票请在官网预订' }
+        };
+        
+        // 特殊航司列表
+        const specialAirlines = ['CA', 'GX', '8L', 'PN', 'HU', 'CN', 'MF'];
+        
+        // 航司规则提示文本 - 更新CA和CZ提示
+        const airlineRuleTips = {
+            'CZ': 'CZ航空：儿童客票使用OSI CZ ADTN指令备注成人票号/旅客序号',
+            'GX': 'GX航空：请使用代理人平台客票查询功能备注儿童',
+            '8L': '8L航空：请使用代理人平台客票查询功能备注儿童',
+            'PN': 'PN航空：请使用代理人平台客票查询功能备注儿童',
+            'HU': 'HU航空：请使用代理人平台客票查询功能备注儿童',
+            'CN': 'CN航空：请使用代理人平台客票查询功能备注儿童',
+            'MF': 'MF航空：儿童客票请在官网预订',
+            'CA': 'CA航空：请联系航司互相备注成人儿童', // 更新CA提示
+            'KN': 'KN航空：儿童客票使用OSI KN ADT指令备注成人票号'
+        };
+        
+        // 存储成人票号信息
+        let adultInfo = []; 
+        let currentChildCount = 0;
+        let hasInfoChanged = false;
+
+        // 识别区折叠功能
+        const toggleRecognizerBtn = document.getElementById('toggleRecognizer');
+        const recognizerBox = document.getElementById('recognizerBox');
+        let isRecognizerOpen = false;
+
+        toggleRecognizerBtn.addEventListener('click', () => {
+            isRecognizerOpen = !isRecognizerOpen;
+            recognizerBox.style.display = isRecognizerOpen ? 'block' : 'none';
+            toggleRecognizerBtn.innerHTML = isRecognizerOpen ? 
+                '<i class="fas fa-chevron-up"></i> 收起文字识别区' : 
+                '<i class="fas fa-chevron-down"></i> 展开文字识别区';
+        });
+
+        // 一键清空识别区
+        document.getElementById('clearRecognizerBtn').addEventListener('click', () => {
+            document.getElementById('textRecognizer').value = '';
+        });
+
+        // 页面刷新按钮
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            location.reload();
+        });
+
+        // 优化后的文本解析功能
+        document.getElementById('parseTextBtn').addEventListener('click', function() {
+            const text = document.getElementById('textRecognizer').value;
+            
+            // 航空公司代码识别
+            const airlinePattern = /(?:航班号|航班|Flight|Airline)[:：\s]*([A-Za-z0-9]{2})/i;
+            const airlineMatch = airlinePattern.exec(text);
+            const airlineCode = airlineMatch ? airlineMatch[1].toUpperCase() : '';
+            
+            // 更新航空公司代码
+            if (airlineCode) {
+                document.getElementById('airline').value = airlineCode;
+                originalAirline = airlineCode;
+            }
+
+            // 手机号识别
+            const phonePattern = /(?:手机|电话|联系方式)[:：\s]*(\d{11})/i;
+            const phoneMatch = phonePattern.exec(text);
+            if (phoneMatch) {
+                document.getElementById('phone').value = phoneMatch[1];
+                document.getElementById('phone').dispatchEvent(new Event('input'));
+            }
+
+            // 增强版正则（支持所有分隔符和跨行匹配）
+            const pattern = /(?:乘机人|乘机人\d+|姓名|乘机人N)[:：\s]*([\u4e00-\u9fa5·]{2,})[\s\S]*?(?:身份证|身份证号码|证件号码)[:：\s]*(\d{17}[\dXx])/gi;
+            const matches = [];
+            
+            let match;
+            while ((match = pattern.exec(text)) !== null) {
+                matches.push({
+                    name: match[1].replace(/\s/g, '').trim(),
+                    id: match[2].toUpperCase().replace(/\s/g, '')
+                });
+            }
+
+            // 清空现有旅客
+            const container = document.getElementById('passengers-container');
+            container.innerHTML = '';
+            
+            // 重置旅客序号
+            currentPassengerIndex = 1;
+            
+            // 批量创建旅客
+            matches.forEach((item) => {
+                const card = createPassengerCard();
+                
+                // 填充数据
+                card.querySelector('.id-name').value = item.name;
+                card.querySelector('.id-number').value = item.id;
+                
+                // 计算原始儿童状态
+                const age = calculateAgeFromID(item.id);
+                const isChild = age < 12;
+                
+                // 保存原始信息
+                const pid = card.dataset.pid;
+                originalPassengers[pid] = {
+                    name: item.name,
+                    id: item.id,
+                    isChild: isChild
+                };
+                
+                // 触发验证
+                card.querySelector('.id-number').dispatchEvent(new Event('input'));
+                
+                container.appendChild(card);
+            });
+
+            if(matches.length === 0) {
+                alert('未识别到有效信息！\n支持以下格式：\n乘机人：张珊\n身份证：371323199912020837\n航班号：EU121');
+            } else {
+                // 显示成功识别的旅客数量
+                const resultElement = document.getElementById('recognitionResult');
+                resultElement.textContent = `成功识别 ${matches.length} 位旅客`;
+                resultElement.style.display = 'block';
+
+                setTimeout(() => {
+                    resultElement.style.display = 'none';
+                }, 3000);
+
+                // 设置标志位表示使用了智能识别
+                hasUsedSmartRecognition = true;
+                
+                // 更新状态栏
+                updateStatusBar();
+                
+                generateCommand();
+                
+                // 如果手机号有效，自动显示指令弹窗
+                setTimeout(() => {
+                    if (isPhoneValid()) {
+                        showCommandModal();
+                    }
+                }, 300);
+                
+                // 显示一键复制按钮
+                document.getElementById('copyAllBtn').style.display = 'flex';
+                
+                document.getElementById('phone').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        });
+
+        // 验证手机号是否有效
+        function isPhoneValid() {
+            const phone = document.getElementById('phone').value.trim();
+            return /^1[3-9]\d{9}$/.test(phone);
+        }
+
+        // 重复证件检查函数
+        function checkDuplicateDocuments(currentCard) {
+            const allCards = document.querySelectorAll('.passenger-card');
+            const currentType = currentCard.querySelector('.doc-tab.active').dataset.type;
+            const currentDocNumber = currentType === 'idCard' ? 
+                currentCard.querySelector('.id-number').value.trim() :
+                currentCard.querySelector('.passport-number').value.trim();
+
+            let isDuplicate = false;
+            let duplicates = [];
+
+            allCards.forEach(card => {
+                if(card === currentCard) return;
+                
+                const type = card.querySelector('.doc-tab.active').dataset.type;
+                const docNumber = type === 'idCard' ? 
+                    card.querySelector('.id-number').value.trim() :
+                    card.querySelector('.passport-number').value.trim();
+                
+                if(docNumber && docNumber === currentDocNumber) {
+                    isDuplicate = true;
+                    duplicates.push(card);
+                }
+            });
+
+            if (isDuplicate) {
+                showDuplicateError(currentCard, duplicates);
+            }
+
+            return isDuplicate;
+        }
+
+        // 显示重复证件错误弹窗
+        function showDuplicateError(currentCard, duplicates) {
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            let message = '发现重复证件号码：\n';
+            message += `当前旅客：${currentCard.querySelector('.id-name').value || '未命名'} - ${currentCard.querySelector('.id-number').value}\n`;
+            message += '重复的旅客：\n';
+            
+            duplicates.forEach(card => {
+                message += `- ${card.querySelector('.id-name').value || '未命名'} - ${card.querySelector('.id-number').value}\n`;
+            });
+            
+            errorMessage.textContent = message;
+            errorAlert.style.display = 'block';
+        }
+
+        // 输入验证函数
+        function validateInput(input, pattern, errorMsg) {
+            const isValid = new RegExp(pattern).test(input.value);
+            input.parentNode.querySelector('.error-tip').textContent = isValid ? '' : errorMsg;
+            return isValid;
+        }
+
+        // 航空公司验证
+        document.getElementById('airline').addEventListener('input', function(e) {
+            validateInput(this, '^[A-Za-z0-9]{2}$', '需2位字母/数字组合');
+            checkAirlineChange();
+            generateCommand();
+        });
+        
+        // 检查航空公司是否变更
+        function checkAirlineChange() {
+            const currentAirline = document.getElementById('airline').value.trim().toUpperCase();
+            
+            // 首次设置航空公司
+            if (!originalAirline && currentAirline) {
+                originalAirline = currentAirline;
+                return;
+            }
+            
+            // 航空公司变更且有儿童旅客
+            if (originalAirline && currentAirline !== originalAirline) {
+                const hasChild = Array.from(document.querySelectorAll('.passenger-card')).some(card => {
+                    const idInput = card.querySelector('.id-number');
+                    if (idInput && idInput.value) {
+                        const age = calculateAgeFromID(idInput.value);
+                        return age < 12;
+                    }
+                    return false;
+                });
+                
+                if (hasChild) {
+                    clearAdultInfo();
+                    hasInfoChanged = true;
+                    updateOutputStatus();
+                    
+                    // 显示变更提醒
+                    document.getElementById('infoChangeAlert').style.display = 'flex';
+                    setTimeout(() => {
+                        document.getElementById('infoChangeAlert').style.display = 'none';
+                    }, 3000);
+                }
+            }
+        }
+        
+        // 手机号验证
+        document.getElementById('phone').addEventListener('input', function(e) {
+            validateInput(this, '^1[3-9]\\d{9}$', '需有效手机号码');
+            generateCommand();
+            
+            // 如果是智能识别后填写手机号，自动弹出指令弹窗
+            if (hasUsedSmartRecognition && isPhoneValid()) {
+                setTimeout(() => {
+                    showCommandModal();
+                }, 300);
+            }
+        });
+
+        // 创建旅客卡片
+        function createPassengerCard() {
+            const template = document.getElementById('passenger-template');
+            const clone = document.importNode(template.content, true);
+            const card = clone.querySelector('.passenger-card');
+            const pid = `passenger-${++passengerCount}`;
+
+            card.dataset.pid = pid;
+            
+            // 更新旅客序号
+            card.querySelector('.passenger-index').textContent = currentPassengerIndex++;
+            
+            // 重新绑定性别单选按钮的name属性
+            const radios = card.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => {
+                radio.name = `gender-${pid}`;
+            });
+
+            // 身份证验证
+            const idNumberInput = card.querySelector('.id-number');
+            idNumberInput.addEventListener('input', function() {
+                validateInput(this, '^\\d{17}[\\dXx]$', '需有效18位身份证号');
+                const isDuplicate = checkDuplicateDocuments(card);
+                this.parentNode.querySelector('.duplicate-tip').textContent = 
+                    isDuplicate ? '⚠️ 证件号码重复' : '';
+                
+                // 检查信息是否变更
+                const pid = card.dataset.pid;
+                const original = originalPassengers[pid];
+                const newAge = calculateAgeFromID(this.value);
+                const newIsChild = newAge < 12;
+                
+                // 更新旅客类型指示器
+                const typeIndicator = card.querySelector('.passenger-type');
+                if (newIsChild) {
+                    typeIndicator.textContent = '儿童';
+                    typeIndicator.classList.add('child');
+                } else {
+                    typeIndicator.textContent = '成人';
+                    typeIndicator.classList.remove('child');
+                }
+                
+                // 显示年龄信息
+                const ageTip = this.parentNode.querySelector('.age-tip');
+                const childTip = this.parentNode.querySelector('.child-tip');
+                
+                if (this.value && /^\d{17}[\dXx]$/i.test(this.value)) {
+                    ageTip.textContent = `${newIsChild ? '儿童' : '成人'}旅客（${newAge}岁）`;
+                    ageTip.className = newIsChild ? 'age-tip child' : 'age-tip';
+                    childTip.textContent = newIsChild ? '儿童旅客需关联成人票号' : '';
+                } else {
+                    ageTip.textContent = '';
+                    childTip.textContent = '';
+                }
+                
+                // 修复点：检查是否有儿童旅客
+                const hasChild = hasChildPassenger();
+                
+                if(original && original.isChild !== undefined) {
+                    if (original.isChild !== newIsChild) {
+                        if (hasChild) {
+                            clearAdultInfo();
+                            hasInfoChanged = true;
+                            updateOutputStatus();
+                            card.classList.add('changed');
+                        } else {
+                            // 如果没有儿童了，则清除变更状态
+                            clearAdultInfo();
+                            hasInfoChanged = false;
+                            updateOutputStatus();
+                            card.classList.remove('changed');
+                        }
+                    } else {
+                        card.classList.remove('changed');
+                    }
+                }
+                
+                // 更新状态栏
+                updateStatusBar();
+                generateCommand();
+            });
+
+            // 姓名输入事件
+            const nameInput = card.querySelector('.id-name');
+            nameInput.addEventListener('input', generateCommand);
+
+            // 护照验证
+            const passportInput = card.querySelector('.passport-number');
+            passportInput.addEventListener('input', function() {
+                validateInput(this, '^[A-Z0-9]{6,20}$', '需有效证件号码');
+                const isDuplicate = checkDuplicateDocuments(card);
+                this.parentNode.querySelector('.duplicate-tip').textContent = 
+                    isDuplicate ? '⚠️ 证件号码重复' : '';
+                generateCommand();
+            });
+            
+            // 护照模式下出生日期验证
+            const birthDateInput = card.querySelector('.birth-date');
+            birthDateInput.addEventListener('input', function() {
+                const value = this.value.trim();
+                const isValid = /^\d{4}[-\/]?\d{2}[-\/]?\d{2}$/.test(value);
+                this.parentNode.querySelector('.error-tip').textContent = isValid ? '' : '格式: YYYYMMDD 或 YYYY-MM-DD';
+                
+                if (isValid) {
+                    const age = calculateAge(value);
+                    const isChild = age < 12;
+                    
+                    // 更新旅客类型指示器
+                    const typeIndicator = card.querySelector('.passenger-type');
+                    if (isChild) {
+                        typeIndicator.textContent = '儿童';
+                        typeIndicator.classList.add('child');
+                    } else {
+                        typeIndicator.textContent = '成人';
+                        typeIndicator.classList.remove('child');
+                    }
+                    
+                    // 显示年龄信息
+                    const ageTip = this.parentNode.querySelector('.age-tip');
+                    const childTip = this.parentNode.querySelector('.child-tip');
+                    
+                    ageTip.textContent = `${isChild ? '儿童' : '成人'}旅客（${age}岁）`;
+                    ageTip.className = isChild ? 'age-tip child' : 'age-tip';
+                    childTip.textContent = isChild ? '儿童旅客需关联成人票号' : '';
+                    
+                    // 修复点：检查是否有儿童旅客
+                    const hasChild = hasChildPassenger();
+                    
+                    // 检查信息是否变更
+                    const pid = card.dataset.pid;
+                    const original = originalPassengers[pid];
+                    
+                    if(original && original.isChild !== undefined) {
+                        if (original.isChild !== isChild) {
+                            if (hasChild) {
+                                clearAdultInfo();
+                                hasInfoChanged = true;
+                                updateOutputStatus();
+                                card.classList.add('changed');
+                            } else {
+                                // 如果没有儿童了，则清除变更状态
+                                clearAdultInfo();
+                                hasInfoChanged = false;
+                                updateOutputStatus();
+                                card.classList.remove('changed');
+                            }
+                        } else {
+                            card.classList.remove('changed');
+                        }
+                    }
+                } else {
+                    this.parentNode.querySelector('.age-tip').textContent = '';
+                    this.parentNode.querySelector('.child-tip').textContent = '';
+                }
+                
+                generateCommand();
+            });
+
+            bindCardEvents(card);
+            bindCopyButtons(card);
+            
+            // 更新状态栏
+            updateStatusBar();
+            
+            // 初始化原始信息
+            originalPassengers[pid] = {
+                name: '',
+                id: '',
+                isChild: false
+            };
+            
+            return card;
+        }
+        
+        // 检查是否有儿童旅客
+        function hasChildPassenger() {
+            const cards = document.querySelectorAll('.passenger-card');
+            for (const card of cards) {
+                const typeIndicator = card.querySelector('.passenger-type');
+                if (typeIndicator && typeIndicator.classList.contains('child')) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function bindCardEvents(card) {
+            card.querySelector('.remove-btn').addEventListener('click', () => {
+                if(document.querySelectorAll('.passenger-card').length > 1) {
+                    // 删除原始信息记录
+                    delete originalPassengers[card.dataset.pid];
+                    card.remove();
+                    
+                    // 修复点：检查删除后是否还有儿童旅客
+                    if (hasChildPassenger()) {
+                        clearAdultInfo();
+                        hasInfoChanged = true;
+                        updateOutputStatus();
+                    } else {
+                        // 如果没有儿童了，则清除变更状态
+                        clearAdultInfo();
+                        hasInfoChanged = false;
+                        updateOutputStatus();
+                    }
+                    
+                    // 更新状态栏
+                    updateStatusBar();
+                    
+                    generateCommand();
+                }
+            });
+
+            card.querySelectorAll('.doc-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    card.querySelectorAll('.doc-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    card.querySelectorAll('.doc-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    card.querySelector(`.${tab.dataset.type}-section`).classList.add('active');
+                    generateCommand();
+                });
+            });
+
+            card.querySelectorAll('input, select').forEach(element => {
+                element.addEventListener('input', generateCommand);
+            });
+
+            card.querySelector('.doc-type-select').addEventListener('change', generateCommand);
+
+            card.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const parent = this.closest('.gender-group');
+                    parent.querySelectorAll('.gender-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.closest('.gender-option').classList.add('selected');
+                    generateCommand();
+                });
+            });
+        }
+
+        // 优化后的复制按钮绑定
+        function bindCopyButtons(card) {
+            card.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.dataset.copy;
+                    let textToCopy = '';
+                    
+                    if (type === 'name') {
+                        textToCopy = card.querySelector('.id-name').value;
+                    } else if (type === 'id') {
+                        textToCopy = card.querySelector('.id-number').value;
+                    }
+                    
+                    if (textToCopy) {
+                        navigator.clipboard.writeText(textToCopy)
+                            .then(() => {
+                                showFeedback(`${type === 'name' ? '旅客姓名' : '身份证号'}已复制`);
+                                // 添加视觉反馈
+                                this.style.backgroundColor = 'var(--primary)';
+                                this.style.color = 'white';
+                                setTimeout(() => {
+                                    this.style.backgroundColor = '';
+                                    this.style.color = '';
+                                }, 500);
+                            })
+                            .catch(err => console.error('复制失败:', err));
+                    }
+                });
+            });
+        }
+
+        document.getElementById('addPassengerBtn').addEventListener('click', () => {
+            const newCard = createPassengerCard();
+            document.getElementById('passengers-container').appendChild(newCard);
+            clearAdultInfo();
+            hasInfoChanged = true;
+            updateOutputStatus();
+            updateStatusBar();
+            generateCommand();
+        });
+
+        document.getElementById('clearAllBtn').addEventListener('click', () => {
+            const container = document.getElementById('passengers-container');
+            container.innerHTML = '';
+            container.appendChild(createPassengerCard());
+            document.getElementById('airline').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('textRecognizer').value = '';
+            adultInfo = [];
+            originalAirline = '';
+            originalPassengers = {};
+            hasInfoChanged = false;
+            updateOutputStatus();
+            generateCommand();
+            // 清空时重置标志位
+            hasUsedSmartRecognition = false;
+            document.getElementById('copyAllBtn').style.display = 'none';
+            // 重置旅客序号
+            currentPassengerIndex = 1;
+            updateStatusBar();
+        });
+
+        document.getElementById('output').addEventListener('click', copyCommand);
+
+        // 一键复制所有证件信息
+        document.getElementById('copyAllBtn').addEventListener('click', function() {
+            let allInfo = '';
+            const cards = document.querySelectorAll('.passenger-card');
+            
+            cards.forEach(card => {
+                const name = card.querySelector('.id-name')?.value || '';
+                const id = card.querySelector('.id-number')?.value || '';
+                
+                if (name && id) {
+                    allInfo += `${name}：${id}\n`;
+                }
+            });
+            
+            if (allInfo) {
+                navigator.clipboard.writeText(allInfo)
+                    .then(() => {
+                        showFeedback('所有证件信息已复制');
+                    })
+                    .catch(err => console.error('复制失败:', err));
+            }
+        });
+
+        function generateCommand() {
+            const airline = document.getElementById('airline').value.trim().toUpperCase();
+            const phone = document.getElementById('phone').value.trim();
+            let isValid = true;
+
+            // 验证手机号
+            if (!/^1[3-9]\d{9}$/.test(phone)) {
+                document.getElementById('phone').classList.add('error');
+                document.getElementById('phone').parentNode.querySelector('.error-tip').textContent = '需有效手机号码';
+                isValid = false;
+            } else {
+                document.getElementById('phone').classList.remove('error');
+                document.getElementById('phone').parentNode.querySelector('.error-tip').textContent = '';
+            }
+
+            const passengers = Array.from(document.querySelectorAll('.passenger-card')).map((card, index) => {
+                const isPassport = card.querySelector('.doc-tab[data-type="passport"]').classList.contains('active');
+                const data = { position: index + 1, isChild: false, age: 99, isDuplicate: false };
+
+                try {
+                    if(isPassport) {
+                        data.type = 'passport';
+                        data.docType = card.querySelector('.doc-type-select').value;
+                        data.surname = (card.querySelector('.surname').value || '').toUpperCase();
+                        data.givenname = (card.querySelector('.givenname').value || '').toUpperCase();
+                        data.passportNo = card.querySelector('.passport-number').value || '';
+                        data.birthDate = formatDate(card.querySelector('.birth-date').value);
+                        data.expiryDate = formatDate(card.querySelector('.expiry-date').value);
+                        data.nationality = countryCode(card.querySelector('.nationality').value);
+                        data.issuingCountry = countryCode(card.querySelector('.issuing-country').value);
+                        data.gender = card.querySelector('input[type="radio"]:checked')?.value || 'M';
+                        
+                        if (card.querySelector('.birth-date').value) {
+                            data.age = calculateAge(card.querySelector('.birth-date').value);
+                            data.isChild = data.age < 12;
+                        }
+                    } else {
+                        data.type = 'idCard';
+                        data.name = (card.querySelector('.id-name').value || '').trim();
+                        data.idNumber = (card.querySelector('.id-number').value || '').replace(/\s/g, '');
+                        data.age = calculateAgeFromID(data.idNumber);
+                        data.isChild = data.age < 12;
+                        
+                        if(!data.name || !/^\d{17}[\dXx]$/i.test(data.idNumber)) {
+                            isValid = false;
+                        }
+                    }
+                    
+                    data.isDuplicate = checkDuplicateDocuments(card);
+                    if(data.isDuplicate) isValid = false;
+
+                } catch (error) {
+                    console.error(error);
+                    isValid = false;
+                }
+                
+                return data;
+            });
+
+            updateCommandDisplay(airline, phone, passengers, isValid);
+            
+            // 新增：自动弹窗逻辑
+            if (isValid && !document.querySelector('.error-tip:not(:empty)')) {
+                const childPassengers = passengers.filter(p => p.isChild);
+                const airline = document.getElementById('airline').value.trim().toUpperCase();
+                
+                if (childPassengers.length > 0) {
+                    if (specialAirlines.includes(airline)) {
+                        showAirlineRuleModal(airline);
+                    } else if (adultInfo.length !== childPassengers.length || hasInfoChanged) {
+                        showAdultInfoModal(childPassengers);
+                    } else {
+                        showCommandModal();
+                    }
+                } else {
+                    showCommandModal();
+                }
+            }
+        }
+
+        function updateCommandDisplay(airline, phone, passengers, isValid) {
+            const isAirlineValid = /^[A-Z0-9]{2}$/.test(airline);
+            const isPhoneValid = /^1[3-9]\d{9}$/.test(phone);
+            const hasDuplicate = passengers.some(p => p.isDuplicate);
+            
+            if(!isAirlineValid || !isPhoneValid || !isValid || passengers.length === 0 || hasDuplicate) {
+                let errorMessage = '请修正以下问题：\n';
+                if(hasDuplicate) errorMessage += '- 存在重复证件号码\n';
+                if(!isAirlineValid) errorMessage += '- 无效航空公司代码\n';
+                if(!isPhoneValid) errorMessage += '- 无效手机号码\n';
+                if(passengers.length === 0) errorMessage += '- 至少需要一位旅客';
+                document.getElementById('command').textContent = errorMessage;
+                return;
+            }
+
+            let command = '';
+            command += 'NM1' + passengers.map((p, i) => {
+                const name = p.type === 'passport' ? 
+                    `${p.surname}/${p.givenname}`.replace(/\/+$/, '') : 
+                    p.name.toUpperCase();
+                    
+                const childTag = p.isChild ? '<span class="child-tag">CHD</span>' : '';
+                return `<span class="highlight">${name}</span>${childTag}${i < passengers.length-1 ? '1' : ''}`;
+            }).join('') + '\n';
+
+            passengers.forEach(p => {
+                if(p.type === 'passport') {
+                    const docCode = p.docType === 'P' ? 'P' : 'A';
+                    command += `SSR DOCS <span class="highlight">${airline}</span> HK1 ` +
+                        `<span class="highlight">${docCode}</span>/` +
+                        `<span class="highlight">${p.issuingCountry}</span>/` +
+                        `<span class="highlight">${p.passportNo}</span>/` +
+                        `<span class="highlight">${p.nationality}</span>/` +
+                        `<span class="highlight">${p.birthDate}</span>/` +
+                        `<span class="highlight">${p.gender}</span>/` +
+                        `<span class="highlight">${p.expiryDate}</span>/` +
+                        `<span class="highlight">${p.surname}</span>/` +
+                        `<span class="highlight">${p.givenname}</span>/P${p.position}\n`;
+                } else {
+                    const id = p.idNumber.toUpperCase();
+                    command += `SSR FOID <span class="highlight">${airline}</span> HK/NI` +
+                        `${id.substr(0,6)}<span class="highlight">${id.substr(6,8)}</span>${id.substr(14)}/P${p.position}\n`;
+                }
+            });
+
+            command += `OSI <span class="highlight">${airline}</span> CTCT<span class="highlight">18871875569</span>\n`;
+            
+            // 根据乘客数量生成CTCM指令
+            if (passengers.length === 1) {
+                command += `OSI <span class="highlight">${airline}</span> CTCM<span class="highlight">${phone}</span>/P1\n`;
+            } else {
+                let pnrs = '';
+                for (let i = 1; i <= passengers.length; i++) {
+                    pnrs += `/P${i}`;
+                }
+                command += `OSI <span class="highlight">${airline}</span> CTCM<span class="highlight">${phone}</span>${pnrs}\n`;
+            }
+
+            // 添加儿童备注指令
+            if (adultInfo.length > 0 && !hasInfoChanged) {
+                const airlineRule = airlineMap[airline] || { type: 'RMK' };
+                
+                // 去重处理
+                const uniqueAdultTickets = [...new Set(adultInfo.map(info => info.ticket))];
+                
+                uniqueAdultTickets.forEach(ticket => {
+                    switch (airlineRule.type) {
+                        case 'ADT': // CZ, ZH, 3U, EU, KN
+                            adultInfo.forEach(info => {
+                                if (info.ticket === ticket) {
+                                    // CZ使用特殊格式：成人票号/旅客序号
+                                    if (airline === 'CZ') {
+                                        command += `OSI ${airline} ADTN ${info.ticket}/P${info.childPosition}\n`;
+                                    } else {
+                                        // 其他航司使用普通格式
+                                        command += `OSI ${airline} ADT ${info.ticket}\n`;
+                                    }
+                                }
+                            });
+                            break;
+                        case 'RMK': // 其他航司
+                            command += `RMK ${ticket}\n`;
+                            break;
+                    }
+                });
+            }
+
+            const now = new Date();
+            now.setHours(now.getHours() + 2);
+            const timeString = now.toLocaleTimeString('en-GB', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: false 
+            }).replace(/:/g, '');
+            command += `TKTL<span class="highlight">${timeString}</span>/./PEK950\n\\`;
+
+            document.getElementById('command').innerHTML = command;
+        }
+
+        // 显示成人信息输入弹窗
+        function showAdultInfoModal(childPassengers) {
+            const container = document.getElementById('adultInfoContainer');
+            container.innerHTML = '';
+            const airline = document.getElementById('airline').value.trim().toUpperCase();
+            currentChildCount = childPassengers.length;
+            
+            // 更新弹窗描述
+            const descElement = document.getElementById('adultInfoDesc');
+            if (airline === 'CZ') {
+                descElement.textContent = "请为每位儿童旅客输入成人票号和成人身份证号码";
+            } else {
+                descElement.textContent = "请添加成人信息并输入成人票号和身份证号码";
+            }
+
+            // 默认添加一个成人信息
+            addAdultInfoSection();
+            
+            document.getElementById('adultError').textContent = '';
+            document.getElementById('adultInfoModal').style.display = 'block';
+        }
+
+        // 添加成人信息项
+        function addAdultInfoSection() {
+            const template = document.getElementById('adult-template');
+            const clone = document.importNode(template.content, true);
+            const item = clone.querySelector('.adult-info-item');
+            
+            // 设置成人序号
+            const adultCount = document.querySelectorAll('.adult-info-item').length + 1;
+            item.querySelector('.adult-index').textContent = adultCount;
+            
+            // 绑定删除按钮
+            const removeBtn = item.querySelector('.remove-adult');
+            removeBtn.addEventListener('click', function() {
+                if (document.querySelectorAll('.adult-info-item').length > 1) {
+                    item.remove();
+                }
+            });
+            
+            // 添加身份证验证
+            const adultIdInput = item.querySelector('.adult-id');
+            adultIdInput.addEventListener('input', function() {
+                validateAdultID(this);
+            });
+            
+            // 添加票号验证
+            const adultTicketInput = item.querySelector('.adult-ticket');
+            adultTicketInput.addEventListener('input', function() {
+                validateAdultTicket(this);
+            });
+            
+            document.getElementById('adultInfoContainer').appendChild(item);
+        }
+
+        // 验证成人身份证号
+        function validateAdultID(input) {
+            const id = input.value.trim();
+            const errorTip = input.nextElementSibling;
+            
+            if (!/^\d{17}[\dXx]$/.test(id)) {
+                errorTip.textContent = '需有效18位身份证号';
+                return false;
+            }
+            
+            // 计算年龄
+            const birthYear = parseInt(id.substr(6, 4));
+            const birthMonth = parseInt(id.substr(10, 2)) - 1;
+            const birthDay = parseInt(id.substr(12, 2));
+            const today = new Date();
+            let age = today.getFullYear() - birthYear;
+            
+            if (today.getMonth() < birthMonth || 
+               (today.getMonth() === birthMonth && today.getDate() < birthDay)) {
+                age--;
+            }
+            
+            if (age < 18) {
+                errorTip.textContent = '成人年龄必须满18周岁';
+                return false;
+            }
+            
+            errorTip.textContent = '';
+            return true;
+        }
+        
+        // 验证成人票号
+        function validateAdultTicket(input) {
+            const value = input.value.trim();
+            const errorTip = input.nextElementSibling;
+            
+            // 移除连字符
+            const cleanValue = value.replace(/-/g, '');
+            
+            // 检查是否为13位数字
+            if (!/^\d{13}$/.test(cleanValue)) {
+                errorTip.textContent = '需13位有效票号（可含连字符）';
+                return false;
+            }
+            
+            errorTip.textContent = '';
+            return true;
+        }
+
+        // 确认成人信息
+        document.getElementById('confirmAdultInfo').addEventListener('click', function() {
+            const airline = document.getElementById('airline').value.trim().toUpperCase();
+            adultInfo = [];
+            
+            // 验证所有成人身份证
+            let allValid = true;
+            document.querySelectorAll('.adult-id').forEach(input => {
+                if (!validateAdultID(input)) {
+                    allValid = false;
+                }
+            });
+            
+            // 验证所有成人票号
+            document.querySelectorAll('.adult-ticket').forEach(input => {
+                if (!validateAdultTicket(input)) {
+                    allValid = false;
+                }
+            });
+            
+            if (!allValid) {
+                document.getElementById('adultError').textContent = '请填写有效的成人信息';
+                return;
+            }
+            
+            // 收集所有成人信息
+            const adultItems = document.querySelectorAll('#adultInfoContainer .adult-info-item');
+            const childPositions = [];
+            
+            // 获取所有儿童旅客的位置
+            document.querySelectorAll('.passenger-card').forEach((card, index) => {
+                const typeIndicator = card.querySelector('.passenger-type');
+                if (typeIndicator && typeIndicator.classList.contains('child')) {
+                    childPositions.push(index + 1);
+                }
+            });
+            
+            adultItems.forEach((item, index) => {
+                const id = item.querySelector('.adult-id')?.value.trim();
+                const ticket = item.querySelector('.adult-ticket')?.value.trim();
+                if (id && ticket) {
+                    adultInfo.push({ 
+                        id,
+                        ticket, 
+                        childPosition: childPositions[index] || 1 
+                    });
+                }
+            });
+            
+            // 验证所有成人信息
+            if (adultInfo.length === 0) {
+                document.getElementById('adultError').textContent = '请填写至少一组成人信息';
+                return;
+            }
+            
+            document.getElementById('adultInfoModal').style.display = 'none';
+            hasInfoChanged = false;
+            updateOutputStatus();
+            
+            // 强制重新生成指令
+            setTimeout(() => {
+                generateCommand();
+                showCommandModal();
+            }, 300);
+        });
+
+        // 取消成人信息输入
+        document.getElementById('cancelAdultInfo').addEventListener('click', function() {
+            document.getElementById('adultInfoModal').style.display = 'none';
+        });
+        
+        // 清空成人信息
+        function clearAdultInfo() {
+            adultInfo = [];
+            showFeedback('成人票号信息已清空');
+            document.getElementById('infoChangeAlert').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('infoChangeAlert').style.display = 'none';
+            }, 3000);
+        }
+        
+        // 更新输出状态
+        function updateOutputStatus() {
+            const output = document.getElementById('output');
+            const airline = document.getElementById('airline').value.trim().toUpperCase();
+            
+            // 特殊航司不显示变更提示
+            if (specialAirlines.includes(airline)) {
+                output.classList.remove('changed');
+                return;
+            }
+            
+            if (hasInfoChanged) {
+                output.classList.add('changed');
+            } else {
+                output.classList.remove('changed');
+            }
+        }
+        
+        // 更新状态栏
+        function updateStatusBar() {
+            const passengers = document.querySelectorAll('.passenger-card');
+            let childCount = 0;
+            let isValid = true;
+            
+            // 检查航空公司代码
+            const airline = document.getElementById('airline').value.trim().toUpperCase();
+            const airlineValid = airline.length === 2;
+            
+            // 检查手机号
+            const phone = document.getElementById('phone').value.trim();
+            const phoneValid = phone.length === 11;
+            
+            passengers.forEach(card => {
+                // 检查当前卡片是身份证还是护照
+                const isPassport = card.querySelector('.doc-tab[data-type="passport"]').classList.contains('active');
+                
+                if (!isPassport) {
+                    // 身份证类型
+                    const nameInput = card.querySelector('.id-name');
+                    const idInput = card.querySelector('.id-number');
+                    
+                    // 检查必填字段
+                    if (!nameInput.value.trim() || !idInput.value.trim()) {
+                        isValid = false;
+                    }
+                    
+                    // 儿童计数
+                    if (idInput.value) {
+                        const age = calculateAgeFromID(idInput.value);
+                        if (age < 12) childCount++;
+                    }
+                } else {
+                    // 护照类型
+                    const surnameInput = card.querySelector('.surname');
+                    const givennameInput = card.querySelector('.givenname');
+                    const passportInput = card.querySelector('.passport-number');
+                    const birthDateInput = card.querySelector('.birth-date');
+                    
+                    // 检查必填字段
+                    if (!surnameInput.value.trim() || 
+                        !givennameInput.value.trim() || 
+                        !passportInput.value.trim()) {
+                        isValid = false;
+                    }
+                    
+                    // 儿童计数
+                    if (birthDateInput.value) {
+                        const age = calculateAge(birthDateInput.value);
+                        if (age < 12) childCount++;
+                    }
+                }
+            });
+            
+            // 如果没有任何旅客，则isValid设为false
+            if (passengers.length === 0) {
+                isValid = false;
+            }
+            
+            document.getElementById('passengerCount').textContent = `旅客数量: ${passengers.length}`;
+            document.getElementById('childCount').textContent = `儿童旅客: ${childCount}`;
+            
+            // 更新状态消息
+            let status = '就绪';
+            let statusClass = '';
+            
+            if (passengers.length > 0) {
+                if (airlineValid && phoneValid && isValid) {
+                    status = '信息完整';
+                    statusClass = 'valid';
+                } else {
+                    status = '信息不完整';
+                    statusClass = 'invalid';
+                }
+            }
+            
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = `状态: ${status}`;
+            statusElement.className = statusClass;
+        }
+
+        async function copyCommand() {
+            // 检查指令是否有效
+            const commandText = document.getElementById('command').textContent;
+            if (!commandText || commandText.includes('请填写')) return;
+            
+            // 检查是否有儿童旅客
+            const childPassengers = [];
+            document.querySelectorAll('.passenger-card').forEach(card => {
+                const isPassport = card.querySelector('.doc-tab[data-type="passport"]').classList.contains('active');
+                let isChild = false;
+                let name = '';
+
+                if (isPassport) {
+                    const birthDateInput = card.querySelector('.birth-date').value;
+                    if (birthDateInput) {
+                        const age = calculateAge(birthDateInput);
+                        isChild = age < 12;
+                    }
+                    name = (card.querySelector('.surname').value || '') + ' ' + (card.querySelector('.givenname').value || '');
+                } else {
+                    const idInput = card.querySelector('.id-number').value;
+                    if (idInput) {
+                        const age = calculateAgeFromID(idInput);
+                        isChild = age < 12;
+                    }
+                    name = card.querySelector('.id-name').value || '';
+                }
+
+                if (isChild) {
+                    childPassengers.push({ name });
+                }
+            });
+
+            const airline = document.getElementById('airline').value.trim().toUpperCase();
+            const airlineRule = airlineMap[airline] || { type: 'RMK' };
+            
+            // 特殊航司处理
+            if (specialAirlines.includes(airline) && childPassengers.length > 0) {
+                showAirlineRuleModal(airline);
+                return;
+            }
+            
+            // 其他航司处理
+            if (childPassengers.length > 0 && 
+                ['ADT', 'RMK'].includes(airlineRule.type) &&
+                (adultInfo.length !== childPassengers.length || hasInfoChanged)) {
+                showAdultInfoModal(childPassengers);
+                return;
+            }
+            
+            // 显示指令弹窗
+            showCommandModal();
+        }
+        
+        // 显示航司规则弹窗
+        function showAirlineRuleModal(airline) {
+            const ruleTip = document.getElementById('airlineRuleTip');
+            const ruleContent = airlineRuleTips[airline] || '该航司无特殊儿童备注规则';
+            
+            ruleTip.innerHTML = `<div class="rule-tip-icon"><i class="fas fa-info-circle"></i></div>${ruleContent}`;
+            document.getElementById('ruleModalCommand').innerHTML = document.getElementById('command').innerHTML;
+            document.getElementById('airlineRuleModal').style.display = 'block';
+        }
+        
+        // 显示指令弹窗
+        function showCommandModal() {
+            const modal = document.getElementById('commandModal');
+            const commandText = document.getElementById('command').innerHTML;
+            
+            if(commandText && !commandText.includes('请填写')) {
+                document.getElementById('modalCommand').innerHTML = commandText;
+                modal.style.display = 'block';
+            }
+        }
+
+        // 工具函数
+        function calculateAge(birthDate) {
+            // 移除所有非数字字符
+            const cleanDate = birthDate.replace(/[^0-9]/g, '');
+            if (cleanDate.length !== 8) return 99;
+            
+            const birthYear = parseInt(cleanDate.substr(0,4));
+            const birthMonth = parseInt(cleanDate.substr(4,2)) - 1;
+            const birthDay = parseInt(cleanDate.substr(6,2));
+            
+            const today = new Date();
+            let age = today.getFullYear() - birthYear;
+            
+            if (today.getMonth() < birthMonth || 
+               (today.getMonth() === birthMonth && today.getDate() < birthDay)) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        function calculateAgeFromID(idNumber) {
+            if (!idNumber || idNumber.length < 17) return 0;
+            
+            // 提取出生日期
+            const birthYear = parseInt(idNumber.substr(6, 4));
+            const birthMonth = parseInt(idNumber.substr(10, 2)) - 1;
+            const birthDay = parseInt(idNumber.substr(12, 2));
+            
+            // 计算当前日期
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth();
+            const currentDay = today.getDate();
+            
+            // 计算年龄
+            let age = currentYear - birthYear;
+            
+            // 如果当前月份小于出生月份，或者月份相同但日期小于出生日期，则年龄减1
+            if (currentMonth < birthMonth || 
+                (currentMonth === birthMonth && currentDay < birthDay)) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        function formatDate(dateStr) {
+            const cleanDate = dateStr.replace(/[^0-9]/g, '');
+            if (cleanDate.length !== 8) return '';
+            const year = cleanDate.substr(0,4);
+            const month = parseInt(cleanDate.substr(4,2)) - 1;
+            const day = cleanDate.substr(6,2);
+            if(month < 0 || month > 11 || day < 1 || day > 31) return '';
+            return `${day}${monthAbbr[month]}${year.substr(2)}`;
+        }
+
+        function countryCode(name) {
+            return countryCodeMap[name.trim()] || name.toUpperCase();
+        }
+
+        function showFeedback(text) {
+            const fb = document.getElementById('copyFeedback');
+            fb.textContent = text;
+            fb.style.opacity = '1';
+            setTimeout(() => fb.style.opacity = '0', 2000);
+        }
+
+        // 关闭弹窗逻辑
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.command-modal, .rule-modal').style.display = 'none';
+            });
+        });
+
+        // 点击指令内容复制
+        document.getElementById('modalCommand').addEventListener('click', function() {
+            navigator.clipboard.writeText(this.textContent)
+                .then(() => {
+                    showFeedback('✅ 指令已复制');
+                    document.getElementById('commandModal').style.display = 'none';
+                })
+                .catch(() => showFeedback('❌ 复制失败'));
+        });
+        
+        // 模态框复制按钮
+        document.getElementById('modalCopyBtn').addEventListener('click', function() {
+            const commandText = document.getElementById('modalCommand').textContent;
+            navigator.clipboard.writeText(commandText)
+                .then(() => {
+                    showFeedback('✅ 指令已复制');
+                    document.getElementById('commandModal').style.display = 'none';
+                })
+                .catch(() => showFeedback('❌ 复制失败'));
+        });
+
+        // 点击蒙层关闭
+        document.getElementById('commandModal').addEventListener('click', function(e) {
+            if(e.target === this) this.style.display = 'none';
+        });
+        
+        document.getElementById('airlineRuleModal').addEventListener('click', function(e) {
+            if(e.target === this) this.style.display = 'none';
+        });
+
+        // 错误弹窗关闭按钮
+        document.getElementById('errorConfirm').addEventListener('click', () => {
+            document.getElementById('errorAlert').style.display = 'none';
+        });
+        
+        // 特殊航司规则弹窗复制按钮
+        document.getElementById('copyRuleCommand').addEventListener('click', function() {
+            const commandText = document.getElementById('ruleModalCommand').textContent;
+            navigator.clipboard.writeText(commandText)
+                .then(() => {
+                    showFeedback('✅ 指令已复制');
+                    document.getElementById('airlineRuleModal').style.display = 'none';
+                });
+        });
+        
+        // 特殊航司规则弹窗关闭按钮
+        document.getElementById('closeRuleModal').addEventListener('click', function() {
+            document.getElementById('airlineRuleModal').style.display = 'none';
+        });
+
+        // 添加成人按钮
+        document.getElementById('addAdultBtn').addEventListener('click', function() {
+            addAdultInfoSection();
+        });
+
+        // 初始化第一个旅客
+        const firstCard = createPassengerCard();
+        document.getElementById('passengers-container').appendChild(firstCard);
+        
+        // 保存原始航空公司信息
+        originalAirline = document.getElementById('airline').value.trim().toUpperCase();
+        
+        // 保存原始旅客信息
+        const pid = firstCard.dataset.pid;
+        originalPassengers[pid] = {
+            name: '',
+            id: '',
+            isChild: false
+        };
+        
+        // 添加特殊航司提示弹窗处理
+        document.getElementById('alertConfirm').addEventListener('click', function() {
+            document.getElementById('customAlert').style.display = 'none';
+        });
+        
+        document.getElementById('alertCopy').addEventListener('click', function() {
+            document.getElementById('customAlert').style.display = 'none';
+        });
+        
+        // 验证确认按钮
+        document.getElementById('validationConfirm').addEventListener('click', function() {
+            document.getElementById('validationAlert').style.display = 'none';
+            
+            // 滚动到第一个错误字段
+            const firstError = document.querySelector('.error');
+            if (firstError) {
+                firstError.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center'
+                });
+                
+                // 高亮显示
+                firstError.classList.add('error-highlight');
+                setTimeout(() => {
+                    firstError.classList.remove('error-highlight');
+                }, 3000);
+            }
+        });
+        
+        // 初始状态栏更新
+        updateStatusBar();
+    });
+</script>
+</body>
+</html>

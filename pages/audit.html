@@ -1,0 +1,4094 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>智能订单审计系统 | 专业版</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a4b8c;
+            --primary-light: #2a5ca0;
+            --secondary-color: #2c8c6e;
+            --secondary-light: #3daa8a;
+            --success-color: #28a745;
+            --success-light: #34ce57;
+            --danger-color: #dc3545;
+            --danger-light: #e74c3c;
+            --warning-color: #ffc107;
+            --warning-light: #ffd54f;
+            --modify-color: #6f42c1;
+            --modify-light: #8c68d3;
+            --text-color: #2c3e50;
+            --text-light: #6c757d;
+            --background-color: #f8fafc;
+            --card-bg: #ffffff;
+            --card-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            --border-radius: 12px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 1.5rem;
+            font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .dashboard {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 1.75rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .input-section {
+            padding: 2.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.75rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            font-size: 0.95rem;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #E0E6ED;
+            border-radius: 10px;
+            background: #F9FAFC;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(44, 140, 110, 0.15);
+            outline: none;
+            background: #ffffff;
+        }
+
+        textarea {
+            height: 70px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a4a4a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+            padding-right: 2.5rem;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            padding: 0 2.5rem 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.9rem 1.75rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(26, 75, 140, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(26, 75, 140, 0.25);
+        }
+
+        .btn-export {
+            background: var(--success-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+        }
+
+        .btn-export:hover {
+            background: var(--success-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(40, 167, 69, 0.25);
+        }
+
+        .btn-reset {
+            background: var(--danger-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);
+        }
+
+        .btn-reset:hover {
+            background: var(--danger-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(220, 53, 69, 0.25);
+        }
+
+        .data-table-container {
+            overflow-x: auto;
+            margin: 0 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid #EDF2F7;
+            font-size: 0.95rem;
+        }
+
+        .data-table th {
+            background: #F8F9FB;
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr {
+            transition: var(--transition);
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .number-input {
+            text-align: right;
+            padding-right: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .valid { background: var(--success-color); }
+        .invalid { background: var(--danger-color); }
+
+        .error-msg {
+            color: var(--danger-color);
+            font-size: 0.85em;
+            display: inline-block;
+            margin-top: 0.25rem;
+        }
+
+        .duplicate-warning {
+            color: var(--danger-color);
+            font-size: 0.8em;
+            margin-left: 8px;
+            font-weight: 500;
+            background: rgba(220, 53, 69, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        /* 优化操作按钮样式 */
+        .action-buttons {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .tr-selected .action-buttons {
+            opacity: 1;
+        }
+
+        .action-btn {
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            transition: var(--transition);
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            white-space: nowrap;
+        }
+
+        .delete-btn {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .delete-btn:hover {
+            background: var(--danger-color);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+        }
+
+        .modify-btn {
+            background: rgba(111, 66, 193, 0.1);
+            color: var(--modify-color);
+            border: 1px solid rgba(111, 66, 193, 0.3);
+        }
+
+        .modify-btn:hover {
+            background: var(--modify-color);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(111, 66, 193, 0.2);
+        }
+
+        .btn-override {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            margin-left: 0.5rem;
+        }
+
+        .btn-override:hover {
+            background: var(--warning-color);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
+        }
+
+        /* 复选框样式 */
+        .checkbox-cell {
+            width: 40px;
+            text-align: center;
+        }
+        
+        .checkbox-cell input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .tr-selected {
+            background-color: #f0f9ff !important;
+        }
+
+        /* 优化弹窗提示样式 */
+        .alert-warning {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            padding: 1rem 1.5rem;
+            background: #fff3cd;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            color: #856404;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            border-left: 4px solid #ffc107;
+            max-width: 380px;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .alert-warning button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+            color: #856404;
+            opacity: 0.7;
+            transition: var(--transition);
+        }
+
+        .alert-warning button:hover {
+            opacity: 1;
+        }
+
+        /* 成功提示样式 */
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .custom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            width: 450px;
+            max-width: 90%;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+            animation: scaleIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 1.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 1.75rem;
+            line-height: 1;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger-color);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            margin: 1.25rem 0;
+        }
+
+        .modal-footer {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .radio-group {
+            margin: 1.25rem 0;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            margin: 0.75rem 0;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .radio-group label:hover {
+            background: #f8f9fa;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 0.75rem;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2.5rem;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--secondary-color);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            gap: 0.5rem;
+        }
+
+        .pagination button {
+            padding: 0.6rem 1.1rem;
+            border: 1px solid #E0E6ED;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .pagination button.active {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .pagination button:hover:not(.active) {
+            background: #F1F5F9;
+            transform: translateY(-2px);
+        }
+
+        .focus-visible {
+            outline: 2px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        .record-count {
+            margin: 1.5rem 0;
+            padding: 0.75rem 1.25rem;
+            background: #F8F9FB;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .passenger-info {
+            margin-top: 1.25rem;
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .passenger-info h3 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .passenger-info p {
+            margin: 0.4rem 0;
+        }
+
+        .passenger-error {
+            color: var(--danger-color);
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .recognition-section {
+            margin-bottom: 2.5rem;
+            padding: 1.75rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .new-input {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid #E0E6ED;
+            border-radius: 8px;
+            margin-bottom: 0.9rem;
+            background: #F9FAFC;
+            transition: var(--transition);
+        }
+
+        .new-input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(44, 140, 110, 0.1);
+            outline: none;
+            background: #ffffff;
+        }
+
+        .add-input-btn {
+            padding: 0.6rem 1.1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 0.9rem;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-input-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(26, 75, 140, 0.2);
+        }
+
+        .amount-input {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .format-examples {
+            margin-top: 12px;
+            padding: 1rem;
+            background-color: #f0f9ff;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .format-examples h4 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+        
+        .format-examples ul {
+            padding-left: 1.5rem;
+            margin: 0;
+        }
+        
+        .format-examples li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9em;
+            color: var(--text-light);
+        }
+        
+        .recognized-data {
+            margin-top: 1.25rem;
+            padding: 1.25rem;
+            background: #e8f5e9;
+            border-radius: 10px;
+            display: none;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .recognized-data h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+        }
+        
+        .recognition-tag {
+            display: inline-block;
+            padding: 0.3rem 0.75rem;
+            background: var(--success-color);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.85em;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .audit-recognized-data {
+            margin-top: 1.25rem;
+            padding: 1.25rem;
+            background: #e3f2fd;
+            border-radius: 10px;
+            display: none;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .audit-recognized-data h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+        }
+        
+        .audit-recognized-data p {
+            margin: 0.4rem 0;
+        }
+
+        /* 金额差异提示 */
+        .amount-mismatch {
+            position: relative;
+        }
+        
+        .amount-mismatch::after {
+            content: "!";
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: var(--danger-color);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* 优化表格内容显示 */
+        .table-cell-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            align-items: center;
+        }
+        
+        .table-cell-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.4rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--secondary-color);
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: var(--transition);
+            font-size: 0.7rem;
+        }
+        
+        .copy-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .copy-all-btn {
+            background: none;
+            border: 1px solid var(--secondary-color);
+            color: var(--secondary-color);
+            cursor: pointer;
+            padding: 3px 6px;
+            border-radius: 3px;
+            transition: var(--transition);
+            font-size: 0.7rem;
+            margin-top: 3px;
+        }
+        
+        .copy-all-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* 表格字体控制样式 */
+        .table-font-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin: 1rem 1.5rem;
+            padding: 0.75rem;
+            background: #f8f9fb;
+            border-radius: 8px;
+        }
+        
+        .table-font-btn {
+            padding: 0.4rem 0.8rem;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .table-font-btn:hover {
+            background: var(--secondary-light);
+            transform: scale(1.05);
+        }
+        
+        .table-font-btn.active {
+            background: var(--primary-color);
+        }
+        
+        /* 表格字体大小样式 - 修复版 */
+        .data-table.normal-font td {
+            font-size: 0.95rem !important;
+        }
+        
+        .data-table.large-font td {
+            font-size: 1.15rem !important;
+            font-weight: 500;
+        }
+        
+        .data-table.x-large-font td {
+            font-size: 1.3rem !important;
+            font-weight: 600;
+        }
+        
+        /* 表格中的特定元素放大 */
+        .data-table.large-font .table-cell-item,
+        .data-table.x-large-font .table-cell-item {
+            font-size: 0.95rem;
+            padding: 0.3rem 0.5rem;
+        }
+        
+        .data-table.large-font .copy-btn,
+        .data-table.x-large-font .copy-btn {
+            font-size: 0.8rem;
+            padding: 3px 6px;
+        }
+        
+        .data-table.large-font .copy-all-btn,
+        .data-table.x-large-font .copy-all-btn {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+        }
+        
+        /* 表格状态指示器放大 */
+        .data-table.large-font .status-dot,
+        .data-table.x-large-font .status-dot {
+            width: 12px;
+            height: 12px;
+        }
+        
+        .data-table.large-font .error-msg,
+        .data-table.x-large-font .error-msg {
+            font-size: 0.9em;
+        }
+        
+        .data-table.large-font .action-btn,
+        .data-table.x-large-font .action-btn {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.9rem;
+        }
+        
+        /* 金额差异提示放大 */
+        .data-table.large-font .amount-mismatch::after,
+        .data-table.x-large-font .amount-mismatch::after {
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+        }
+
+        /* 表格布局优化 */
+        .data-table td:nth-child(2) { /* 订单号列 */
+            word-break: break-word;
+            max-width: 200px;
+            min-width: 120px;
+        }
+        
+        .data-table td:nth-child(3), /* 乘机人列 */
+        .data-table td:nth-child(4) { /* 票号列 */
+            max-width: 220px;
+            min-width: 150px;
+        }
+        
+        .data-table td:nth-child(5), /* 新票总价 */
+        .data-table td:nth-child(6), /* 收款金额 */
+        .data-table td:nth-child(7) { /* 赔付金额 */
+            min-width: 100px;
+        }
+        
+        .data-table td:nth-child(8), /* 外采平台 */
+        .data-table td:nth-child(9) { /* 外采支付账号 */
+            min-width: 110px;
+        }
+        
+        .data-table td:nth-child(10) { /* 状态列 */
+            min-width: 140px;
+        }
+        
+        .data-table td:nth-child(11) { /* 操作列 */
+            min-width: 130px;
+        }
+
+        /* 新增功能样式 */
+        .batch-actions {
+            display: flex;
+            gap: 1rem;
+            margin: 0 1.5rem 1rem;
+        }
+        
+        .batch-btn {
+            padding: 0.7rem 1.2rem;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .batch-btn:hover {
+            background: var(--secondary-light);
+            transform: translateY(-2px);
+        }
+        
+        .batch-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .stats-section {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            flex: 1;
+            min-width: 180px;
+            padding: 1.25rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .total-amount {
+            color: var(--primary-color);
+        }
+        
+        .error-amount {
+            color: var(--danger-color);
+        }
+        
+        .success-amount {
+            color: var(--success-color);
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 1.5rem;
+            padding: 1rem;
+            background: #f8f9fb;
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .filter-group label {
+            font-size: 0.85rem;
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+        
+        .filter-select {
+            padding: 0.6rem;
+            border: 1px solid #E0E6ED;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        /* 金额展示放大样式 */
+        .amount-display {
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        /* 正常金额样式 - 绿色 */
+        .amount-normal {
+            color: #28a745;
+            background: #f0fff4;
+            border-color: #c3e6cb;
+        }
+
+        /* 异常金额样式 - 红色 */
+        .amount-abnormal {
+            color: #dc3545;
+            background: #fff0f0;
+            border-color: #f5c6cb;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+        }
+
+        /* 表格中金额单元格放大 */
+        .data-table td .amount-cell {
+            font-size: 1.15rem;
+            font-weight: 600;
+            padding: 0.75rem;
+            border-radius: 6px;
+            text-align: center;
+            display: inline-block;
+            min-width: 100px;
+        }
+
+        .data-table td .amount-cell.normal {
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .data-table td .amount-cell.abnormal {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            font-weight: 700;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        /* 识别区域金额样式 */
+        .recognized-amount {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 6px;
+            background: #e8f5e9;
+            border-left: 4px solid #28a745;
+        }
+
+        .recognized-amount.abnormal {
+            background: #ffeaea;
+            border-left: 4px solid #dc3545;
+            color: #dc3545;
+        }
+
+        /* 高级搜索样式 */
+        .advanced-search-section {
+            margin: 1rem 1.5rem;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-header h3 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .advanced-search-content {
+            padding: 1.5rem;
+            background: white;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .search-input, .search-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e0e6ed;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        /* 快捷键提示样式 */
+        .shortcuts-help {
+            margin: 0 1.5rem 1rem;
+            padding: 0.75rem 1rem;
+            background: #f0f9ff;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary-color);
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* 公告弹窗特殊样式 */
+        .announcement-modal .modal-content {
+            max-width: 600px;
+        }
+
+        .announcement-modal .modal-header {
+            background: linear-gradient(135deg, var(--warning-color) 0%, var(--warning-light) 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .announcement-modal .modal-body {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .announcement-modal li {
+            margin-bottom: 0.5rem;
+        }
+
+        .announcement-modal strong {
+            color: var(--primary-color);
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .header {
+                padding: 1.5rem;
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .input-section {
+                padding: 1.5rem;
+            }
+            
+            .action-bar {
+                padding: 0 1.5rem 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.8rem 1.25rem;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 0.75rem;
+            }
+            
+            .modal-content {
+                padding: 1.75rem;
+            }
+            
+            .action-buttons {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .data-table-container {
+                margin: 0 0.5rem;
+            }
+            
+            .table-font-controls {
+                margin: 1rem 0.5rem;
+            }
+            
+            /* 移动端表格列宽调整 */
+            .data-table td:nth-child(2) {
+                max-width: 150px;
+                min-width: 100px;
+            }
+            
+            .data-table td:nth-child(3),
+            .data-table td:nth-child(4) {
+                max-width: 180px;
+                min-width: 120px;
+            }
+            
+            .stats-section {
+                flex-direction: column;
+            }
+            
+            .batch-actions {
+                flex-direction: column;
+            }
+            
+            .advanced-search-content {
+                padding: 1rem;
+            }
+            
+            .search-row {
+                flex-direction: column;
+            }
+        }
+
+        /* 微调首页返回按钮 */
+        .home-button {
+            padding: 0.75rem 1.25rem;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(44, 140, 110, 0.2);
+            text-decoration: none;
+        }
+
+        .home-button:hover {
+            background: var(--secondary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(44, 140, 110, 0.25);
+        }
+        
+        /* 新增样式：校验提示 */
+        .validation-message {
+            font-size: 0.85em;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .validation-error {
+            background-color: #ffeaea;
+            color: #d63031;
+            border-left: 3px solid #d63031;
+        }
+        
+        .validation-warning {
+            background-color: #fff4e6;
+            color: #e17055;
+            border-left: 3px solid #e17055;
+        }
+        
+        .validation-success {
+            background-color: #e8f6f3;
+            color: #00b894;
+            border-left: 3px solid #00b894;
+        }
+
+        /* 最新记录高亮样式 */
+        .latest-record {
+            background-color: #e8f5e9 !important;
+            transition: background-color 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <a href='/' id='homeLink' class="home-button">
+            <i class="fas fa-arrow-left"></i> 返回主页
+        </a>
+    </div>
+    
+    <div class="dashboard">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> 订单审计管理系统</h1>
+            <div class="header-actions">
+                <button class="btn btn-export" onclick="importExcel()"><i class="fas fa-file-import"></i> 导入数据</button>
+                <button class="btn btn-export" onclick="downloadTemplate()"><i class="fas fa-download"></i> 下载模板</button>
+                <button class="btn btn-export" onclick="exportExcel()"><i class="fas fa-file-export"></i> 导出报表</button>
+                <button class="btn btn-export" onclick="backupData()"><i class="fas fa-download"></i> 备份数据</button>
+                <button class="btn btn-export" onclick="restoreData()"><i class="fas fa-upload"></i> 恢复数据</button>
+                <button class="btn btn-reset" onclick="clearAll()"><i class="fas fa-trash-alt"></i> 重置系统</button>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label><i class="fas fa-hashtag"></i> 订单编号</label>
+                <input type="text" id="orderId" placeholder="输入订单号">
+                <div id="orderIdValidation" class="validation-message"></div>
+            </div>
+            
+            <div class="input-group">
+                <label><i class="fas fa-clipboard-list"></i> 审计内容</label>
+                <textarea id="textInput" placeholder="示例：兜底出票价1860.5，收回1420.0，差价440.5&#10;或：黑屏600元，票号784-3555729642"></textarea>
+                <div id="textInputValidation" class="validation-message"></div>
+                <div class="audit-recognized-data" id="auditRecognizedData">
+                    <h4><i class="fas fa-check-circle"></i> 已识别审计信息：</h4>
+                    <p id="auditAmountInfo"></p>
+                </div>
+            </div>
+
+            <div class="recognition-section">
+                <label><i class="fas fa-text-height"></i> 文本识别区</label>
+                <textarea id="recognitionText" placeholder="粘贴需要识别的文本，例如乘机人信息..." style="height: 150px;"></textarea>
+                
+                <div class="format-examples">
+                    <h4><i class="fas fa-lightbulb"></i> 支持格式示例：</h4>
+                    <ul>
+                        <li>乘机人1：刘宏兵 身份证：321283199111180613 票号：781-2967401894</li>
+                        <li>乘机人2：付玮 身份证：140225199303170032 票号：781-2967401893</li>
+                        <li>乘机人：「张三」，票号：「784-1234567890」</li>
+                        <li>乘机人:李四,票号:784-1122334455</li>
+                    </ul>
+                </div>
+                
+                <div class="recognized-data" id="recognizedData">
+                    <h4><i class="fas fa-check-circle"></i> 已识别信息：</h4>
+                    <div id="passengerList"></div>
+                    <div id="ticketList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn btn-primary" onclick="handleSubmit()"><i class="fas fa-paper-plane"></i> 提交审计</button>
+        </div>
+
+        <!-- 数据统计卡片 -->
+        <div class="stats-section" id="statsSection">
+            <div class="stat-card">
+                <div class="stat-value total-amount" id="totalRecords">0</div>
+                <div class="stat-label">总记录数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value error-amount" id="errorRecords">0</div>
+                <div class="stat-label">异常记录</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="duplicateOrders">0</div>
+                <div class="stat-label">重复订单</div>
+            </div>
+        </div>
+
+        <!-- 筛选功能 -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <label>状态筛选</label>
+                <select class="filter-select" id="statusFilter">
+                    <option value="all">全部状态</option>
+                    <option value="valid">正常</option>
+                    <option value="invalid">异常</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>平台筛选</label>
+                <select class="filter-select" id="platformFilter">
+                    <option value="all">全部平台</option>
+                    <option value="携程">携程</option>
+                    <option value="去哪儿qunar">去哪儿qunar</option>
+                    <option value="航司官网">航司官网</option>
+                    <option value="航司电话">航司电话</option>
+                    <option value="黑屏">黑屏</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>支付方式筛选</label>
+                <select class="filter-select" id="paymentFilter">
+                    <option value="all">全部支付方式</option>
+                    <option value="支付宝">支付宝</option>
+                    <option value="出票组对公信用卡">出票组对公信用卡</option>
+                    <option value="黑屏">黑屏</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>搜索订单号</label>
+                <input type="text" class="filter-select" id="orderSearch" placeholder="输入订单号搜索">
+            </div>
+            <div class="filter-group">
+                <label>&nbsp;</label>
+                <button class="filter-select" style="background: var(--secondary-color); color: white; cursor: pointer;" onclick="applyFilters()">应用筛选</button>
+            </div>
+            <div class="filter-group">
+                <label>&nbsp;</label>
+                <button class="filter-select" style="background: var(--danger-color); color: white; cursor: pointer;" onclick="clearFilters()">清除筛选</button>
+            </div>
+        </div>
+
+        <!-- 高级搜索区域 -->
+        <div class="advanced-search-section">
+            <div class="section-header" onclick="toggleAdvancedSearch()">
+                <h3><i class="fas fa-search-plus"></i> 高级搜索</h3>
+                <span class="toggle-icon" id="advancedSearchToggle">▼</span>
+            </div>
+            <div class="advanced-search-content" id="advancedSearchContent" style="display: none;">
+                <div class="search-row">
+                    <div class="search-group">
+                        <label>金额范围搜索</label>
+                        <select id="amountField" class="search-select">
+                            <option value="newTicket">新票总价</option>
+                            <option value="receive">收款金额</option>
+                            <option value="compensation">赔付金额</option>
+                        </select>
+                        <input type="number" id="amountMin" class="search-input" placeholder="最小值" step="0.01">
+                        <input type="number" id="amountMax" class="search-input" placeholder="最大值" step="0.01">
+                    </div>
+                    
+                    <div class="search-group">
+                        <label>时间范围</label>
+                        <input type="date" id="dateFrom" class="search-input">
+                        <input type="date" id="dateTo" class="search-input">
+                    </div>
+                </div>
+                
+                <div class="search-row">
+                    <div class="search-group">
+                        <label>乘机人搜索</label>
+                        <input type="text" id="passengerSearch" class="search-input" placeholder="输入乘机人姓名">
+                    </div>
+                    
+                    <div class="search-group">
+                        <label>票号搜索</label>
+                        <input type="text" id="ticketSearch" class="search-input" placeholder="输入票号">
+                    </div>
+                </div>
+                
+                <div class="search-actions">
+                    <button class="btn btn-primary" onclick="performAdvancedSearch()">
+                        <i class="fas fa-search"></i> 执行搜索
+                    </button>
+                    <button class="btn btn-reset" onclick="clearAdvancedSearch()">
+                        <i class="fas fa-times"></i> 清除条件
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快捷键提示 -->
+        <div class="shortcuts-help">
+            <strong>快捷键提示:</strong> Ctrl+S - 提交审计 | Ctrl+F - 搜索 | Ctrl+E - 导出 | Ctrl+I - 导入 | ESC - 清除筛选
+        </div>
+
+        <div class="loading" id="loadingIndicator" style="display: none;">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="record-count" id="recordCount">
+            <i class="fas fa-database"></i> 显示 0-0 条，共 0 条记录
+        </div>
+
+        <!-- 批量操作按钮 -->
+        <div class="batch-actions">
+            <button class="batch-btn" id="batchDeleteBtn" onclick="batchDeleteRecords()" disabled>
+                <i class="fas fa-trash"></i> 批量删除选中记录
+            </button>
+            <button class="batch-btn" id="batchValidateBtn" onclick="batchValidateRecords()" disabled>
+                <i class="fas fa-check-circle"></i> 批量标记为正常
+            </button>
+            <button class="batch-btn" onclick="batchModifyPlatform()">
+                <i class="fas fa-edit"></i> 批量修改平台
+            </button>
+            <button class="batch-btn" onclick="batchModifyPayment()">
+                <i class="fas fa-credit-card"></i> 批量修改支付方式
+            </button>
+            <button class="batch-btn" onclick="selectAllRecords()">
+                <i class="fas fa-check-square"></i> 全选/取消全选
+            </button>
+            <button class="batch-btn" onclick="scrollToLatestData()">
+                <i class="fas fa-arrow-down"></i> 跳转到最新
+            </button>
+        </div>
+
+        <!-- 表格字体控制 -->
+        <div class="table-font-controls">
+            <span>表格字体大小:</span>
+            <button class="table-font-btn active" onclick="changeTableFontSize('normal')">正常</button>
+            <button class="table-font-btn" onclick="changeTableFontSize('large')">放大</button>
+            <button class="table-font-btn" onclick="changeTableFontSize('x-large')">最大</button>
+        </div>
+
+        <div class="data-table-container">
+            <table class="data-table normal-font" id="mainTable">
+                <thead>
+                    <tr>
+                        <th class="checkbox-cell">
+                            <input type="checkbox" id="selectAll">
+                        </th>
+                        <th>订单号</th>
+                        <th>兜底乘机人</th>
+                        <th>兜底新票号</th>
+                        <th>兜底票新票总价</th>
+                        <th>订单收款金额</th>
+                        <th>赔付金额</th>
+                        <th>外采平台</th>
+                        <th>外采支付账号</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="pagination" id="pagination">
+            <!-- 分页按钮将在这里动态生成 -->
+        </div>
+    </div>
+
+    <!-- 公告弹窗 -->
+    <div class="custom-modal announcement-modal" id="announcementModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span><i class="fas fa-bullhorn"></i> 系统使用公告</span>
+                <span class="modal-close" onclick="closeAnnouncementModal()">×</span>
+            </div>
+            <div class="modal-body">
+                <div style="line-height: 1.6; font-size: 0.95rem;">
+                    <p><strong>重要提示：</strong></p>
+                    <ol style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                        <li>需要依次填写 <strong>【审计内容】-【文本识别】-【订单编号】</strong></li>
+                        <li>其中 <strong>【文本识别】为非必填项</strong>，如不填写则需要手动点击提交按钮</li>
+                        <li>数据录入完成后请及时导出报表，并使用 <strong>【智能数据对比】</strong> 模块进行数据对比</li>
+                        <li><strong style="color: var(--danger-color);">严禁在有数据的情况下刷新页面</strong>，可能会导致数据丢失</li>
+                        <li>对于数据需要暂时关闭网页时，请使用 <strong>【备份数据】</strong> 功能暂存数据</li>
+                        <li>其他功能后续继续完善</li>
+                    </ol>
+                    <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 6px; border-left: 4px solid var(--warning-color);">
+                        <i class="fas fa-lightbulb" style="color: var(--warning-color);"></i>
+                        <strong>温馨提示：</strong> 此公告仅在每次重新打开页面时显示一次，不会影响您的日常工作。
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeAnnouncementModal()">
+                    <i class="fas fa-check"></i> 我已阅读并理解
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 原有的弹窗代码保持不变 -->
+    <div class="custom-modal" id="blackScreenModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span><i class="fas fa-desktop"></i> 出票方式确认</span>
+                <span class="modal-close" onclick="closeModal('blackScreenModal')">×</span>
+            </div>
+            <div class="modal-body">
+                <p>该订单是否属于黑屏出票？</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="handleBlackScreenConfirm(true)">是</button>
+                <button class="btn btn-reset" onclick="handleBlackScreenConfirm(false)">否</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 其他模态窗口保持不变 -->
+    <div class="custom-modal" id="platformModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span><i class="fas fa-shopping-cart"></i> 外采信息填写</span>
+                <span class="modal-close" onclick="closeModal('platformModal')">×</span>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>外采平台</label>
+                    <select id="platformInput">
+                        <option value="">请选择外采平台</option>
+                        <option value="携程">携程</option>
+                        <option value="去哪儿qunar">去哪儿qunar</option>
+                        <option value="航司官网">航司官网</option>
+                        <option value="航司电话">航司电话</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>外采支付账号</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="payment" value="支付宝" required> 支付宝
+                        </label>
+                        <label>
+                            <input type="radio" name="payment" value="出票组对公信用卡" required>出票组对公信用卡
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="confirmPlatform()">确认</button>
+                <button class="btn btn-reset" onclick="closeModal('platformModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 其他模态窗口保持不变 -->
+    <div class="custom-modal" id="manualInfoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span><i class="fas fa-edit"></i> 手动填写信息</span>
+                <span class="modal-close" onclick="closeModal('manualInfoModal')">×</span>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>兜底乘机人</label>
+                    <div id="passengerInputs">
+                        <input type="text" class="new-input" placeholder="乘机人1">
+                    </div>
+                    <button class="add-input-btn" onclick="addPassengerInput()">添加乘机人</button>
+                </div>
+                <div class="input-group">
+                    <label>兜底新票号</label>
+                    <div id="ticketInputs">
+                        <input type="text" class="new-input" placeholder="票号1">
+                    </div>
+                    <button class="add-input-btn" onclick="addTicketInput()">添加票号</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveManualInfo()">保存</button>
+                <button class="btn btn-reset" onclick="closeManualInfoModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 其他模态窗口保持不变 -->
+    <div class="custom-modal" id="manualAmountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span><i class="fas fa-money-bill-wave"></i> 手动填写金额</span>
+                <span class="modal-close" onclick="closeModal('manualAmountModal')">×</span>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>兜底票新票总价</label>
+                    <input type="number" id="manualNewTicket" class="new-input" step="0.01" placeholder="请输入新票总价">
+                    <div id="manualNewTicketValidation" class="validation-message"></div>
+                </div>
+                <div class="input-group">
+                    <label>订单收款金额</label>
+                    <input type="number" id="manualReceive" class="new-input" step="0.01" placeholder="请输入收款金额">
+                    <div id="manualReceiveValidation" class="validation-message"></div>
+                </div>
+                <div class="input-group">
+                    <label>赔付金额</label>
+                    <input type="number" id="manualCompensation" class="new-input" step="0.01" placeholder="请输入赔付金额">
+                    <div id="manualCompensationValidation" class="validation-message"></div>
+                </div>
+                <div id="manualAmountValidation" class="validation-message"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveManualAmount()">保存</button>
+                <button class="btn btn-reset" onclick="closeModal('manualAmountModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改记录模态窗口保持不变 -->
+    <div class="custom-modal" id="modifyRecordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span><i class="fas fa-edit"></i> 修改记录信息</span>
+                <span class="modal-close" onclick="closeModal('modifyRecordModal')">×</span>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>订单编号</label>
+                    <input type="text" id="modifyOrderId" disabled>
+                </div>
+                
+                <div class="input-group">
+                    <label>兜底乘机人</label>
+                    <div id="modifyPassengerInputs">
+                        <!-- 动态生成的乘机人输入框 -->
+                    </div>
+                    <button class="add-input-btn" onclick="addModifyPassengerInput()">添加乘机人</button>
+                </div>
+                
+                <div class="input-group">
+                    <label>兜底新票号</label>
+                    <div id="modifyTicketInputs">
+                        <!-- 动态生成的票号输入框 -->
+                    </div>
+                    <button class="add-input-btn" onclick="addModifyTicketInput()">添加票号</button>
+                </div>
+                
+                <div class="input-group">
+                    <label>兜底票新票总价</label>
+                    <input type="number" id="modifyNewTicket" step="0.01">
+                    <div id="modifyNewTicketValidation" class="validation-message"></div>
+                </div>
+                
+                <div class="input-group">
+                    <label>订单收款金额</label>
+                    <input type="number" id="modifyReceive" step="0.01">
+                    <div id="modifyReceiveValidation" class="validation-message"></div>
+                </div>
+                
+                <div class="input-group">
+                    <label>赔付金额</label>
+                    <input type="number" id="modifyCompensation" step="0.01">
+                    <div id="modifyCompensationValidation" class="validation-message"></div>
+                </div>
+                
+                <div id="modifyAmountValidation" class="validation-message"></div>
+                
+                <div class="input-group">
+                    <label>外采平台</label>
+                    <select id="modifyPlatform">
+                        <option value="">请选择外采平台</option>
+                        <option value="携程">携程</option>
+                        <option value="去哪儿qunar">去哪儿qunar</option>
+                        <option value="航司官网">航司官网</option>
+                        <option value="航司电话">航司电话</option>
+                        <option value="其他">其他</option>
+                        <option value="黑屏">黑屏</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>外采支付账号</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="modifyPayment" value="支付宝"> 支付宝
+                        </label>
+                        <label>
+                            <input type="radio" name="modifyPayment" value="出票组对公信用卡">出票组对公信用卡
+                        </label>
+                        <label>
+                            <input type="radio" name="modifyPayment" value="黑屏">黑屏
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveModifiedRecord()">保存修改</button>
+                <button class="btn btn-reset" onclick="closeModal('modifyRecordModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐藏的文件输入元素 -->
+    <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="handleFileSelect(event)">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <script>
+        // 全局变量
+        let records = [];
+        let hasExported = true;
+        let isReturningHome = false;
+        let currentRecord = null;
+        let currentPage = 1;
+        const recordsPerPage = 10;
+        let autoPopupTimeout = null;
+        let currentModifyIndex = -1;
+        let filteredRecords = [];
+        let isFiltered = false;
+
+        // 公告弹窗相关函数
+        function showAnnouncementModal() {
+            document.getElementById('announcementModal').style.display = 'flex';
+        }
+
+        function closeAnnouncementModal() {
+            // 标记公告已关闭（使用sessionStorage，关闭页面后失效）
+            sessionStorage.setItem('announcementClosed', 'true');
+            document.getElementById('announcementModal').style.display = 'none';
+        }
+
+        // 新增：滚动到最新数据函数
+        function scrollToLatestData() {
+            // 计算最新数据所在的页码
+            const displayRecords = isFiltered ? filteredRecords : records;
+            const totalPages = Math.ceil(displayRecords.length / recordsPerPage);
+            
+            // 如果最新数据不在当前页，则切换到最后一页
+            if (currentPage !== totalPages && totalPages > 0) {
+                currentPage = totalPages;
+                updateTable();
+            }
+            
+            // 短暂延迟确保DOM已更新，然后滚动到表格位置
+            setTimeout(() => {
+                const tableContainer = document.querySelector('.data-table-container');
+                if (tableContainer) {
+                    // 滚动到表格容器
+                    tableContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                    
+                    // 高亮显示最新添加的记录
+                    highlightLatestRecord();
+                }
+            }, 100);
+        }
+
+        // 新增：高亮显示最新记录
+        function highlightLatestRecord() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            if (rows.length > 0) {
+                const latestRow = rows[rows.length - 1];
+                
+                // 添加高亮样式
+                latestRow.classList.add('latest-record');
+                
+                // 3秒后移除高亮
+                setTimeout(() => {
+                    latestRow.classList.remove('latest-record');
+                }, 3000);
+                
+                // 添加闪烁动画效果
+                latestRow.animate([
+                    { backgroundColor: '#e8f5e9' },
+                    { backgroundColor: '#ffffff' },
+                    { backgroundColor: '#e8f5e9' }
+                ], {
+                    duration: 1000,
+                    iterations: 2
+                });
+            }
+        }
+
+        // 表格字体大小控制
+        function changeTableFontSize(size) {
+            const table = document.getElementById('mainTable');
+            const buttons = document.querySelectorAll('.table-font-btn');
+            
+            table.classList.remove('normal-font', 'large-font', 'x-large-font');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (size === 'large') {
+                table.classList.add('large-font');
+                buttons[1].classList.add('active');
+            } else if (size === 'x-large') {
+                table.classList.add('x-large-font');
+                buttons[2].classList.add('active');
+            } else {
+                table.classList.add('normal-font');
+                buttons[0].classList.add('active');
+            }
+            
+            localStorage.setItem('tableFontSize', size);
+        }
+
+        // 页面加载时应用保存的表格字体偏好
+        function applySavedTableFontSize() {
+            const savedSize = localStorage.getItem('tableFontSize') || 'normal';
+            changeTableFontSize(savedSize);
+        }
+
+        // 更新数据统计
+        function updateStats() {
+            const totalRecords = records.length;
+            const errorRecords = records.filter(r => !r.isValid).length;
+            
+            const orderCounts = {};
+            records.forEach(r => {
+                orderCounts[r.orderId] = (orderCounts[r.orderId] || 0) + 1;
+            });
+            const duplicateOrders = Object.values(orderCounts).filter(count => count > 1).length;
+            
+            document.getElementById('totalRecords').textContent = totalRecords;
+            document.getElementById('errorRecords').textContent = errorRecords;
+            document.getElementById('duplicateOrders').textContent = duplicateOrders;
+        }
+
+        // 应用筛选 - 修复版
+        function applyFilters() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const platformFilter = document.getElementById('platformFilter').value;
+            const paymentFilter = document.getElementById('paymentFilter').value;
+            const orderSearch = document.getElementById('orderSearch').value.trim().toLowerCase();
+            
+            // 如果没有设置任何筛选条件，则显示所有记录
+            if (statusFilter === 'all' && platformFilter === 'all' && paymentFilter === 'all' && orderSearch === '') {
+                isFiltered = false;
+                filteredRecords = [];
+                currentPage = 1;
+                updateTable();
+                showAlert('已清除所有筛选条件', 'success');
+                return;
+            }
+            
+            // 应用筛选条件
+            filteredRecords = records.filter(record => {
+                let match = true;
+                
+                // 状态筛选
+                if (statusFilter !== 'all') {
+                    if (statusFilter === 'valid' && !record.isValid) match = false;
+                    if (statusFilter === 'invalid' && record.isValid) match = false;
+                }
+                
+                // 平台筛选
+                if (match && platformFilter !== 'all') {
+                    if (record.platform !== platformFilter) match = false;
+                }
+                
+                // 支付方式筛选
+                if (match && paymentFilter !== 'all') {
+                    if (record.payment !== paymentFilter) match = false;
+                }
+                
+                // 订单号搜索
+                if (match && orderSearch) {
+                    if (!record.orderId.toLowerCase().includes(orderSearch)) match = false;
+                }
+                
+                return match;
+            });
+            
+            isFiltered = true;
+            currentPage = 1;
+            updateTable();
+            
+            // 显示筛选结果提示
+            showAlert(`已筛选出 ${filteredRecords.length} 条记录`, 'success');
+        }
+
+        // 清除筛选
+        function clearFilters() {
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('platformFilter').value = 'all';
+            document.getElementById('paymentFilter').value = 'all';
+            document.getElementById('orderSearch').value = '';
+            
+            isFiltered = false;
+            filteredRecords = [];
+            currentPage = 1;
+            updateTable();
+            
+            showAlert('已清除所有筛选条件', 'success');
+        }
+
+        // 批量删除记录
+        function batchDeleteRecords() {
+            const checkboxes = document.querySelectorAll('.record-checkbox:checked');
+            if (checkboxes.length === 0) {
+                showAlert('请先选择要删除的记录');
+                return;
+            }
+            
+            if (!confirm(`确定要删除选中的 ${checkboxes.length} 条记录吗？`)) {
+                return;
+            }
+            
+            const indicesToDelete = [];
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const rowIndex = Array.from(row.parentNode.children).indexOf(row);
+                const actualIndex = (currentPage - 1) * recordsPerPage + rowIndex;
+                indicesToDelete.push(actualIndex);
+            });
+            
+            indicesToDelete.sort((a, b) => b - a);
+            
+            indicesToDelete.forEach(index => {
+                records.splice(index, 1);
+            });
+            
+            sessionStorage.setItem('auditRecords', JSON.stringify(records));
+            updateTable();
+            showAlert(`成功删除 ${indicesToDelete.length} 条记录`, 'success');
+        }
+
+        // 批量标记为正常
+        function batchValidateRecords() {
+            const checkboxes = document.querySelectorAll('.record-checkbox:checked');
+            if (checkboxes.length === 0) {
+                showAlert('请先选择要标记的记录');
+                return;
+            }
+            
+            if (!confirm(`确定要将选中的 ${checkboxes.length} 条记录标记为正常吗？`)) {
+                return;
+            }
+            
+            const indicesToValidate = [];
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const rowIndex = Array.from(row.parentNode.children).indexOf(row);
+                const actualIndex = (currentPage - 1) * recordsPerPage + rowIndex;
+                indicesToValidate.push(actualIndex);
+            });
+            
+            indicesToValidate.forEach(index => {
+                records[index].manualOverride = true;
+                validateRecord(records[index]);
+            });
+            
+            sessionStorage.setItem('auditRecords', JSON.stringify(records));
+            updateTable();
+            showAlert(`成功标记 ${indicesToValidate.length} 条记录为正常`, 'success');
+        }
+
+        // 批量修改平台
+        function batchModifyPlatform() {
+            const selectedRecords = getSelectedRecords();
+            if (selectedRecords.length === 0) {
+                showAlert('请先选择要修改的记录');
+                return;
+            }
+            
+            const newPlatform = prompt('请输入新的外采平台:');
+            if (!newPlatform) return;
+            
+            selectedRecords.forEach(index => {
+                records[index].platform = newPlatform;
+            });
+            
+            sessionStorage.setItem('auditRecords', JSON.stringify(records));
+            updateTable();
+            showAlert(`成功修改 ${selectedRecords.length} 条记录的平台信息`, 'success');
+        }
+
+        // 批量修改支付方式
+        function batchModifyPayment() {
+            const selectedRecords = getSelectedRecords();
+            if (selectedRecords.length === 0) {
+                showAlert('请先选择要修改的记录');
+                return;
+            }
+            
+            const newPayment = prompt('请输入新的支付方式:');
+            if (!newPayment) return;
+            
+            selectedRecords.forEach(index => {
+                records[index].payment = newPayment;
+            });
+            
+            sessionStorage.setItem('auditRecords', JSON.stringify(records));
+            updateTable();
+            showAlert(`成功修改 ${selectedRecords.length} 条记录的支付方式`, 'success');
+        }
+
+        // 获取选中的记录索引
+        function getSelectedRecords() {
+            const checkboxes = document.querySelectorAll('.record-checkbox:checked');
+            const indices = [];
+            
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const rowIndex = Array.from(row.parentNode.children).indexOf(row);
+                const actualIndex = (currentPage - 1) * recordsPerPage + rowIndex;
+                indices.push(actualIndex);
+            });
+            
+            return indices;
+        }
+
+        // 全选/取消全选
+        function selectAllRecords() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.record-checkbox');
+            
+            const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+                toggleRowSelection(checkbox);
+            });
+            
+            selectAllCheckbox.checked = !allChecked;
+            
+            updateBatchButtons();
+        }
+
+        // 更新批量操作按钮状态
+        function updateBatchButtons() {
+            const checkboxes = document.querySelectorAll('.record-checkbox:checked');
+            const hasSelected = checkboxes.length > 0;
+            
+            document.getElementById('batchDeleteBtn').disabled = !hasSelected;
+            document.getElementById('batchValidateBtn').disabled = !hasSelected;
+        }
+
+        // 切换行选择状态
+        function toggleRowSelection(checkbox) {
+            const row = checkbox.closest('tr');
+            if (checkbox.checked) {
+                row.classList.add('tr-selected');
+            } else {
+                row.classList.remove('tr-selected');
+                document.getElementById('selectAll').checked = false;
+            }
+        }
+
+        // 文本金额解析 - 修复版：当明确指定差价0时使用0，但仍标记为异常
+        function parseTextAmount(text) {
+            const getNum = pattern => {
+                const match = text.match(pattern);
+                if (!match) return 0;
+                
+                const numStr = match[1];
+                return parseFloat(numStr) || 0;
+            };
+            
+            const isBlackScreen = /黑屏([\d.]+)元/.test(text);
+            let newTicket = 0, receive = 0, compensation = 0;
+            let userCompensation = 0;
+            let hasExplicitZeroDiff = false; // 新增：标记是否明确指定差价0
+            
+            if (isBlackScreen) {
+                newTicket = getNum(/黑屏([\d.]+)元/);
+                receive = newTicket;
+                compensation = 0;
+            } else {
+                newTicket = getNum(/兜底出票价([\d.]+)/);
+                receive = getNum(/收回([\d.]+)/);
+                userCompensation = getNum(/差价([\d.]+)/);
+                
+                // 关键修复：如果明确写明了"差价0"，使用0但标记为特殊情况
+                if (/差价\s*0/.test(text)) {
+                    compensation = 0;
+                    hasExplicitZeroDiff = true; // 标记这是明确指定的0差价
+                } else if (userCompensation > 0) {
+                    // 用户明确指定了差价金额
+                    compensation = userCompensation;
+                } else {
+                    // 默认计算逻辑
+                    compensation = Math.max(newTicket - receive, 0);
+                }
+            }
+            
+            const calculatedComp = Math.max(newTicket - receive, 0);
+
+            return { 
+                newTicket, 
+                receive, 
+                compensation, 
+                isBlackScreen, 
+                userCompensation, 
+                calculatedComp,
+                hasExplicitZeroDiff // 返回这个标记
+            };
+        }
+
+        // 金额验证函数 - 修复版：处理明确指定差价0但仍需提醒的情况
+        function validateAmounts(record) {
+            const newTicket = record.newTicket || 0;
+            const receive = record.receive || 0;
+            const compensation = record.compensation || 0;
+            const calculatedComp = record.calculatedComp || Math.max(newTicket - receive, 0);
+            const hasExplicitZeroDiff = record.hasExplicitZeroDiff || false;
+            
+            let isAbnormal = false;
+            let compensationAbnormal = false;
+            let issues = [];
+            
+            // 检查金额关系
+            if (receive > newTicket) {
+                isAbnormal = true;
+                compensationAbnormal = true;
+                issues.push("收款金额大于新票总价");
+            }
+            
+            // 检查赔付金额差异 - 如果是明确指定的0差价，给出特殊提示
+            if (hasExplicitZeroDiff && newTicket > 0 && receive === 0) {
+                isAbnormal = true;
+                compensationAbnormal = true;
+                issues.push(`明确指定差价0，但按逻辑应为 ${calculatedComp.toFixed(2)}元（请确认是否为线下收款）`);
+            } else if (Math.abs(compensation - calculatedComp) > 0.01) {
+                isAbnormal = true;
+                compensationAbnormal = true;
+                issues.push(`赔付金额差异: 系统计算 ${calculatedComp.toFixed(2)} vs 录入 ${compensation.toFixed(2)}`);
+            }
+            
+            // 检查负值
+            if (newTicket < 0) {
+                isAbnormal = true;
+                issues.push("新票总价为负值");
+            }
+            
+            if (receive < 0) {
+                isAbnormal = true;
+                issues.push("收款金额为负值");
+            }
+            
+            if (compensation < 0) {
+                isAbnormal = true;
+                compensationAbnormal = true;
+                issues.push("赔付金额为负值");
+            }
+            
+            return {
+                isAbnormal,
+                compensationAbnormal,
+                issues,
+                calculatedComp,
+                hasExplicitZeroDiff
+            };
+        }
+
+        // 获取金额显示样式 - 修复版：赔付金额异常时直接显示红色
+        function getAmountStyle(validation, isCompensation = false) {
+            // 如果是赔付金额且赔付金额异常，显示红色
+            if (isCompensation && validation.compensationAbnormal) {
+                return 'abnormal';
+            }
+            // 其他情况，只有真正异常才显示红色
+            return validation.isAbnormal ? 'abnormal' : 'normal';
+        }
+
+        // 更新表格
+        function updateTable() {
+            const displayRecords = isFiltered ? filteredRecords : records;
+            
+            const tbody = document.getElementById('tableBody');
+            const startIndex = (currentPage - 1) * recordsPerPage;
+            const endIndex = Math.min(startIndex + recordsPerPage, displayRecords.length);
+            const currentRecords = displayRecords.slice(startIndex, endIndex);
+
+            tbody.innerHTML = currentRecords.map((record, index) => {
+                validateRecord(record);
+                
+                const duplicateCount = records.filter(r => r.orderId === record.orderId).length;
+                const isDuplicate = duplicateCount > 1;
+
+                const hasMismatch = record.userCompensation > 0 && 
+                                   Math.abs(record.userCompensation - record.calculatedComp) > 0.01;
+
+                let passengersHTML = '<span style="color:#999">未填写或未识别</span>';
+                if (record.passengers && record.passengers.length > 0) {
+                    passengersHTML = `
+                        <div class="table-cell-content">
+                            ${record.passengers.map(passenger => `
+                                <div class="table-cell-item">
+                                    <span>${passenger}</span>
+                                    <button class="copy-btn" data-passenger="${passenger}" title="复制乘机人姓名">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            `).join('')}
+                            ${record.passengers.length > 1 ? `
+                                <button class="copy-all-btn" data-passengers='${JSON.stringify(record.passengers)}' title="复制所有乘机人">
+                                    <i class="fas fa-copy"></i> 全部
+                                </button>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+
+                let ticketNumbersHTML = '<span style="color:#999">未填写或未识别</span>';
+                if (record.ticketNumbers && record.ticketNumbers.length > 0) {
+                    ticketNumbersHTML = `
+                        <div class="table-cell-content">
+                            ${record.ticketNumbers.map(ticket => `
+                                <div class="table-cell-item">
+                                    <span>${ticket}</span>
+                                    <button class="copy-btn" data-ticket="${ticket}" title="复制票号">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            `).join('')}
+                            ${record.ticketNumbers.length > 1 ? `
+                                <button class="copy-all-btn" data-tickets='${JSON.stringify(record.ticketNumbers)}' title="复制所有票号">
+                                    <i class="fas fa-copy"></i> 全部
+                                </button>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+
+                // 金额验证
+                const amountValidation = validateAmounts(record);
+
+                return `
+                    <tr ${!record.isValid ? 'style="background: #FFF5F5"' : ''}>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" class="record-checkbox" onchange="toggleRowSelection(this)">
+                        </td>
+                        <td>
+                            ${record.orderId}
+                            ${isDuplicate ? `<span class="duplicate-warning">(${duplicateCount}条记录)</span>` : ''}
+                        </td>
+                        <td>${passengersHTML}</td>
+                        <td>${ticketNumbersHTML}</td>
+                        <td class="number-input">
+                            <div class="table-cell-item">
+                                <span class="amount-cell ${getAmountStyle(amountValidation)}">
+                                    ${formatValue(record.newTicket)}
+                                </span>
+                                <button class="copy-btn" data-amount="${formatValue(record.newTicket)}" data-label="兜底票新票总价" title="复制金额">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="number-input">
+                            <div class="table-cell-item">
+                                <span class="amount-cell ${getAmountStyle(amountValidation)}">
+                                    ${formatValue(record.receive)}
+                                </span>
+                                <button class="copy-btn" data-amount="${formatValue(record.receive)}" data-label="订单收款金额" title="复制金额">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="number-input ${hasMismatch ? 'amount-mismatch tooltip' : ''}">
+                            <div class="table-cell-item">
+                                <span class="amount-cell ${getAmountStyle(amountValidation, true)}"> <!-- 修改这里：赔付金额单独判断 -->
+                                    ${formatValue(record.compensation)}
+                                </span>
+                                <button class="copy-btn" data-amount="${formatValue(record.compensation)}" data-label="赔付金额" title="复制金额">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            ${hasMismatch ? `<span class="tooltiptext">用户输入: ${formatValue(record.userCompensation)}元, 系统计算: ${formatValue(record.calculatedComp)}元</span>` : ''}
+                        </td>
+                        <td>${record.platform || '<span style="color:#999">未填写</span>'}</td>
+                        <td>${record.payment || '<span style="color:#999">未选择</span>'}</td>
+                        <td>
+                            <span class="status-dot ${record.isValid ? 'valid' : 'invalid'}"></span>
+                            ${record.isValid ? '正常' : `
+                                <span class="error-msg">${record.errorMsg}</span>
+                                <button class="action-btn btn-override" onclick="manualValidate(${startIndex + index})">
+                                    <i class="fas fa-check"></i> 标记正常
+                                </button>
+                            `}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn delete-btn" onclick="deleteRecord(${startIndex + index})">
+                                    <i class="fas fa-trash"></i> 删除
+                                </button>
+                                <button class="action-btn modify-btn" onclick="modifyRecord(${startIndex + index})">
+                                    <i class="fas fa-edit"></i> 修改
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // 为表格中的所有复制按钮添加事件监听
+            tbody.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const passenger = this.getAttribute('data-passenger');
+                    const ticket = this.getAttribute('data-ticket');
+                    const amount = this.getAttribute('data-amount');
+                    const label = this.getAttribute('data-label');
+                    
+                    if (passenger) {
+                        copyPassengerName(passenger);
+                    } else if (ticket) {
+                        copyTicketNumber(ticket);
+                    } else if (amount) {
+                        copyAmount(amount, label);
+                    }
+                });
+            });
+            
+            // 为表格中的全部复制按钮添加事件监听
+            tbody.querySelectorAll('.copy-all-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const passengers = this.getAttribute('data-passengers');
+                    const tickets = this.getAttribute('data-tickets');
+                    
+                    if (passengers) {
+                        const passengerArray = JSON.parse(passengers);
+                        copyAllPassengerNames(passengerArray);
+                    } else if (tickets) {
+                        const ticketArray = JSON.parse(tickets);
+                        copyAllTicketNumbers(ticketArray);
+                    }
+                });
+            });
+
+            // 为复选框添加事件监听
+            tbody.querySelectorAll('.record-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    toggleRowSelection(this);
+                    updateBatchButtons();
+                });
+            });
+
+            updatePagination();
+            updateRecordCount();
+            updateStats();
+            updateBatchButtons();
+        }
+
+        // 页面加载初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查是否已经关闭过公告（使用sessionStorage，关闭页面后失效）
+            const announcementClosed = sessionStorage.getItem('announcementClosed');
+            
+            if (!announcementClosed) {
+                // 延迟显示，确保页面加载完成
+                setTimeout(() => {
+                    showAnnouncementModal();
+                }, 500);
+            }
+            
+            applySavedTableFontSize();
+            
+            const savedFormData = sessionStorage.getItem('auditFormData');
+            if (savedFormData) {
+                const formData = JSON.parse(savedFormData);
+                document.getElementById('orderId').value = formData.orderId || '';
+                document.getElementById('textInput').value = formData.textInput || '';
+                document.getElementById('recognitionText').value = formData.recognitionText || '';
+                
+                if (formData.recognitionText) {
+                    recognizeText(formData.recognitionText);
+                }
+                
+                if (formData.textInput) {
+                    recognizeAuditText(formData.textInput);
+                }
+            }
+
+            const savedRecords = sessionStorage.getItem('auditRecords');
+            if (savedRecords) {
+                records = JSON.parse(savedRecords);
+                updateTable();
+            }
+
+            document.getElementById('homeLink').addEventListener('click', function(e) {
+                isReturningHome = true;
+                saveFormData();
+            });
+            
+            document.getElementById('recognitionText').addEventListener('input', function() {
+                const text = this.value.trim();
+                if (text) {
+                    recognizeText(text);
+                } else {
+                    document.getElementById('recognizedData').style.display = 'none';
+                }
+            });
+            
+            document.getElementById('textInput').addEventListener('input', function() {
+                const text = this.value.trim();
+                if (text) {
+                    recognizeAuditText(text);
+                    autoTriggerModal();
+                } else {
+                    document.getElementById('auditRecognizedData').style.display = 'none';
+                }
+            });
+
+            document.getElementById('orderId').addEventListener('input', autoTriggerModal);
+            
+            document.getElementById('manualNewTicket').addEventListener('input', validateManualAmounts);
+            document.getElementById('manualReceive').addEventListener('input', validateManualAmounts);
+            document.getElementById('manualCompensation').addEventListener('input', validateManualAmounts);
+            
+            document.getElementById('modifyNewTicket').addEventListener('input', validateModifyAmounts);
+            document.getElementById('modifyReceive').addEventListener('input', validateModifyAmounts);
+            document.getElementById('modifyCompensation').addEventListener('input', validateModifyAmounts);
+            
+            document.getElementById('selectAll').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.record-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                    toggleRowSelection(checkbox);
+                });
+                updateBatchButtons();
+            });
+
+            // 添加筛选输入框的事件监听
+            document.getElementById('orderSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyFilters();
+                }
+            });
+
+            // 添加快捷键支持
+            setupKeyboardShortcuts();
+
+            // 订单号验证
+            document.getElementById('orderId').addEventListener('blur', function() {
+                validateOrderId(this.value);
+            });
+
+            // 审计内容验证
+            document.getElementById('textInput').addEventListener('blur', function() {
+                validateAuditText(this.value);
+            });
+        });
+
+        // 显示提示信息
+        function showAlert(message, type = 'warning') {
+            const existingAlert = document.querySelector('.alert-warning, .alert-success');
+            if (existingAlert) existingAlert.remove();
+
+            const alertBox = document.createElement('div');
+            alertBox.className = type === 'success' ? 'alert-warning alert-success' : 'alert-warning';
+            
+            let alertContent = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            // 如果是成功消息且与数据相关，添加跳转链接
+            if (type === 'success' && (message.includes('提交') || message.includes('添加') || message.includes('导入'))) {
+                alertContent += ` <a href="javascript:void(0)" onclick="scrollToLatestData()" style="color: inherit; text-decoration: underline; margin-left: 10px;">查看最新数据</a>`;
+            }
+            
+            alertContent += `<button onclick="this.parentElement.remove()">×</button>`;
+            
+            alertBox.innerHTML = alertContent;
+            document.body.appendChild(alertBox);
+            setTimeout(() => alertBox.remove(), 5000);
+        }
+
+        // 复制到剪贴板
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            
+            try {
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textarea);
+                return successful;
+            } catch (err) {
+                document.body.removeChild(textarea);
+                return false;
+            }
+        }
+
+        // 显示复制成功提示
+        function showCopySuccess(message) {
+            showAlert(`已复制: ${message}`, 'success');
+        }
+
+        // 复制乘机人姓名
+        function copyPassengerName(passengerName) {
+            if (copyToClipboard(passengerName)) {
+                showCopySuccess(passengerName);
+            } else {
+                showAlert('复制失败，请手动选择文本复制');
+            }
+        }
+
+        // 复制所有乘机人姓名
+        function copyAllPassengerNames(passengerNames) {
+            const allPassengers = passengerNames.join(', ');
+            if (copyToClipboard(allPassengers)) {
+                showCopySuccess(allPassengers);
+            } else {
+                showAlert('复制失败，请手动选择文本复制');
+            }
+        }
+
+        // 复制票号
+        function copyTicketNumber(ticketNumber) {
+            if (copyToClipboard(ticketNumber)) {
+                showCopySuccess(ticketNumber);
+            } else {
+                showAlert('复制失败，请手动选择文本复制');
+            }
+        }
+
+        // 复制所有票号
+        function copyAllTicketNumbers(ticketNumbers) {
+            const allTickets = ticketNumbers.join(', ');
+            if (copyToClipboard(allTickets)) {
+                showCopySuccess(allTickets);
+            } else {
+                showAlert('复制失败，请手动选择文本复制');
+            }
+        }
+
+        // 复制金额
+        function copyAmount(amount, label) {
+            if (copyToClipboard(amount)) {
+                showCopySuccess(`${label}: ${amount}`);
+            } else {
+                showAlert('复制失败，请手动选择文本复制');
+            }
+        }
+
+        // 保存表单数据
+        function saveFormData() {
+            const formData = {
+                orderId: document.getElementById('orderId').value,
+                textInput: document.getElementById('textInput').value,
+                recognitionText: document.getElementById('recognitionText').value
+            };
+            sessionStorage.setItem('auditFormData', JSON.stringify(formData));
+        }
+
+        // 自动触发弹窗逻辑
+        function autoTriggerModal() {
+            clearTimeout(autoPopupTimeout);
+            autoPopupTimeout = setTimeout(() => {
+                const orderId = document.getElementById('orderId').value.trim();
+                const text = document.getElementById('textInput').value.trim();
+                const recognitionText = document.getElementById('recognitionText').value.trim();
+                
+                if (!orderId || !text) return;
+                
+                try {
+                    const amountResult = parseTextAmount(text);
+                    const recognitionResult = extractPassengerInfo(recognitionText);
+                    
+                    if ((amountResult.newTicket > 0 || amountResult.isBlackScreen) && 
+                        (recognitionResult.passengers.length > 0 || recognitionResult.ticketNumbers.length > 0)) {
+                        currentRecord = {
+                            orderId,
+                            text,
+                            platform: '',
+                            payment: '',
+                            passengers: recognitionResult.passengers,
+                            ticketNumbers: recognitionResult.ticketNumbers,
+                            manualPassengers: false,
+                            manualTickets: false,
+                            manualAmount: false,
+                            hasExplicitZeroDiff: amountResult.hasExplicitZeroDiff // 新增
+                        };
+                        
+                        if (amountResult.isBlackScreen) {
+                            currentRecord.newTicket = amountResult.newTicket;
+                            currentRecord.receive = amountResult.newTicket;
+                            currentRecord.compensation = 0;
+                        } else {
+                            currentRecord.newTicket = amountResult.newTicket;
+                            currentRecord.receive = amountResult.receive;
+                            currentRecord.compensation = amountResult.compensation;
+                            currentRecord.userCompensation = amountResult.userCompensation;
+                            currentRecord.calculatedComp = amountResult.calculatedComp;
+                            currentRecord.hasExplicitZeroDiff = amountResult.hasExplicitZeroDiff; // 新增
+                        }
+                        
+                        showModal('blackScreenModal');
+                    }
+                } catch (error) {
+                    console.error('自动识别失败:', error);
+                }
+            }, 500);
+        }
+
+        // 文本识别 - 修复版：支持多人识别和更灵活的票号格式
+        function recognizeText(text) {
+            const result = extractPassengerInfo(text);
+            const passengerList = document.getElementById('passengerList');
+            const ticketList = document.getElementById('ticketList');
+            const recognizedData = document.getElementById('recognizedData');
+            
+            passengerList.innerHTML = '';
+            ticketList.innerHTML = '';
+            
+            if (result.passengers.length > 0) {
+                passengerList.innerHTML = '<strong>乘机人:</strong> ';
+                result.passengers.forEach(passenger => {
+                    const passengerItem = document.createElement('div');
+                    passengerItem.className = 'passenger-item';
+                    passengerItem.innerHTML = `
+                        <span class="recognition-tag">${passenger}</span>
+                        <button class="copy-btn" data-passenger="${passenger}" title="复制乘机人姓名">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    `;
+                    passengerList.appendChild(passengerItem);
+                });
+                
+                const copyAllButton = document.createElement('button');
+                copyAllButton.className = 'copy-all-btn';
+                copyAllButton.innerHTML = '<i class="fas fa-copy"></i> 复制所有乘机人';
+                copyAllButton.onclick = function() {
+                    copyAllPassengerNames(result.passengers);
+                };
+                passengerList.appendChild(copyAllButton);
+                
+                passengerList.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const passengerName = this.getAttribute('data-passenger');
+                        copyPassengerName(passengerName);
+                    });
+                });
+            }
+            
+            if (result.ticketNumbers.length > 0) {
+                ticketList.innerHTML = '<strong>票号:</strong> ';
+                result.ticketNumbers.forEach(ticket => {
+                    const ticketItem = document.createElement('div');
+                    ticketItem.className = 'ticket-item';
+                    ticketItem.innerHTML = `
+                        <span class="recognition-tag">${ticket}</span>
+                        <button class="copy-btn" data-ticket="${ticket}" title="复制票号">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    `;
+                    ticketList.appendChild(ticketItem);
+                });
+                
+                const copyAllButton = document.createElement('button');
+                copyAllButton.className = 'copy-all-btn';
+                copyAllButton.innerHTML = '<i class="fas fa-copy"></i> 复制所有票号';
+                copyAllButton.onclick = function() {
+                    copyAllTicketNumbers(result.ticketNumbers);
+                };
+                ticketList.appendChild(copyAllButton);
+                
+                ticketList.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const ticketNumber = this.getAttribute('data-ticket');
+                        copyTicketNumber(ticketNumber);
+                    });
+                });
+            }
+            
+            if (result.passengers.length > 0 || result.ticketNumbers.length > 0) {
+                recognizedData.style.display = 'block';
+            } else {
+                recognizedData.style.display = 'none';
+            }
+            
+            if (result.errors.length > 0) {
+                result.errors.forEach(error => {
+                    showAlert(error);
+                });
+            }
+        }
+
+        // 审计内容识别 - 修复版：正确处理差价0的情况并给出异常提示
+        function recognizeAuditText(text) {
+            const result = parseTextAmount(text);
+            const auditAmountInfo = document.getElementById('auditAmountInfo');
+            const auditData = document.getElementById('auditRecognizedData');
+            
+            let infoHTML = '';
+            
+            // 创建临时记录用于验证
+            const tempRecord = {
+                newTicket: result.newTicket,
+                receive: result.receive,
+                compensation: result.compensation,
+                userCompensation: result.userCompensation,
+                calculatedComp: result.calculatedComp,
+                hasExplicitZeroDiff: result.hasExplicitZeroDiff
+            };
+            const validation = validateAmounts(tempRecord);
+            
+            if (result.isBlackScreen) {
+                infoHTML = `
+                    <div class="recognized-amount">
+                        <span>识别到黑屏出票：${formatValue(result.newTicket)}元</span>
+                        <button class="copy-btn" data-amount="${formatValue(result.newTicket)}元" data-label="黑屏出票金额" title="复制金额">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="recognized-amount">
+                        <span>订单收款金额：${formatValue(result.newTicket)}元</span>
+                        <button class="copy-btn" data-amount="${formatValue(result.newTicket)}元" data-label="订单收款金额" title="复制金额">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="recognized-amount">
+                        <span>赔付金额：0元</span>
+                        <button class="copy-btn" data-amount="0元" data-label="赔付金额" title="复制金额">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                if (result.newTicket > 0) {
+                    infoHTML += `
+                        <div class="recognized-amount">
+                            <span>兜底票新票总价：${formatValue(result.newTicket)}元</span>
+                            <button class="copy-btn" data-amount="${formatValue(result.newTicket)}元" data-label="兜底票新票总价" title="复制金额">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+                if (result.receive > 0) {
+                    infoHTML += `
+                        <div class="recognized-amount">
+                            <span>订单收款金额：${formatValue(result.receive)}元</span>
+                            <button class="copy-btn" data-amount="${formatValue(result.receive)}元" data-label="订单收款金额" title="复制金额">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                // 赔付金额显示逻辑
+                if (result.hasExplicitZeroDiff) {
+                    // 明确指定差价0的情况 - 显示为异常（红色）
+                    infoHTML += `
+                        <div class="recognized-amount abnormal">
+                            <span>赔付金额：0元（明确指定）</span>
+                            <button class="copy-btn" data-amount="0元" data-label="赔付金额" title="复制金额">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    `;
+                } else if (result.compensation > 0) {
+                    // 赔付金额单独判断是否异常
+                    const compAmountClass = validation.compensationAbnormal ? 'recognized-amount abnormal' : 'recognized-amount';
+                    infoHTML += `
+                        <div class="${compAmountClass}">
+                            <span>赔付金额：${formatValue(result.compensation)}元</span>
+                            <button class="copy-btn" data-amount="${formatValue(result.compensation)}元" data-label="赔付金额" title="复制金额">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    // 默认情况
+                    infoHTML += `
+                        <div class="recognized-amount ${validation.compensationAbnormal ? 'abnormal' : ''}">
+                            <span>赔付金额：${formatValue(result.compensation)}元</span>
+                            <button class="copy-btn" data-amount="${formatValue(result.compensation)}元" data-label="赔付金额" title="复制金额">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                // 如果赔付金额与系统计算值不一致，显示提示
+                if (result.userCompensation > 0 && Math.abs(result.userCompensation - result.calculatedComp) > 0.01) {
+                    infoHTML += `<p class="passenger-error">注意：赔付金额与系统计算值 ${formatValue(result.calculatedComp)}元 不一致</p>`;
+                }
+                
+                // 特殊情况的提示
+                if (text.includes('责任方承担') && result.compensation === 0) {
+                    infoHTML += `<p class="passenger-error" style="color: var(--warning-color);">已识别：责任方承担，赔付金额为0</p>`;
+                }
+            }
+            
+            // 如果有异常，显示异常信息
+            if (validation.issues.length > 0) {
+                infoHTML += `<div class="validation-error" style="margin-top: 10px; padding: 8px; border-radius: 6px;">
+                    <strong>金额异常:</strong> ${validation.issues.join('; ')}
+                </div>`;
+            }
+            
+            if (infoHTML) {
+                auditAmountInfo.innerHTML = infoHTML;
+                auditData.style.display = 'block';
+                
+                auditAmountInfo.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const amount = this.getAttribute('data-amount');
+                        const label = this.getAttribute('data-label');
+                        copyAmount(amount, label);
+                    });
+                });
+            } else {
+                auditData.style.display = 'none';
+            }
+        }
+
+        // 提交审计
+        function handleSubmit() {
+            const orderId = document.getElementById('orderId').value.trim();
+            const text = document.getElementById('textInput').value.trim();
+            const recognitionText = document.getElementById('recognitionText').value.trim();
+
+            if (!orderId) {
+                showAlert("请输入订单号");
+                return;
+            }
+
+            if (!text) {
+                showAlert("请输入审计内容");
+                return;
+            }
+
+            try {
+                const recognitionResult = extractPassengerInfo(recognitionText);
+                if (recognitionResult.errors.length > 0) {
+                    recognitionResult.errors.forEach(error => {
+                        showAlert(error);
+                    });
+                    return;
+                }
+
+                const amountResult = parseTextAmount(text);
+                
+                currentRecord = {
+                    orderId,
+                    text,
+                    platform: '',
+                    payment: '',
+                    passengers: recognitionResult.passengers,
+                    ticketNumbers: recognitionResult.ticketNumbers,
+                    manualPassengers: false,
+                    manualTickets: false,
+                    manualAmount: false,
+                    hasExplicitZeroDiff: amountResult.hasExplicitZeroDiff // 新增
+                };
+
+                if (!currentRecord.passengers || currentRecord.passengers.length === 0) {
+                    currentRecord.manualPassengers = true;
+                }
+
+                if (!currentRecord.ticketNumbers || currentRecord.ticketNumbers.length === 0) {
+                    currentRecord.manualTickets = true;
+                }
+
+                if (amountResult.newTicket === 0 && amountResult.receive === 0 && amountResult.compensation === 0) {
+                    currentRecord.manualAmount = true;
+                } else {
+                    currentRecord.newTicket = amountResult.newTicket;
+                    currentRecord.receive = amountResult.receive;
+                    currentRecord.compensation = amountResult.compensation;
+                    currentRecord.userCompensation = amountResult.userCompensation;
+                    currentRecord.calculatedComp = amountResult.calculatedComp;
+                    currentRecord.hasExplicitZeroDiff = amountResult.hasExplicitZeroDiff; // 新增
+                }
+
+                if (currentRecord.manualPassengers || currentRecord.manualTickets) {
+                    if (currentRecord.manualPassengers && currentRecord.manualTickets) {
+                        showModal('manualInfoModal');
+                    } else if (currentRecord.manualPassengers) {
+                        alert("未识别到乘机人信息，请手动填写");
+                        showModal('manualInfoModal');
+                    } else if (currentRecord.manualTickets) {
+                        alert("未识别到票号信息，请手动填写");
+                        showModal('manualInfoModal');
+                    }
+                } else if (currentRecord.manualAmount) {
+                    showModal('manualAmountModal');
+                } else {
+                    showModal('blackScreenModal');
+                }
+            } catch (error) {
+                showAlert(`识别失败: ${error.message}`);
+                console.error('识别失败:', error);
+            }
+        }
+
+        // 显示模态窗口
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        // 关闭模态窗口
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // 手动填写乘机人和票号
+        function addPassengerInput() {
+            const passengerInputs = document.getElementById('passengerInputs');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.className = 'new-input';
+            newInput.placeholder = `乘机人${passengerInputs.children.length + 1}`;
+            passengerInputs.appendChild(newInput);
+        }
+
+        function addTicketInput() {
+            const ticketInputs = document.getElementById('ticketInputs');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.className = 'new-input';
+            newInput.placeholder = `票号${ticketInputs.children.length + 1}`;
+            ticketInputs.appendChild(newInput);
+        }
+
+        function saveManualInfo() {
+            const passengerInputs = document.getElementById('passengerInputs').querySelectorAll('input');
+            const ticketInputs = document.getElementById('ticketInputs').querySelectorAll('input');
+
+            const passengers = [];
+            passengerInputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) passengers.push(value);
+            });
+
+            const ticketNumbers = [];
+            ticketInputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) ticketNumbers.push(value);
+            });
+
+            if (currentRecord.manualPassengers && passengers.length === 0) {
+                showAlert("请输入至少一位乘机人");
+                return;
+            }
+
+            if (currentRecord.manualTickets && ticketNumbers.length === 0) {
+                showAlert("请输入至少一个票号");
+                return;
+            }
+
+            currentRecord.passengers = passengers;
+            currentRecord.ticketNumbers = ticketNumbers;
+
+            closeModal('manualInfoModal');
+
+            if (currentRecord.manualAmount) {
+                showModal('manualAmountModal');
+            } else {
+                showModal('blackScreenModal');
+            }
+        }
+
+        function closeManualInfoModal() {
+            closeModal('manualInfoModal');
+        }
+
+        // 实时校验手动填写金额
+        function validateManualAmounts() {
+            const newTicketInput = document.getElementById('manualNewTicket').value;
+            const receiveInput = document.getElementById('manualReceive').value;
+            const compensationInput = document.getElementById('manualCompensation').value;
+            
+            const newTicket = newTicketInput ? parseFloat(newTicketInput) : 0;
+            const receive = receiveInput ? parseFloat(receiveInput) : 0;
+            const compensation = compensationInput ? parseFloat(compensationInput) : 0;
+            
+            const calculatedComp = Math.max(newTicket - receive, 0);
+            const validationMsg = document.getElementById('manualAmountValidation');
+            
+            document.getElementById('manualNewTicketValidation').innerHTML = '';
+            document.getElementById('manualReceiveValidation').innerHTML = '';
+            document.getElementById('manualCompensationValidation').innerHTML = '';
+            validationMsg.innerHTML = '';
+            
+            let hasError = false;
+            let messages = [];
+            
+            if (newTicket < 0) {
+                document.getElementById('manualNewTicketValidation').innerHTML = 
+                    '<span class="validation-error">兜底票新票总价不能为负数</span>';
+                hasError = true;
+            }
+            
+            if (receive < 0) {
+                document.getElementById('manualReceiveValidation').innerHTML = 
+                    '<span class="validation-error">订单收款金额不能为负数</span>';
+                hasError = true;
+            }
+            
+            if (compensation < 0) {
+                document.getElementById('manualCompensationValidation').innerHTML = 
+                    '<span class="validation-error">赔付金额不能为负数</span>';
+                hasError = true;
+            }
+            
+            if (newTicket > 0 && receive > 0) {
+                if (Math.abs(compensation - calculatedComp) > 0.01) {
+                    messages.push(`系统计算赔付金额应为: ${formatValue(calculatedComp)}元`);
+                    
+                    if (compensation > 0) {
+                        document.getElementById('manualCompensationValidation').innerHTML = 
+                            `<span class="validation-warning">与系统计算值不一致，系统计算为: ${formatValue(calculatedComp)}元</span>`;
+                    }
+                }
+            }
+            
+            if (receive > newTicket) {
+                messages.push("订单收款金额不应大于兜底票新票总价");
+                hasError = true;
+            }
+            
+            if (newTicket > 0 && receive === 0 && compensation !== newTicket) {
+                messages.push("当订单收款金额为0时，赔付金额应等于兜底票新票总价");
+                hasError = true;
+            }
+            
+            if (messages.length > 0) {
+                const messageType = hasError ? 'validation-error' : 'validation-warning';
+                validationMsg.innerHTML = `<span class="${messageType}">${messages.join('; ')}</span>`;
+            } else if (newTicket > 0 || receive > 0 || compensation > 0) {
+                validationMsg.innerHTML = '<span class="validation-success">金额关系校验通过</span>';
+            }
+        }
+
+        function saveManualAmount() {
+            const newTicketInput = document.getElementById('manualNewTicket').value;
+            const receiveInput = document.getElementById('manualReceive').value;
+            const compensationInput = document.getElementById('manualCompensation').value;
+            
+            const newTicket = newTicketInput ? parseFloat(newTicketInput) : 0;
+            const receive = receiveInput ? parseFloat(receiveInput) : 0;
+            const userCompensation = compensationInput ? parseFloat(compensationInput) : 0;
+            
+            const calculatedComp = Math.max(newTicket - receive, 0);
+            // 保留用户填写的赔付金额，不强制修改
+            const compensation = userCompensation;
+
+            if (newTicket === 0 && receive === 0 && compensation === 0) {
+                showAlert("请输入至少一个金额");
+                return;
+            }
+
+            if (receive > newTicket) {
+                showAlert("订单收款金额不应大于兜底票新票总价");
+                return;
+            }
+
+            currentRecord.newTicket = newTicket;
+            currentRecord.receive = receive;
+            currentRecord.compensation = compensation; // 保留用户填写的赔付金额
+            currentRecord.userCompensation = userCompensation;
+            currentRecord.calculatedComp = calculatedComp;
+            currentRecord.manualAmount = true;
+
+            closeModal('manualAmountModal');
+            showModal('blackScreenModal');
+        }
+
+        function handleBlackScreenConfirm(isBlackScreen) {
+            closeModal('blackScreenModal');
+            
+            if (isBlackScreen) {
+                currentRecord.platform = '黑屏';
+                currentRecord.payment = '黑屏';
+                processRecord();
+            } else {
+                document.querySelectorAll('input[name="payment"]').forEach(radio => radio.checked = false);
+                document.getElementById('platformInput').value = '';
+                showModal('platformModal');
+            }
+        }
+
+        function confirmPlatform() {
+            const platform = document.getElementById('platformInput').value.trim();
+            const payment = document.querySelector('input[name="payment"]:checked')?.value;
+
+            if (!platform) {
+                showAlert("请填写外采平台");
+                return;
+            }
+            if (!payment) {
+                showAlert("请选择外采支付账号");
+                return;
+            }
+
+            currentRecord.platform = platform;
+            currentRecord.payment = payment;
+            closeModal('platformModal');
+            processRecord();
+        }
+
+        // 处理记录 - 修复版：传递hasExplicitZeroDiff信息
+        function processRecord() {
+            const record = {
+                orderId: currentRecord.orderId,
+                text: currentRecord.text,
+                newTicket: currentRecord.newTicket,
+                receive: currentRecord.receive,
+                compensation: currentRecord.compensation,
+                isManual: currentRecord.manualAmount,
+                manualOverride: false,
+                hasError: false,
+                passengers: currentRecord.passengers,
+                ticketNumbers: currentRecord.ticketNumbers,
+                platform: currentRecord.platform,
+                payment: currentRecord.payment,
+                userCompensation: currentRecord.userCompensation || 0,
+                calculatedComp: currentRecord.calculatedComp || Math.max(currentRecord.newTicket - currentRecord.receive, 0),
+                hasExplicitZeroDiff: currentRecord.hasExplicitZeroDiff || false // 新增
+            };
+            
+            validateRecord(record);
+            record.id = Date.now().toString();
+            record.timestamp = new Date().toISOString();
+
+            records.push(record);
+            
+            hasExported = false;
+            sessionStorage.setItem('auditRecords', JSON.stringify(records));
+            updateTable();
+            clearInputs();
+            resetManualInfo();
+            
+            // 自动滚动到最新数据
+            scrollToLatestData();
+        }
+
+        // 验证记录 - 修复版：使用新的validateAmounts函数
+        function validateRecord(record) {
+            if (record.manualOverride) {
+                record.isValid = true;
+                record.errorMsg = '';
+                return;
+            }
+
+            const validation = validateAmounts(record);
+            
+            const basicValid = !record.manualAmount || (record.newTicket > 0);
+            const validCompensation = record.compensation >= 0;
+
+            record.isValid = basicValid && validCompensation && !validation.isAbnormal;
+            record.errorMsg = !basicValid ? '新票总价不可为0' : 
+                            !validCompensation ? '金额异常' : 
+                            validation.issues.join('; ');
+            record.hasError = validation.isAbnormal || !record.isValid;
+
+            if (validation.isAbnormal) {
+                showAlert(record.errorMsg);
+            }
+        }
+
+        function manualValidate(index) {
+            if (confirm("确认手动覆盖此记录状态为正常？")) {
+                records[index].manualOverride = true;
+                validateRecord(records[index]);
+                sessionStorage.setItem('auditRecords', JSON.stringify(records));
+                updateTable();
+            }
+        }
+
+        function formatValue(value) {
+            if (value === null || value === undefined || value === '') {
+                return '<span style="color:#999">未填写</span>';
+            }
+            
+            const numValue = parseFloat(value);
+            if (isNaN(numValue)) return value.toString();
+            
+            const strValue = numValue.toString();
+            
+            if (Number.isInteger(numValue)) {
+                return numValue.toString();
+            } else {
+                const decimalPart = strValue.split('.')[1];
+                if (!decimalPart) return numValue.toString();
+                
+                const decimalPlaces = Math.min(decimalPart.length, 2);
+                return numValue.toFixed(decimalPlaces);
+            }
+        }
+
+        // 修改记录函数
+        function modifyRecord(index) {
+            const record = records[index];
+            currentModifyIndex = index;
+            
+            document.getElementById('modifyOrderId').value = record.orderId;
+            
+            const passengerInputs = document.getElementById('modifyPassengerInputs');
+            passengerInputs.innerHTML = '';
+            if (record.passengers && record.passengers.length > 0) {
+                record.passengers.forEach((passenger, i) => {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'new-input';
+                    input.value = passenger;
+                    input.placeholder = `乘机人${i+1}`;
+                    passengerInputs.appendChild(input);
+                });
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'new-input';
+                input.placeholder = '乘机人1';
+                passengerInputs.appendChild(input);
+            }
+            
+            const ticketInputs = document.getElementById('modifyTicketInputs');
+            ticketInputs.innerHTML = '';
+            if (record.ticketNumbers && record.ticketNumbers.length > 0) {
+                record.ticketNumbers.forEach((ticket, i) => {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'new-input';
+                    input.value = ticket;
+                    input.placeholder = `票号${i+1}`;
+                    ticketInputs.appendChild(input);
+                });
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'new-input';
+                input.placeholder = '票号1';
+                ticketInputs.appendChild(input);
+            }
+            
+            document.getElementById('modifyNewTicket').value = record.newTicket || '';
+            document.getElementById('modifyReceive').value = record.receive || '';
+            document.getElementById('modifyCompensation').value = record.compensation || '';
+            
+            document.getElementById('modifyPlatform').value = record.platform || '';
+            
+            document.querySelectorAll('input[name="modifyPayment"]').forEach(radio => {
+                radio.checked = (radio.value === record.payment);
+            });
+            
+            showModal('modifyRecordModal');
+            
+            validateModifyAmounts();
+        }
+
+        // 实时校验修改记录金额
+        function validateModifyAmounts() {
+            const newTicketInput = document.getElementById('modifyNewTicket').value;
+            const receiveInput = document.getElementById('modifyReceive').value;
+            const compensationInput = document.getElementById('modifyCompensation').value;
+            
+            const newTicket = newTicketInput ? parseFloat(newTicketInput) : 0;
+            const receive = receiveInput ? parseFloat(receiveInput) : 0;
+            const compensation = compensationInput ? parseFloat(compensationInput) : 0;
+            
+            const calculatedComp = Math.max(newTicket - receive, 0);
+            const validationMsg = document.getElementById('modifyAmountValidation');
+            
+            document.getElementById('modifyNewTicketValidation').innerHTML = '';
+            document.getElementById('modifyReceiveValidation').innerHTML = '';
+            document.getElementById('modifyCompensationValidation').innerHTML = '';
+            validationMsg.innerHTML = '';
+            
+            let hasError = false;
+            let messages = [];
+            
+            if (newTicket < 0) {
+                document.getElementById('modifyNewTicketValidation').innerHTML = 
+                    '<span class="validation-error">兜底票新票总价不能为负数</span>';
+                hasError = true;
+            }
+            
+            if (receive < 0) {
+                document.getElementById('modifyReceiveValidation').innerHTML = 
+                    '<span class="validation-error">订单收款金额不能为负数</span>';
+                hasError = true;
+            }
+            
+            if (compensation < 0) {
+                document.getElementById('modifyCompensationValidation').innerHTML = 
+                    '<span class="validation-error">赔付金额不能为负数</span>';
+                hasError = true;
+            }
+            
+            if (newTicket > 0 && receive > 0) {
+                if (Math.abs(compensation - calculatedComp) > 0.01) {
+                    messages.push(`系统计算赔付金额应为: ${formatValue(calculatedComp)}元`);
+                    
+                    if (compensation > 0) {
+                        document.getElementById('modifyCompensationValidation').innerHTML = 
+                            `<span class="validation-warning">与系统计算值不一致，系统计算为: ${formatValue(calculatedComp)}元</span>`;
+                    }
+                }
+            }
+            
+            if (receive > newTicket) {
+                messages.push("订单收款金额不应大于兜底票新票总价");
+                hasError = true;
+            }
+            
+            if (newTicket > 0 && receive === 0 && compensation !== newTicket) {
+                messages.push("当订单收款金额为0时，赔付金额应等于兜底票新票总价");
+                hasError = true;
+            }
+            
+            if (messages.length > 0) {
+                const messageType = hasError ? 'validation-error' : 'validation-warning';
+                validationMsg.innerHTML = `<span class="${messageType}">${messages.join('; ')}</span>`;
+            } else if (newTicket > 0 || receive > 0 || compensation > 0) {
+                validationMsg.innerHTML = '<span class="validation-success">金额关系校验通过</span>';
+            }
+        }
+
+        // 添加乘机人输入框
+        function addModifyPassengerInput() {
+            const passengerInputs = document.getElementById('modifyPassengerInputs');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.className = 'new-input';
+            newInput.placeholder = `乘机人${passengerInputs.children.length + 1}`;
+            passengerInputs.appendChild(newInput);
+        }
+
+        // 添加票号输入框
+        function addModifyTicketInput() {
+            const ticketInputs = document.getElementById('modifyTicketInputs');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.className = 'new-input';
+            newInput.placeholder = `票号${ticketInputs.children.length + 1}`;
+            ticketInputs.appendChild(newInput);
+        }
+
+        // 保存修改后的记录
+        function saveModifiedRecord() {
+            const index = currentModifyIndex;
+            if (index === undefined || index < 0 || index >= records.length) return;
+            
+            const record = records[index];
+            
+            const passengerInputs = document.querySelectorAll('#modifyPassengerInputs input');
+            const passengers = Array.from(passengerInputs).map(input => input.value.trim()).filter(value => value);
+            
+            const ticketInputs = document.querySelectorAll('#modifyTicketInputs input');
+            const ticketNumbers = Array.from(ticketInputs).map(input => input.value.trim()).filter(value => value);
+            
+            const newTicketInput = document.getElementById('modifyNewTicket').value;
+            const receiveInput = document.getElementById('modifyReceive').value;
+            const compensationInput = document.getElementById('modifyCompensation').value;
+            
+            const newTicket = newTicketInput ? parseFloat(newTicketInput) : 0;
+            const receive = receiveInput ? parseFloat(receiveInput) : 0;
+            const compensation = compensationInput ? parseFloat(compensationInput) : 0;
+            
+            const platform = document.getElementById('modifyPlatform').value;
+            const paymentRadio = document.querySelector('input[name="modifyPayment"]:checked');
+            const payment = paymentRadio ? paymentRadio.value : '';
+            
+            if (receive > newTicket) {
+                showAlert("订单收款金额不应大于兜底票新票总价");
+                return;
+            }
+            
+            record.passengers = passengers;
+            record.ticketNumbers = ticketNumbers;
+            record.newTicket = newTicket;
+            record.receive = receive;
+            record.compensation = compensation;
+            record.platform = platform;
+            record.payment = payment;
+            record.manualOverride = true;
+            
+            validateRecord(record);
+            
+            sessionStorage.setItem('auditRecords', JSON.stringify(records));
+            
+            updateTable();
+            
+            closeModal('modifyRecordModal');
+            
+            showAlert("记录已成功修改");
+        }
+
+        function deleteRecord(index) {
+            if (confirm('确认删除此记录？')) {
+                records.splice(index, 1);
+                hasExported = false;
+                sessionStorage.setItem('auditRecords', JSON.stringify(records));
+                updateTable();
+            }
+        }
+
+        function clearInputs() {
+            document.getElementById('orderId').value = '';
+            document.getElementById('textInput').value = '';
+            document.getElementById('recognitionText').value = '';
+            sessionStorage.removeItem('auditFormData');
+            document.getElementById('recognizedData').style.display = 'none';
+            document.getElementById('auditRecognizedData').style.display = 'none';
+        }
+
+        function resetManualInfo() {
+            const passengerInputs = document.getElementById('passengerInputs');
+            passengerInputs.innerHTML = '<input type="text" class="new-input" placeholder="乘机人1">';
+            
+            const ticketInputs = document.getElementById('ticketInputs');
+            ticketInputs.innerHTML = '<input type="text" class="new-input" placeholder="票号1">';
+            
+            document.getElementById('manualNewTicket').value = '';
+            document.getElementById('manualReceive').value = '';
+            document.getElementById('manualCompensation').value = '';
+            
+            document.getElementById('manualNewTicketValidation').innerHTML = '';
+            document.getElementById('manualReceiveValidation').innerHTML = '';
+            document.getElementById('manualCompensationValidation').innerHTML = '';
+            document.getElementById('manualAmountValidation').innerHTML = '';
+        }
+
+        function clearAll() {
+            if (records.length && confirm('确认清空所有数据？')) {
+                records = [];
+                hasExported = true;
+                sessionStorage.removeItem('auditFormData');
+                sessionStorage.removeItem('auditRecords');
+                clearInputs();
+                clearFilters();
+                updateTable();
+            }
+        }
+
+        // 导入Excel数据
+        function importExcel() {
+            document.getElementById('excelFileInput').click();
+        }
+
+        // 处理文件选择
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.match(/\.(xlsx|xls)$/)) {
+                showAlert('请选择Excel文件（.xlsx 或 .xls 格式）');
+                return;
+            }
+
+            showLoading();
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    if (jsonData.length === 0) {
+                        hideLoading();
+                        showAlert('Excel文件中没有数据');
+                        return;
+                    }
+
+                    if (!validateImportData(jsonData)) {
+                        hideLoading();
+                        return;
+                    }
+
+                    processImportData(jsonData);
+                    
+                    hideLoading();
+                    
+                    document.getElementById('excelFileInput').value = '';
+                    
+                } catch (error) {
+                    hideLoading();
+                    console.error('导入失败:', error);
+                    showAlert(`导入失败: ${error.message}`);
+                }
+            };
+            
+            reader.onerror = function() {
+                hideLoading();
+                showAlert('文件读取失败，请重试');
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+
+        // 验证导入数据格式
+        function validateImportData(data) {
+            if (!data || data.length === 0) {
+                showAlert('导入的数据为空');
+                return false;
+            }
+
+            const requiredColumns = ['订单号', '兜底乘机人', '兜底新票号', '兜底票新票总价', '订单收款金额', '赔付金额', '外采平台', '外采支付账号'];
+            const firstRow = data[0];
+            const missingColumns = requiredColumns.filter(col => !(col in firstRow));
+            
+            if (missingColumns.length > 0) {
+                showAlert(`导入文件缺少必需的列: ${missingColumns.join(', ')}。请使用系统导出的模板文件。`);
+                return false;
+            }
+
+            return true;
+        }
+
+        // 处理导入的数据
+        function processImportData(jsonData) {
+            const newRecords = [];
+            let skippedRecords = 0;
+            
+            jsonData.forEach((row, index) => {
+                try {
+                    const passengers = row['兜底乘机人'] && row['兜底乘机人'] !== '未填写' ? 
+                        row['兜底乘机人'].toString().split(',').map(p => p.trim()).filter(p => p) : [];
+                    
+                    const ticketNumbers = row['兜底新票号'] && row['兜底新票号'] !== '未填写' ? 
+                        row['兜底新票号'].toString().split(',').map(t => t.trim()).filter(t => t) : [];
+                    
+                    const record = {
+                        id: `imported_${Date.now()}_${index}`,
+                        timestamp: new Date().toISOString(),
+                        orderId: row['订单号']?.toString() || '',
+                        passengers: passengers,
+                        ticketNumbers: ticketNumbers,
+                        newTicket: parseFloat(row['兜底票新票总价']) || 0,
+                        receive: parseFloat(row['订单收款金额']) || 0,
+                        compensation: parseFloat(row['赔付金额']) || 0,
+                        platform: row['外采平台']?.toString() || '',
+                        payment: row['外采支付账号']?.toString() || '',
+                        text: '导入数据',
+                        isManual: true,
+                        manualOverride: false,
+                        hasError: false,
+                        userCompensation: parseFloat(row['赔付金额']) || 0,
+                        calculatedComp: Math.max((parseFloat(row['兜底票新票总价']) || 0) - (parseFloat(row['订单收款金额']) || 0), 0)
+                    };
+                    
+                    validateRecord(record);
+                    
+                    newRecords.push(record);
+                    
+                } catch (error) {
+                    console.error(`处理第 ${index + 1} 行数据时出错:`, error);
+                    skippedRecords++;
+                }
+            });
+
+            if (newRecords.length > 0) {
+                records.push(...newRecords);
+                
+                hasExported = false;
+                sessionStorage.setItem('auditRecords', JSON.stringify(records));
+                updateTable();
+                
+                let message = `成功导入 ${newRecords.length} 条记录`;
+                if (skippedRecords > 0) {
+                    message += `，跳过 ${skippedRecords} 条格式错误的记录`;
+                }
+                showAlert(message, 'success');
+                
+                // 导入成功后自动跳转到最新数据
+                setTimeout(() => {
+                    scrollToLatestData();
+                }, 500);
+            } else {
+                showAlert('没有成功导入任何记录');
+            }
+        }
+
+        // 下载导入模板
+        function downloadTemplate() {
+            try {
+                const templateData = [{
+                    "订单号": "示例订单号001",
+                    "兜底乘机人": "张三,李四",
+                    "兜底新票号": "784-1234567890,784-0987654321",
+                    "兜底票新票总价": 1860.5,
+                    "订单收款金额": 1420.0,
+                    "赔付金额": 440.5,
+                    "外采平台": "携程",
+                    "外采支付账号": "支付宝"
+                }];
+
+                const ws = XLSX.utils.json_to_sheet(templateData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "导入模板");
+                
+                const colWidths = [
+                    { wch: 15 },
+                    { wch: 20 },
+                    { wch: 25 },
+                    { wch: 15 },
+                    { wch: 15 },
+                    { wch: 15 },
+                    { wch: 15 },
+                    { wch: 20 }
+                ];
+                ws['!cols'] = colWidths;
+                
+                XLSX.writeFile(wb, "订单审计系统导入模板.xlsx");
+                showAlert('模板文件已下载，请按照模板格式填写数据', 'success');
+            } catch (error) {
+                console.error('下载模板失败:', error);
+                showAlert('下载模板失败，请重试');
+            }
+        }
+
+        // 数据备份功能
+        function backupData() {
+            const backup = {
+                records: records,
+                timestamp: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `audit_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showAlert('数据备份已下载', 'success');
+        }
+
+        // 数据恢复功能
+        function restoreData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const backup = JSON.parse(e.target.result);
+                        
+                        if (!backup.records || !Array.isArray(backup.records)) {
+                            throw new Error('无效的备份文件格式');
+                        }
+                        
+                        if (confirm(`确定要恢复 ${backup.records.length} 条记录吗？这将覆盖当前数据。`)) {
+                            records = backup.records;
+                            sessionStorage.setItem('auditRecords', JSON.stringify(records));
+                            updateTable();
+                            showAlert(`成功恢复 ${records.length} 条记录`, 'success');
+                            
+                            // 恢复数据后自动跳转到最新数据
+                            setTimeout(() => {
+                                scrollToLatestData();
+                            }, 500);
+                        }
+                    } catch (error) {
+                        showAlert(`恢复失败: ${error.message}`);
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        // 高级搜索功能
+        function toggleAdvancedSearch() {
+            const content = document.getElementById('advancedSearchContent');
+            const toggle = document.getElementById('advancedSearchToggle');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.display = 'none';
+                toggle.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function performAdvancedSearch() {
+            const amountField = document.getElementById('amountField').value;
+            const amountMin = parseFloat(document.getElementById('amountMin').value) || -Infinity;
+            const amountMax = parseFloat(document.getElementById('amountMax').value) || Infinity;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const passengerSearch = document.getElementById('passengerSearch').value.trim().toLowerCase();
+            const ticketSearch = document.getElementById('ticketSearch').value.trim().toLowerCase();
+            
+            filteredRecords = records.filter(record => {
+                let match = true;
+                
+                // 金额范围搜索
+                if (match && (amountMin !== -Infinity || amountMax !== Infinity)) {
+                    const amount = record[amountField] || 0;
+                    if (amount < amountMin || amount > amountMax) {
+                        match = false;
+                    }
+                }
+                
+                // 时间范围搜索
+                if (match && (dateFrom || dateTo)) {
+                    const recordDate = record.timestamp ? record.timestamp.split('T')[0] : '';
+                    if (dateFrom && recordDate < dateFrom) match = false;
+                    if (dateTo && recordDate > dateTo) match = false;
+                }
+                
+                // 乘机人搜索
+                if (match && passengerSearch) {
+                    const hasPassenger = record.passengers && 
+                        record.passengers.some(p => p.toLowerCase().includes(passengerSearch));
+                    if (!hasPassenger) match = false;
+                }
+                
+                // 票号搜索
+                if (match && ticketSearch) {
+                    const hasTicket = record.ticketNumbers && 
+                        record.ticketNumbers.some(t => t.toLowerCase().includes(ticketSearch));
+                    if (!hasTicket) match = false;
+                }
+                
+                return match;
+            });
+            
+            isFiltered = true;
+            currentPage = 1;
+            updateTable();
+            
+            showAlert(`高级搜索找到 ${filteredRecords.length} 条记录`, 'success');
+        }
+
+        function clearAdvancedSearch() {
+            document.getElementById('amountMin').value = '';
+            document.getElementById('amountMax').value = '';
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            document.getElementById('passengerSearch').value = '';
+            document.getElementById('ticketSearch').value = '';
+            
+            showAlert('已清除高级搜索条件', 'success');
+        }
+
+        // 添加快捷键支持
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+S 保存/提交
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    handleSubmit();
+                }
+                
+                // Ctrl+F 搜索
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    document.getElementById('orderSearch').focus();
+                }
+                
+                // Ctrl+E 导出
+                if (e.ctrlKey && e.key === 'e') {
+                    e.preventDefault();
+                    exportExcel();
+                }
+                
+                // Ctrl+I 导入
+                if (e.ctrlKey && e.key === 'i') {
+                    e.preventDefault();
+                    importExcel();
+                }
+                
+                // Escape 清除筛选
+                if (e.key === 'Escape') {
+                    clearFilters();
+                }
+            });
+        }
+
+        // 订单号验证
+        function validateOrderId(orderId) {
+            const validationMsg = document.getElementById('orderIdValidation');
+            
+            if (!orderId.trim()) {
+                validationMsg.innerHTML = '<span class="validation-error">请输入订单号</span>';
+                return false;
+            }
+            
+            // 检查订单号格式（示例：字母数字组合）
+            if (!/^[A-Za-z0-9-_]+$/.test(orderId)) {
+                validationMsg.innerHTML = '<span class="validation-warning">订单号格式异常，请确认</span>';
+                return false;
+            }
+            
+            // 检查重复订单号
+            const duplicateCount = records.filter(r => r.orderId === orderId).length;
+            if (duplicateCount > 0) {
+                validationMsg.innerHTML = `<span class="validation-warning">该订单号已存在 ${duplicateCount} 条记录</span>`;
+                return true; // 允许重复但提示
+            }
+            
+            validationMsg.innerHTML = '<span class="validation-success">订单号格式正确</span>';
+            return true;
+        }
+
+        // 审计内容验证
+        function validateAuditText(text) {
+            const validationMsg = document.getElementById('textInputValidation');
+            
+            if (!text.trim()) {
+                validationMsg.innerHTML = '<span class="validation-error">请输入审计内容</span>';
+                return false;
+            }
+            
+            try {
+                const result = parseTextAmount(text);
+                if (result.newTicket === 0 && result.receive === 0 && result.compensation === 0 && !result.isBlackScreen) {
+                    validationMsg.innerHTML = '<span class="validation-warning">未识别到金额信息，可能需要手动填写</span>';
+                    return true;
+                }
+                
+                validationMsg.innerHTML = '<span class="validation-success">审计内容格式正确</span>';
+                return true;
+            } catch (error) {
+                validationMsg.innerHTML = '<span class="validation-error">审计内容格式异常</span>';
+                return false;
+            }
+        }
+
+        function exportExcel() {
+            try {
+                if (typeof XLSX === 'undefined') {
+                    showAlert("表格库加载失败，请刷新页面重试");
+                    return;
+                }
+                if (typeof Blob === 'undefined') {
+                    showAlert("当前浏览器不支持文件导出，请使用Chrome或Edge浏览器");
+                    return;
+                }
+
+                if (!records.length) {
+                    showAlert("无数据可导出");
+                    return;
+                }
+
+                const exportData = records.map(r => ({
+                    "订单号": r.orderId || '无',
+                    "兜底乘机人": r.passengers && r.passengers.length > 0 ? r.passengers.join(',') : '未填写',
+                    "兜底新票号": r.ticketNumbers && r.ticketNumbers.length > 0 ? r.ticketNumbers.join(',') : '未填写',
+                    "兜底票新票总价": Number(r.newTicket) || 0,
+                    "订单收款金额": Number(r.receive) || 0,
+                    "赔付金额": Number(r.compensation) || 0,
+                    "外采平台": r.platform || '未填写',
+                    "外采支付账号": r.payment || '未选择'
+                }));
+
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "审计数据");
+                
+                const filename = `订单审计_${new Date().toISOString().slice(0,10)}.xlsx`;
+                XLSX.writeFile(wb, filename);
+
+                hasExported = true;
+            } catch (error) {
+                console.error('导出失败:', error);
+                showAlert(`导出失败: ${error.message}`);
+            }
+        }
+
+        function updatePagination() {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            const displayRecords = isFiltered ? filteredRecords : records;
+            const totalPages = Math.ceil(displayRecords.length / recordsPerPage);
+            if (totalPages <= 1) return;
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.className = i === currentPage ? 'active' : '';
+                button.onclick = () => {
+                    currentPage = i;
+                    updateTable();
+                };
+                pagination.appendChild(button);
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingIndicator').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingIndicator').style.display = 'none';
+        }
+
+        function updateRecordCount() {
+            const displayRecords = isFiltered ? filteredRecords : records;
+            const startIndex = (currentPage - 1) * recordsPerPage + 1;
+            const endIndex = Math.min(startIndex + recordsPerPage - 1, displayRecords.length);
+            document.getElementById('recordCount').textContent = `显示 ${startIndex}-${endIndex} 条，共 ${displayRecords.length} 条记录`;
+        }
+
+        // 修复版：改进的文本识别函数，只对13位数字客票校验重复性
+        function extractPassengerInfo(text) {
+            const passengerPattern = /乘机人\d*[：:]\s*([^,\n\r]+?)(?=,|\s*身份证|\s*票号|\s*航班号|$)/g;
+            const ticketPattern = /票号[：:]\s*([^,\s\r\n]+)/g;
+            const maxPassengers = 9;
+
+            const passengers = [];
+            const ticketNumbers = [];
+            const errors = [];
+
+            let passengerMatch;
+            while ((passengerMatch = passengerPattern.exec(text)) !== null) {
+                if (passengers.length >= maxPassengers) {
+                    errors.push(`最多只能识别${maxPassengers}位乘机人`);
+                    break;
+                }
+                
+                const passenger = passengerMatch[1];
+                if (passenger) {
+                    const cleanedPassenger = passenger.trim()
+                        .replace(/\s+/g, ' ')
+                        .replace(/[「」【】]/g, '')
+                        .replace(/[,，]$/, '');
+                    if (cleanedPassenger) passengers.push(cleanedPassenger);
+                }
+            }
+
+            let ticketMatch;
+            const seen13DigitTickets = new Set();
+            while ((ticketMatch = ticketPattern.exec(text)) !== null) {
+                const ticket = ticketMatch[1];
+                if (!ticket) continue;
+                
+                const cleanedTicket = ticket.trim()
+                    .replace(/[「」【】]/g, '')
+                    .replace(/[,，]$/, '');
+                
+                // 只对13位数字客票进行重复性校验
+                const numericTicket = cleanedTicket.replace(/\D/g, '');
+                if (numericTicket.length === 13) {
+                    if (seen13DigitTickets.has(numericTicket)) {
+                        errors.push(`发现重复13位客票号: ${cleanedTicket}`);
+                    } else {
+                        seen13DigitTickets.add(numericTicket);
+                    }
+                }
+                
+                ticketNumbers.push(cleanedTicket);
+            }
+
+            // 检查乘机人和票号数量是否匹配
+            if (passengers.length !== ticketNumbers.length && passengers.length > 0 && ticketNumbers.length > 0) {
+                errors.push(`乘机人数量(${passengers.length})与票号数量(${ticketNumbers.length})不匹配`);
+            }
+
+            return { passengers, ticketNumbers, errors };
+        }
+
+        // 离开页面提示
+        window.addEventListener('beforeunload', (event) => {
+            if (!isReturningHome && !hasExported && records.length > 0) {
+                event.preventDefault();
+                event.returnValue = '您有未导出的数据，确定要离开吗？';
+            } else if (!isReturningHome) {
+                sessionStorage.removeItem('auditFormData');
+                sessionStorage.removeItem('auditRecords');
+            }
+        });
+    </script>
+</body>
+</html>
