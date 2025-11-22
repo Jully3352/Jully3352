@@ -1837,7 +1837,7 @@
                     if (this.searchTerm) {
                         filteredModules = filteredModules.filter(module => 
                             module.name.toLowerCase().includes(this.searchTerm) || 
-                            module.description.toLowerCase().includes(this.searchTerm) ||
+                            module.desc.toLowerCase().includes(this.searchTerm) ||
                             (module.tags && module.tags.some(tag => tag.toLowerCase().includes(this.searchTerm)))
                         );
                     }
@@ -1902,7 +1902,7 @@
                     if (this.searchTerm) {
                         filteredModules = filteredModules.filter(module => 
                             module.name.toLowerCase().includes(this.searchTerm) || 
-                            module.description.toLowerCase().includes(this.searchTerm) ||
+                            module.desc.toLowerCase().includes(this.searchTerm) ||
                             (module.tags && module.tags.some(tag => tag.toLowerCase().includes(this.searchTerm)))
                         );
                     }
@@ -1962,13 +1962,13 @@
                         iconClass = iconConfig.mappings[module.platform];
                     }
                     
-                   card.innerHTML = `
-    ${tagsHTML}
-    ${hotBadge}
-    <i class="fas ${iconClass} module-icon"></i>
-    <h3 class="module-name">${module.name}</h3>
-    <p class="module-desc">${module.description || module.desc}</p>  <!-- 这里兼容两种字段名 -->
-`;
+                    card.innerHTML = `
+                        ${tagsHTML}
+                        ${hotBadge}
+                        <i class="fas ${iconClass} module-icon"></i>
+                        <h3 class="module-name">${module.name}</h3>
+                        <p class="module-desc">${module.desc}</p>
+                    `;
                     
                     // 添加点击事件
                     card.addEventListener('click', () => {
