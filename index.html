@@ -229,6 +229,13 @@
             border-radius: 12px;
             color: var(--primary-color);
             font-weight: 600;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .user-info.admin {
+            background: rgba(76, 175, 80, 0.1);
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
         }
 
         .user-info::before {
@@ -238,6 +245,10 @@
             height: 8px;
             border-radius: 50%;
             background: var(--success-color);
+        }
+
+        .user-info.admin::before {
+            background: #4caf50;
         }
 
         .sidebar-nav {
@@ -297,8 +308,8 @@
         }
 
         .nav-item.has-submenu.open .submenu {
-            max-height: 350px; /* 增加高度以容纳更多选项 */
-            overflow-y: auto; /* 添加滚动条 */
+            max-height: 350px;
+            overflow-y: auto;
         }
 
         /* 子菜单滚动条样式 */
@@ -630,7 +641,7 @@
             z-index: 1;
         }
 
-        .module-description {
+        .module-desc {
             color: var(--text-medium);
             font-size: 1.02rem;
             flex-grow: 1;
@@ -1002,6 +1013,28 @@
             background: var(--primary-color);
         }
 
+        /* 加载状态样式 */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-medium);
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* 移动端适配 */
         @media (max-width: 768px) {
             body {
@@ -1172,7 +1205,7 @@
         <header class="platform-header">
             <div class="platform-title">
                 <div>
-                    <div>民航综合业务平台 v3.1</div>
+                    <div id="platformTitle">民航综合业务平台 v3.1</div>
                     <div class="platform-subtitle">高效 · 智能 · 专业 · 安全</div>
                 </div>
                 <div class="fade-in" style="animation-delay: 0.3s">
@@ -1338,11 +1371,20 @@
                     this.currentTheme = localStorage.getItem('theme') || 'default';
                     this.currentHxModule = null;
                     this.modulesData = [];
+                    this.currentUser = {
+                        name: '用户',
+                        role: 'user',
+                        loginTime: null
+                    };
                     this.init();
                 }
 
                 async init() {
-                    await this.checkAuth();
+                    const authResult = await this.checkAuth();
+                    if (!authResult) {
+                        return;
+                    }
+                    
                     await this.loadModulesFromDatabase();
                     this.setupEventListeners();
                     this.renderModules();
@@ -1379,14 +1421,55 @@
                 }
 
                 async checkAuth() {
+                    // 检查是否已登录
                     if (!sessionStorage.getItem('loggedIn')) {
                         window.location.href = 'login.html';
-                        return;
+                        return false;
                     }
                     
+                    // 获取用户信息
                     const username = sessionStorage.getItem('username') || '用户';
-                    document.getElementById('usernameDisplay').textContent = username;
-                    console.log('当前用户:', username);
+                    const userRole = sessionStorage.getItem('userRole') || 'user';
+                    const loginTime = sessionStorage.getItem('loginTime');
+                    
+                    this.currentUser = {
+                        name: username,
+                        role: userRole,
+                        loginTime: loginTime
+                    };
+                    
+                    // 更新界面显示
+                    this.updateUserDisplay();
+                    
+                    console.log('用户登录信息:', this.currentUser);
+                    return true;
+                }
+
+                updateUserDisplay() {
+                    const userInfoElement = document.getElementById('usernameDisplay');
+                    if (!userInfoElement) return;
+                    
+                    let displayText = this.currentUser.name;
+                    
+                    // 如果是管理员，添加管理员标识和样式
+                    if (this.currentUser.role === 'admin') {
+                        displayText += ' (管理员)';
+                        userInfoElement.classList.add('admin');
+                    } else {
+                        userInfoElement.classList.remove('admin');
+                    }
+                    
+                    userInfoElement.textContent = displayText;
+                    
+                    // 更新平台标题（如果是管理员）
+                    this.updatePlatformTitle();
+                }
+
+                updatePlatformTitle() {
+                    const platformTitle = document.getElementById('platformTitle');
+                    if (platformTitle && this.currentUser.role === 'admin') {
+                        platformTitle.innerHTML = '民航综合业务平台 v3.1 <span style="font-size: 0.6em; background: #4caf50; color: white; padding: 2px 8px; border-radius: 12px; vertical-align: middle; margin-left: 10px;">管理员模式</span>';
+                    }
                 }
 
                 // 从数据库加载模块数据
@@ -1752,6 +1835,36 @@
                             settingsMenu.classList.remove('open');
                         });
                     });
+
+                    // 如果是管理员，添加管理员菜单
+                    if (this.currentUser.role === 'admin') {
+                        this.addAdminMenu();
+                    }
+                }
+
+                addAdminMenu() {
+                    const sidebarNav = document.querySelector('.sidebar-nav');
+                    const settingsMenu = document.getElementById('settingsMenu');
+                    
+                    // 创建管理员菜单项
+                    const adminMenuItem = document.createElement('div');
+                    adminMenuItem.className = 'nav-item';
+                    adminMenuItem.innerHTML = `
+                        <i class="fas fa-user-shield"></i>
+                        <span>系统管理</span>
+                    `;
+                    
+                    // 在设置菜单前插入管理员菜单
+                    sidebarNav.insertBefore(adminMenuItem, settingsMenu);
+                    
+                    // 添加点击事件
+                    adminMenuItem.addEventListener('click', () => {
+                        this.showAdminPanel();
+                    });
+                }
+
+                showAdminPanel() {
+                    alert('管理员功能面板\n\n当前用户: ' + this.currentUser.name + '\n权限: ' + (this.currentUser.role === 'admin' ? '管理员' : '普通用户') + '\n登录时间: ' + new Date(this.currentUser.loginTime).toLocaleString());
                 }
 
                 updateContentByPage() {
