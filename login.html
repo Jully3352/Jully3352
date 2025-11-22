@@ -135,6 +135,9 @@
             border-bottom: 1px solid #f1f5f9;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .user-item:hover {
@@ -147,6 +150,22 @@
 
         .user-item.active {
             background: #0a5cb8;
+            color: white;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #e2e8f0;
+        }
+
+        .user-item.active .user-role {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .user-role.admin {
+            background: #4caf50;
             color: white;
         }
 
@@ -164,6 +183,22 @@
             margin-bottom: 15px;
             color: #c33;
             display: none;
+        }
+
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #0a5cb8;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -194,7 +229,10 @@
             <div class="form-group">
                 <label><i class="fas fa-users"></i> 选择用户</label>
                 <div class="user-list" id="userList">
-                    <div class="loading">正在加载用户列表...</div>
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        正在从数据库加载用户列表...
+                    </div>
                 </div>
             </div>
             
@@ -210,6 +248,13 @@
     </div>
 
     <script>
+        // Supabase 配置
+        const SUPABASE_URL = 'https://wglylvfuwtwrapgkoixl.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnbHlsdmZ1d3R3cmFwZ2tvaXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3NjQwMDIsImV4cCI6MjA3OTM0MDAwMn0.OiINpSKraNUZgZc1Y7CW2U7igCEJbhpZHZ3Lfqnrmyg';
+        
+        // 初始化 Supabase 客户端
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         class LoginManager {
             constructor() {
                 this.users = [];
@@ -217,50 +262,62 @@
             }
 
             async init() {
-                await this.loadUsers();
+                await this.loadUsersFromDatabase();
                 this.setupEventListeners();
                 this.renderUserList();
             }
 
-            async loadUsers() {
+            async loadUsersFromDatabase() {
                 try {
-                    const response = await fetch('users.json');
-                    if (!response.ok) {
-                        throw new Error('无法加载用户数据');
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .order('username');
+
+                    if (error) {
+                        throw new Error('无法从数据库加载用户数据: ' + error.message);
                     }
-                    const data = await response.json();
-                    this.users = data.users || [];
-                    console.log('加载用户数据:', this.users);
+                    
+                    this.users = data || [];
+                    console.log('从数据库加载用户数据:', this.users);
+                    
+                    if (this.users.length === 0) {
+                        throw new Error('数据库中没有用户数据');
+                    }
                 } catch (error) {
-                    console.error('加载用户数据失败:', error);
-                    this.showError('无法加载用户数据，请检查网络连接');
-                    // 使用默认用户数据作为后备
-                    this.users = [
-                        {"username": "吴晨晨", "password": "123456"},
-                        {"username": "朱巾杰", "password": "123456"},
-                        {"username": "胡国柱", "password": "123456"},
-                        {"username": "胡柯兰", "password": "123456"},
-                        {"username": "俞子文", "password": "123456"},
-                        {"username": "杜千慧", "password": "123456"},
-                        {"username": "方婷婷", "password": "123456"},
-                        {"username": "刘广鑫", "password": "123456"},
-                        {"username": "刘强", "password": "123456"},
-                        {"username": "韩琼", "password": "123456"},
-                        {"username": "周璇", "password": "123456"},
-                        {"username": "刘兰欣", "password": "123456"},
-                        {"username": "黄曌", "password": "123456"},
-                        {"username": "测试4", "password": "123456"},
-                        {"username": "薛俊琴", "password": "123456"},
-                        {"username": "荆馨", "password": "123456"},
-                        {"username": "谭浪", "password": "123456"},
-                        {"username": "徐祥新", "password": "123456"},
-                        {"username": "张夏书", "password": "123456"},
-                        {"username": "杜一帆", "password": "123456"},
-                        {"username": "邓文飞", "password": "123456"},
-                        {"username": "龚寒霜", "password": "123456"},
-                        {"username": "程萍", "password": "123456"}
-                    ];
+                    console.error('从数据库加载用户数据失败:', error);
+                    this.showError('无法从数据库加载用户数据，使用本地备份数据');
+                    // 使用本地备份数据
+                    this.users = this.getLocalUsers();
                 }
+            }
+
+            getLocalUsers() {
+                return [
+                    {"username": "吴晨晨", "password": "123456", "role": "user", "display_name": "吴晨晨", "department": "业务部"},
+                    {"username": "朱巾杰", "password": "123456", "role": "user", "display_name": "朱巾杰", "department": "业务部"},
+                    {"username": "胡国柱", "password": "123456", "role": "admin", "display_name": "胡国柱", "department": "管理部"},
+                    {"username": "胡柯兰", "password": "123456", "role": "user", "display_name": "胡柯兰", "department": "业务部"},
+                    {"username": "俞子文", "password": "123456", "role": "user", "display_name": "俞子文", "department": "业务部"},
+                    {"username": "杜千慧", "password": "123456", "role": "user", "display_name": "杜千慧", "department": "业务部"},
+                    {"username": "方婷婷", "password": "123456", "role": "user", "display_name": "方婷婷", "department": "业务部"},
+                    {"username": "刘广鑫", "password": "123456", "role": "user", "display_name": "刘广鑫", "department": "业务部"},
+                    {"username": "刘强", "password": "123456", "role": "user", "display_name": "刘强", "department": "业务部"},
+                    {"username": "韩琼", "password": "123456", "role": "user", "display_name": "韩琼", "department": "业务部"},
+                    {"username": "周璇", "password": "123456", "role": "user", "display_name": "周璇", "department": "业务部"},
+                    {"username": "刘兰欣", "password": "123456", "role": "user", "display_name": "刘兰欣", "department": "业务部"},
+                    {"username": "黄曌", "password": "123456", "role": "user", "display_name": "黄曌", "department": "业务部"},
+                    {"username": "测试4", "password": "123456", "role": "user", "display_name": "测试4", "department": "测试部"},
+                    {"username": "薛俊琴", "password": "123456", "role": "user", "display_name": "薛俊琴", "department": "业务部"},
+                    {"username": "荆馨", "password": "123456", "role": "user", "display_name": "荆馨", "department": "业务部"},
+                    {"username": "谭浪", "password": "123456", "role": "user", "display_name": "谭浪", "department": "业务部"},
+                    {"username": "徐祥新", "password": "123456", "role": "user", "display_name": "徐祥新", "department": "业务部"},
+                    {"username": "张夏书", "password": "123456", "role": "user", "display_name": "张夏书", "department": "业务部"},
+                    {"username": "杜一帆", "password": "123456", "role": "user", "display_name": "杜一帆", "department": "业务部"},
+                    {"username": "邓文飞", "password": "123456", "role": "user", "display_name": "邓文飞", "department": "业务部"},
+                    {"username": "龚寒霜", "password": "123456", "role": "user", "display_name": "龚寒霜", "department": "业务部"},
+                    {"username": "程萍", "password": "123456", "role": "user", "display_name": "程萍", "department": "业务部"}
+                ];
             }
 
             renderUserList() {
@@ -272,7 +329,8 @@
 
                 userList.innerHTML = this.users.map(user => `
                     <div class="user-item" data-username="${user.username}">
-                        ${user.username}
+                        <span>${user.display_name || user.username}</span>
+                        <span class="user-role ${user.role}">${user.role === 'admin' ? '管理员' : '用户'}</span>
                     </div>
                 `).join('');
 
@@ -317,7 +375,7 @@
                 });
             }
 
-            handleLogin() {
+            async handleLogin() {
                 const username = document.getElementById('username').value.trim();
                 const password = document.getElementById('password').value;
                 const loginBtn = document.getElementById('loginBtn');
@@ -341,18 +399,45 @@
                     return;
                 }
 
+                // 记录登录日志
+                await this.recordLogin(user.username);
+
                 // 登录成功
                 this.loginSuccess(user);
+            }
+
+            async recordLogin(username) {
+                try {
+                    const { error } = await supabase
+                        .from('user_login_logs')
+                        .insert([
+                            { 
+                                username: username,
+                                login_time: new Date().toISOString(),
+                                user_agent: navigator.userAgent
+                            }
+                        ]);
+
+                    if (error) {
+                        console.error('记录登录日志失败:', error);
+                    } else {
+                        console.log('登录日志记录成功');
+                    }
+                } catch (error) {
+                    console.error('记录登录日志时发生错误:', error);
+                }
             }
 
             loginSuccess(user) {
                 // 设置用户信息到sessionStorage
                 sessionStorage.setItem('loggedIn', 'true');
                 sessionStorage.setItem('username', user.username);
-                sessionStorage.setItem('userRole', user.username === '胡国柱' ? 'admin' : 'user');
+                sessionStorage.setItem('displayName', user.display_name || user.username);
+                sessionStorage.setItem('userRole', user.role);
+                sessionStorage.setItem('department', user.department || '');
                 sessionStorage.setItem('loginTime', new Date().toISOString());
 
-                console.log('用户登录成功:', user.username);
+                console.log('用户登录成功:', user);
 
                 // 跳转到主页面
                 setTimeout(() => {
