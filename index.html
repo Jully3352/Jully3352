@@ -1069,7 +1069,7 @@
                 <span>民航业务平台</span>
             </div>
             <div class="user-info" id="usernameDisplay">
-                管理员
+                加载中...
             </div>
         </div>
         
@@ -1222,12 +1222,18 @@
         <main>
             <h2 class="section-title"><i class="fas fa-fire"></i>热门功能</h2>
             <div class="module-grid" id="hotModules">
-                <!-- 热门模块将通过JS动态生成 -->
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>正在加载热门功能...</p>
+                </div>
             </div>
             
             <h2 class="section-title"><i class="fas fa-th-large"></i>所有功能</h2>
             <div class="module-grid" id="allModules">
-                <!-- 所有模块将通过JS动态生成 -->
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>正在加载所有功能...</p>
+                </div>
             </div>
         </main>
     </div>
@@ -1330,14 +1336,14 @@
                     this.searchTerm = '';
                     this.currentPage = 'home';
                     this.currentTheme = localStorage.getItem('theme') || 'default';
-                    this.currentHxModule = null; // 存储当前点击的海系非自愿退票模块
-                    this.modulesData = []; // 存储从数据库获取的模块数据
+                    this.currentHxModule = null;
+                    this.modulesData = [];
                     this.init();
                 }
 
                 async init() {
                     await this.checkAuth();
-                    await this.loadModulesFromDatabase(); // 从数据库加载模块数据
+                    await this.loadModulesFromDatabase();
                     this.setupEventListeners();
                     this.renderModules();
                     this.applyTheme(this.currentTheme);
@@ -1359,9 +1365,7 @@
                     });
                     
                     document.getElementById('goToPlatformBtn').addEventListener('click', () => {
-                        // 跳转平台
                         window.open('https://asp.hnair.com/#/', '_blank');
-                        // 显示账号信息弹窗
                         if (this.currentHxModule) {
                             this.showCredentials(this.currentHxModule);
                         }
@@ -1369,7 +1373,6 @@
                     });
                     
                     document.getElementById('viewOperationBtn').addEventListener('click', () => {
-                        // 查看操作方式
                         window.open('http://wh.corp.qunar.com/#/quHelp/quArticle/35114?question=%E6%B5%B7%E7%B3%BB%E9%9D%9E%E8%87%AA%E6%84%BF%E9%80%80%E5%87%AD%E8%AF%81%E4%B8%8A%E4%BC%A0', '_blank');
                         this.toggleHxChoiceNote(false);
                     });
@@ -1378,31 +1381,35 @@
                 async checkAuth() {
                     if (!sessionStorage.getItem('loggedIn')) {
                         window.location.href = 'login.html';
+                        return;
                     }
-                    document.getElementById('usernameDisplay').textContent = 
-                        sessionStorage.getItem('username') || '用户';
+                    
+                    const username = sessionStorage.getItem('username') || '用户';
+                    document.getElementById('usernameDisplay').textContent = username;
+                    console.log('当前用户:', username);
                 }
 
                 // 从数据库加载模块数据
                 async loadModulesFromDatabase() {
                     try {
+                        console.log('开始从数据库加载模块数据...');
+                        
                         const { data, error } = await supabase
                             .from('modules')
                             .select('*')
                             .order('clicks', { ascending: false });
 
                         if (error) {
-                            console.error('Error loading modules from database:', error);
-                            // 如果数据库加载失败，使用默认数据
+                            console.error('从数据库加载模块时出错:', error);
                             this.modulesData = this.getDefaultModulesData();
                         } else {
+                            console.log('成功从数据库加载模块数据:', data);
                             this.modulesData = data || [];
                         }
 
-                        // 更新统计信息
                         this.updateStats();
                     } catch (error) {
-                        console.error('Error loading modules:', error);
+                        console.error('加载模块时发生错误:', error);
                         this.modulesData = this.getDefaultModulesData();
                         this.updateStats();
                     }
@@ -1410,8 +1417,8 @@
 
                 // 获取默认模块数据（数据库不可用时使用）
                 getDefaultModulesData() {
+                    console.log('使用默认模块数据');
                     return [
-                        // 核心功能模块
                         {
                             id: 'aviation',
                             name: '黑屏智能指令生成',
@@ -1448,7 +1455,6 @@
                             icon: 'fa-passport',
                             clicks: 25
                         },
-                        // 数据对比模块
                         {
                             id: 'compare',
                             name: '智能数据对比',
@@ -1458,7 +1464,6 @@
                             icon: 'fa-file-excel',
                             clicks: 18
                         },
-                        // 审计系统模块
                         {
                             id: 'audit',
                             name: '兜底记录审计系统',
@@ -1468,7 +1473,6 @@
                             icon: 'fa-chart-pie',
                             clicks: 15
                         },
-                        // 行程单生成模块
                         {
                             id: 'itinerary',
                             name: '国际行程单生成器',
@@ -1478,8 +1482,6 @@
                             icon: 'fa-ticket-alt',
                             clicks: 29
                         },
-                        
-                        // 代理人平台模块
                         {
                             id: 'hu',
                             name: 'HU代理人平台',
@@ -1541,7 +1543,6 @@
                             passwords: "密码:扫码登录",
                             clicks: 11
                         },
-                        // 知识库模块
                         {
                             id: 'knowledge1',
                             name: '客票病退操作知识库',
@@ -1578,7 +1579,6 @@
                             icon: 'fa-exclamation-triangle',
                             clicks: 14
                         },
-                        // 特殊业务模块
                         {
                             id: 'hx',
                             name: '海系非自愿退票',
@@ -1630,7 +1630,6 @@
                             icon: 'fa-file-contract',
                             clicks: 26
                         },
-                        // 短信模板
                         {
                             id: 'sms',
                             name: '短信模板中心',
@@ -1640,7 +1639,6 @@
                             icon: 'fa-comment-dots',
                             clicks: 31
                         },
-                        // 更多
                         {
                             id: 'more',
                             name: '更多板块研发中',
@@ -1657,9 +1655,9 @@
                 updateStats() {
                     const totalModules = this.modulesData.length;
                     const airlineModules = this.modulesData.filter(module => 
-                        module.tags.includes('代理系统')).length;
+                        module.tags && module.tags.includes('代理系统')).length;
                     const toolModules = this.modulesData.filter(module => 
-                        module.tags.includes('核心工具')).length;
+                        module.tags && module.tags.includes('核心工具')).length;
 
                     document.getElementById('modulesCount').textContent = totalModules;
                     document.getElementById('airlinesCount').textContent = airlineModules;
@@ -1668,12 +1666,10 @@
 
                 // 保存点击数据到数据库
                 async saveClickData(moduleId) {
-                    // 先更新本地数据
                     const module = this.modulesData.find(m => m.id === moduleId);
                     if (module) {
                         module.clicks = (module.clicks || 0) + 1;
                         
-                        // 尝试更新数据库
                         try {
                             const { error } = await supabase
                                 .from('modules')
@@ -1681,10 +1677,12 @@
                                 .eq('id', moduleId);
 
                             if (error) {
-                                console.error('Error updating click count in database:', error);
+                                console.error('更新数据库点击量时出错:', error);
+                            } else {
+                                console.log(`模块 ${moduleId} 点击量更新为: ${module.clicks}`);
                             }
                         } catch (error) {
-                            console.error('Error updating click count:', error);
+                            console.error('更新点击量时发生错误:', error);
                         }
                     }
                 }
@@ -1732,7 +1730,6 @@
                                 i.classList.remove('active'));
                             item.classList.add('active');
                             
-                            // 更新当前页面
                             this.currentPage = item.dataset.page;
                             this.updateContentByPage();
                         });
@@ -1752,25 +1749,20 @@
                             const theme = option.dataset.theme;
                             this.applyTheme(theme);
                             
-                            // 关闭设置菜单
                             settingsMenu.classList.remove('open');
                         });
                     });
                 }
 
                 updateContentByPage() {
-                    // 根据当前页面更新内容
                     console.log(`切换到页面: ${this.currentPage}`);
                     
-                    // 示例：根据页面筛选模块
                     if (this.currentPage === 'home') {
-                        // 首页显示所有模块
                         this.currentCategory = 'all';
                         document.querySelectorAll('.category-btn').forEach(btn => {
                             btn.classList.toggle('active', btn.dataset.category === 'all');
                         });
                     } else {
-                        // 其他页面显示对应分类的模块
                         const categoryMap = {
                             'tools': '核心工具',
                             'analytics': '数据分析',
@@ -1794,16 +1786,12 @@
                 }
 
                 applyTheme(theme) {
-                    // 移除所有主题类
                     document.body.className = '';
-                    // 添加新主题类
                     document.body.classList.add(`theme-${theme}`);
                     
-                    // 保存主题设置
                     localStorage.setItem('theme', theme);
                     this.currentTheme = theme;
                     
-                    // 更新主题指示器
                     const themeNames = {
                         'default': '默认蓝色',
                         'green': '清新绿色',
@@ -1826,14 +1814,11 @@
                     const hotContainer = document.getElementById('hotModules');
                     const allContainer = document.getElementById('allModules');
                     
-                    // 清空容器
                     hotContainer.innerHTML = '';
                     allContainer.innerHTML = '';
                     
-                    // 过滤模块
                     let filteredModules = this.modulesData;
                     
-                    // 应用搜索
                     if (this.searchTerm) {
                         filteredModules = filteredModules.filter(module => 
                             module.name.toLowerCase().includes(this.searchTerm) || 
@@ -1842,33 +1827,28 @@
                         );
                     }
                     
-                    // 应用分类筛选
                     if (this.currentCategory !== 'all') {
                         filteredModules = filteredModules.filter(module => 
                             module.tags && module.tags.includes(this.currentCategory)
                         );
                     }
                     
-                    // 获取热门模块（按点击量排序的前4个）
                     const hotModules = [...filteredModules]
                         .sort((a, b) => (b.clicks || 0) - (a.clicks || 0))
                         .slice(0, 4)
-                        .filter(module => (module.clicks || 0) > 0); // 只显示有点击量的模块
+                        .filter(module => (module.clicks || 0) > 0);
                     
-                    // 渲染热门模块
                     if (hotModules.length > 0) {
                         hotModules.forEach(module => {
                             hotContainer.appendChild(this.createModuleCard(module, true));
                         });
                     } else {
-                        // 如果没有热门模块，显示默认推荐
                         const defaultHotModules = filteredModules.slice(0, 3);
                         defaultHotModules.forEach(module => {
                             hotContainer.appendChild(this.createModuleCard(module, true));
                         });
                     }
                     
-                    // 渲染所有模块（按原始顺序，不按点击量排序）
                     if (filteredModules.length > 0) {
                         filteredModules.forEach(module => {
                             allContainer.appendChild(this.createModuleCard(module));
@@ -1883,7 +1863,6 @@
                         `;
                     }
                     
-                    // 添加卡片动画
                     setTimeout(() => {
                         document.querySelectorAll('.module-card').forEach(card => {
                             card.classList.add('loaded');
@@ -1891,14 +1870,12 @@
                     }, 50);
                 }
 
-                // 单独渲染热门模块（用于点击后即时更新）
                 renderHotModules() {
                     const hotContainer = document.getElementById('hotModules');
                     hotContainer.innerHTML = '';
                     
                     let filteredModules = this.modulesData;
                     
-                    // 应用搜索和分类筛选
                     if (this.searchTerm) {
                         filteredModules = filteredModules.filter(module => 
                             module.name.toLowerCase().includes(this.searchTerm) || 
@@ -1913,26 +1890,22 @@
                         );
                     }
                     
-                    // 获取热门模块（按点击量排序的前4个）
                     const hotModules = [...filteredModules]
                         .sort((a, b) => (b.clicks || 0) - (a.clicks || 0))
                         .slice(0, 4)
                         .filter(module => (module.clicks || 0) > 0);
                     
-                    // 渲染热门模块
                     if (hotModules.length > 0) {
                         hotModules.forEach(module => {
                             hotContainer.appendChild(this.createModuleCard(module, true));
                         });
                     } else {
-                        // 如果没有热门模块，显示默认推荐
                         const defaultHotModules = filteredModules.slice(0, 3);
                         defaultHotModules.forEach(module => {
                             hotContainer.appendChild(this.createModuleCard(module, true));
                         });
                     }
                     
-                    // 重新添加动画
                     setTimeout(() => {
                         hotContainer.querySelectorAll('.module-card').forEach(card => {
                             card.classList.add('loaded');
@@ -1948,15 +1921,12 @@
                     card.dataset.tags = module.tags ? module.tags.join(',') : '';
                     if (module.platform) card.dataset.platform = module.platform;
                     
-                    // 生成标签
                     const tagsHTML = module.tags ? module.tags.map(tag => 
                         `<span class="module-tag">${tag}</span>`
                     ).join('') : '';
                     
-                    // 热门标记
                     const hotBadge = isHot ? '<div class="hot-badge">热门</div>' : '';
                     
-                    // 图标
                     let iconClass = module.icon || 'fa-cube';
                     if (module.platform && iconConfig.mappings[module.platform]) {
                         iconClass = iconConfig.mappings[module.platform];
@@ -1967,10 +1937,9 @@
                         ${hotBadge}
                         <i class="fas ${iconClass} module-icon"></i>
                         <h3 class="module-name">${module.name}</h3>
-                        <p class="module-description">${module.description}</p>
+                        <p class="module-desc">${module.description}</p>
                     `;
                     
-                    // 添加点击事件
                     card.addEventListener('click', () => {
                         this.handleCardClick(card, module);
                     });
@@ -1979,35 +1948,29 @@
                 }
 
                 handleCardClick(card, module) {
-                    // 记录点击
                     this.saveClickData(module.id);
                     
-                    // 特殊处理包机查询模块
                     if (module.id === 'charter') {
                         this.showCharterInfo();
                         return;
                     }
                     
-                    // 特殊处理海系非自愿退票模块
                     if (module.id === 'hx') {
-                        this.currentHxModule = module; // 保存当前模块信息
+                        this.currentHxModule = module;
                         this.showHxChoice();
                         return;
                     }
                     
-                    // 打开链接
                     const url = card.dataset.url;
                     const platform = card.dataset.platform;
                     if (url) {
                         window.open(url, '_blank');
                     }
                     
-                    // 显示凭证（如果需要）
                     if (['HU', '3U', 'HX', 'DFT'].includes(platform)) {
                         this.showCredentials(module);
                     }
                     
-                    // 立即更新热门模块显示
                     this.renderHotModules();
                 }
 
@@ -2019,7 +1982,6 @@
                     document.getElementById('charterNote').style.right = show ? '30px' : '-400px';
                     document.getElementById('overlay').style.display = show ? 'block' : 'none';
                     
-                    // 关闭其他弹窗
                     if (show) {
                         this.toggleCredentialNote(false);
                         this.toggleHxChoiceNote(false);
@@ -2034,7 +1996,6 @@
                     document.getElementById('hxChoiceNote').style.right = show ? '30px' : '-400px';
                     document.getElementById('overlay').style.display = show ? 'block' : 'none';
                     
-                    // 关闭其他弹窗
                     if (show) {
                         this.toggleCredentialNote(false);
                         this.toggleCharterNote(false);
@@ -2099,7 +2060,6 @@
                     document.getElementById('loginNote').style.right = show ? '30px' : '-400px';
                     document.getElementById('overlay').style.display = show ? 'block' : 'none';
                     
-                    // 关闭其他弹窗
                     if (show) {
                         this.toggleCharterNote(false);
                         this.toggleHxChoiceNote(false);
@@ -2116,7 +2076,6 @@
                 }
 
                 copyToClipboard(text, button) {
-                    // 使用现代剪贴板API
                     if (navigator.clipboard && window.isSecureContext) {
                         navigator.clipboard.writeText(text).then(() => {
                             this.showCopyNotice(button);
@@ -2125,7 +2084,6 @@
                             this.fallbackCopyText(text, button);
                         });
                     } else {
-                        // 使用降级方案
                         this.fallbackCopyText(text, button);
                     }
                 }
@@ -2152,7 +2110,6 @@
                     notice.className = 'copy-notice';
                     notice.textContent = '✓ 已复制';
                     
-                    // 确保按钮有父元素
                     if (button && button.parentNode) {
                         button.parentNode.appendChild(notice);
                         setTimeout(() => {
@@ -2164,7 +2121,6 @@
                 }
             }
 
-            // 初始化
             document.addEventListener('DOMContentLoaded', () => new PlatformManager());
         })();
     </script>
