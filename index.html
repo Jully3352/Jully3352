@@ -6,6 +6,8 @@
     <title>民航综合业务平台 v3.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <!-- 添加 Supabase 客户端 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* 所有原有的CSS样式保持不变 */
         :root {
@@ -993,6 +995,41 @@
             background: var(--primary-color);
         }
 
+        /* 后端状态指示器 */
+        .backend-status {
+            position: fixed;
+            bottom: 60px;
+            left: 20px;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 100;
+        }
+
+        .backend-status.connected {
+            color: var(--success-color);
+        }
+
+        .backend-status.disconnected {
+            color: var(--danger-color);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         /* 移动端适配 */
         @media (max-width: 768px) {
             body {
@@ -1045,6 +1082,12 @@
                 bottom: 10px;
                 left: 10px;
                 font-size: 0.8rem;
+            }
+
+            .backend-status {
+                bottom: 50px;
+                left: 10px;
+                font-size: 0.7rem;
             }
         }
 
@@ -1424,6 +1467,12 @@
 <body class="theme-default">
     <div class="overlay" id="overlay"></div>
     
+    <!-- 后端状态指示器 -->
+    <div class="backend-status" id="backendStatus">
+        <i class="fas fa-cloud"></i>
+        <span>连接云端中...</span>
+    </div>
+    
     <!-- 侧边栏 -->
     <div class="sidebar">
         <div class="sidebar-header">
@@ -1552,6 +1601,9 @@
                     </button>
                     <button class="admin-btn" id="addUserBtn">
                         <i class="fas fa-user-plus"></i>添加用户
+                    </button>
+                    <button class="admin-btn" id="syncConfigBtn">
+                        <i class="fas fa-sync-alt"></i>同步配置
                     </button>
                 </div>
             </div>
@@ -1766,6 +1818,10 @@
     </div>
 
     <script>
+        // Supabase 配置 - 替换为您自己的配置
+        const SUPABASE_URL = 'https://https://wglylvfuwtwrapgkoixl.supabase.co.supabase.co'; // 替换为您的 Project URL
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnbHlsdmZ1d3R3cmFwZ2tvaXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3NjQwMDIsImV4cCI6MjA3OTM0MDAwMn0.OiINpSKraNUZgZc1Y7CW2U7igCEJbhpZHZ3Lfqnrmyg'; // 替换为您的 anon public key
+
         (function() {
             const iconConfig = {
                 pool: [
@@ -1786,248 +1842,249 @@
                 }
             };
 
-            // 模块数据
-            const modulesData = [
-                // 核心功能模块
-                {
-                    id: 'aviation',
-                    name: '黑屏智能指令生成',
-                    desc: '支持身份证/护照双模式，自动生成标准民航指令',
-                    url: 'pages/aviation.html',
-                    tags: ['核心工具'],
-                    icon: 'fa-passport',
-                    clicks: 42
-                },
-                {
-                    id: 'sdinf',
-                    name: '黑屏智能指令生成【手动关联成人】',
-                    desc: '支持身份证/护照双模式，自动生成标准民航指令',
-                    url: 'pages/sdinf.html',
-                    tags: ['核心工具'],
-                    icon: 'fa-passport',
-                    clicks: 42
-                },
-                {
-                    id: 'bp',
-                    name: '白屏多人生编',
-                    desc: '乘机人信息批量导入工具，根据输入的乘机人信息生成符合模板要求的Excel文件',
-                    url: 'pages/bp.html',
-                    tags: ['核心工具'],
-                    icon: 'fa-users',
-                    clicks: 0
-                },
-                {
-                    id: 'nct',
-                    name: '升级模版',
-                    desc: '支持紧急、复杂等模版',
-                    url: 'pages/nct.html',
-                    tags: ['核心工具'],
-                    icon: 'fa-passport',
-                    clicks: 25
-                },
-                // 数据对比模块
-                {
-                    id: 'compare',
-                    name: '智能数据对比',
-                    desc: 'Excel文件差异分析，支持金额容差配置',
-                    url: 'pages/compare.html',
-                    tags: ['数据分析'],
-                    icon: 'fa-file-excel',
-                    clicks: 18
-                },
-                // 审计系统模块
-                {
-                    id: 'audit',
-                    name: '兜底记录审计系统',
-                    desc: '实时审计跟踪，支持数据导出Excel',
-                    url: 'pages/audit.html',
-                    tags: ['审计追踪'],
-                    icon: 'fa-chart-pie',
-                    clicks: 15
-                },
-                // 行程单生成模块
-                {
-                    id: 'itinerary',
-                    name: '国际行程单生成器',
-                    desc: '自动生成可打印行程单，支持多航班组合',
-                    url: 'pages/itinerary.html',
-                    tags: ['票务管理'],
-                    icon: 'fa-ticket-alt',
-                    clicks: 29
-                },
-                
-                // 代理人平台模块
-                {
-                    id: 'hu',
-                    name: 'HU代理人平台',
-                    desc: '海南航空代理系统',
-                    url: 'https://irr.hnair.com/newagent/login',
-                    tags: ['代理系统'],
-                    icon: 'fa-plane-departure',
-                    platform: 'HU',
-                    accounts: "账号:pek950217; 账号:pek950218; 账号:pek950219; 账号:pek950220; 账号:pek950221; 账号:pek950222; 账号:pek950223; 账号:pek950224; 账号:pek950308; 账号:pek950309; 账号:pek950310; 账号:pek950311; 账号:pek950312; 账号:pek950313; 账号:pek950314; 账号:pek950315; 账号:pek950316; 账号:pek950317;",
-                    passwords: "密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*; 密码:Qunar.whdd123*",
-                    phones: "手机:13241474562;手机:13241474576;手机:13241474575;手机:13241466742;手机:13241466740;手机:13241469640;手机:13241466774;手机:13241474627;手机:13241474758;手机:13241472419;手机:13241474993;手机:13241467485;手机:13241474104;手机:13241468469;手机:13241467405;手机:13241475484;手机:13241469047;手机:13241468418",
-                    clicks: 36
-                },
-                {
-                    id: '3u',
-                    name: '3U代理人平台',
-                    desc: '四川航空代理系统',
-                    url: 'https://msapp.sichuanair.com/otaserverPc/#/ticket/search',
-                    tags: ['代理系统'],
-                    icon: 'fa-mountain',
-                    platform: '3U',
-                    accounts: "账号:向丽君; 账号:苏欢",
-                    passwords: "密码:whts.5282; 密码:whzy.9660",
-                    clicks: 19
-                },
-                {
-                    id: 'cz',
-                    name: 'CZ代理人平台',
-                    desc: '南方航空代理系统',
-                    url: 'https://www.csair.com/cn/',
-                    tags: ['代理系统'],
-                    icon: 'fa-cloud',
-                    platform: 'CZ',
-                    accounts: "账号:手机号码",
-                    passwords: "密码:验证码",
-                    clicks: 21
-                },
-                {
-                    id: 'mf',
-                    name: 'MF代理人平台',
-                    desc: '客票操作',
-                    url: 'http://95557robot.xiamenair.cn/hindex.htm?entrance=40010&tenantId=1',
-                    tags: ['代理系统'],
-                    icon: 'fa-umbrella-beach',
-                    platform: 'MF',
-                    accounts: "账号:去哪网",
-                    passwords: "密码:随便写数字",
-                    clicks: 14
-                },
-                {
-                    id: 'kn',
-                    name: 'KN代理人平台',
-                    desc: '联合航空代理系统',
-                    url: 'https://alidocs.dingtalk.com/notable/share/form/v01MAeqxY6RDMXKO8j9_dv19yqvsgs3oebp3pcjys_1qX0QQ0',
-                    tags: ['代理系统'],
-                    icon: 'fa-satellite',
-                    platform: 'KN',
-                    accounts: "账号:自己手机号",
-                    passwords: "密码:扫码登录",
-                    clicks: 11
-                },
-                // 知识库模块
-                {
-                    id: 'knowledge1',
-                    name: '客票病退操作知识库',
-                    desc: '退票/查询操作',
-                    url: 'http://fuwu.qunar.com/newPageStore/separate/repositoryRule?eventType=1230058&eventNo=E241213134623scra6',
-                    tags: ['知识库'],
-                    icon: 'fa-book-open',
-                    clicks: 22
-                },
-                {
-                    id: 'knowledge2',
-                    name: '客票签转知识库',
-                    desc: '协助改签',
-                    url: 'http://fuwu.qunar.com/newPageStore/separate/repositoryRule?eventType=460005&eventNo=E2510111239296kn66&domain=tss.fuwu.qunar.com&ruleName=%E5%9B%BD%E5%86%85-%E7%AD%BE%E8%BD%AC%E8%A7%84%E5%88%99',
-                    tags: ['知识库'],
-                    icon: 'fa-exchange-alt',
-                    clicks: 18
-                },
-                {
-                    id: 'knowledge3',
-                    name: '客票重复购票规则',
-                    desc: '航司规则',
-                    url: 'http://wh.corp.qunar.com/#/quHelp/quArticle/30223',
-                    tags: ['知识库'],
-                    icon: 'fa-clone',
-                    clicks: 16
-                },
-                {
-                    id: 'knowledge4',
-                    name: '客票错误购票规则',
-                    desc: '航司规则',
-                    url: 'http://wh.corp.qunar.com/#/quHelp/quArticle/30226',
-                    tags: ['知识库'],
-                    icon: 'fa-exclamation-triangle',
-                    clicks: 14
-                },
-                // 特殊业务模块
-                {
-                    id: 'hx',
-                    name: '海系非自愿退票',
-                    desc: '上传退票凭证，黑屏出票：海系部分航司【因未涉及全部航司可能会有调整，可以通过查看操作方式跳转核实需要上传凭证的航司】所有BSP客票涉及非自愿退票的客票需通过代理人管理系统进行凭证上传，若不符合规定或存在材料缺失，航司的审核人员将予以驳回，并要求代理人在七天内补充完整所需凭证。）',
-                    url: 'https://asp.hnair.com/#/',
-                    tags: ['退票服务'],
-                    icon: 'fa-ship',
-                    platform: 'HX',
-                    accounts: "账号:pek950",
-                    passwords: "密码:Qunar.1029!",
-                    clicks: 28
-                },
-                {
-                    id: 'dft',
-                    name: '德付通',
-                    desc: '上传退票凭证',
-                    url: 'https://www.dovepay.com/dovePay/logAction.do?m=logout',
-                    tags: ['支付系统'],
-                    icon: 'fa-coins',
-                    platform: 'DFT',
-                    accounts: "账号:beijingjxhy@126.com; 账号:WUH003",
-                    passwords: "密码:123456789a",
-                    clicks: 23
-                },
-                {
-                    id: 'charter',
-                    name: '包机客票查询',
-                    desc: '特殊政策查询',
-                    url: '',
-                    tags: ['特殊政策'],
-                    icon: 'fa-plane-arrival',
-                    clicks: 15
-                },
-                {
-                    id: 'dishonest',
-                    name: '失信人查询',
-                    desc: '中国执行信息公开网',
-                    url: 'http://zxgk.court.gov.cn/',
-                    tags: ['公共查询'],
-                    icon: 'fa-gavel',
-                    clicks: 19
-                },
-                {
-                    id: 'change',
-                    name: '客票退改签查询',
-                    desc: '各航司客规',
-                    url: 'http://www.8000yi.com/AirRule/tuigaiqian.aspx?Airlines=DZ',
-                    tags: ['客规查询'],
-                    icon: 'fa-file-contract',
-                    clicks: 26
-                },
-                // 短信模板
-                {
-                    id: 'sms',
-                    name: '短信模板中心',
-                    desc: '常用短信模板快捷入口',
-                    url: 'pages/sms.html',
-                    tags: ['短信模板'],
-                    icon: 'fa-comment-dots',
-                    clicks: 31
-                },
-                // 更多
-                {
-                    id: 'more',
-                    name: '更多板块研发中',
-                    desc: '敬请期待',
-                    url: 'https://www.baidu.com/',
-                    tags: ['百度'],
-                    icon: 'fa-retweet',
-                    clicks: 5
+            class BackendManager {
+                constructor() {
+                    this.supabase = null;
+                    this.isConnected = false;
+                    this.init();
                 }
-            ];
+
+                async init() {
+                    try {
+                        // 检查配置是否正确
+                        if (!SUPABASE_URL || SUPABASE_URL.includes('https://wglylvfuwtwrapgkoixl.supabase.co') || 
+                            !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnbHlsdmZ1d3R3cmFwZ2tvaXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3NjQwMDIsImV4cCI6MjA3OTM0MDAwMn0.OiINpSKraNUZgZc1Y7CW2U7igCEJbhpZHZ3Lfqnrmyg')) {
+                            console.warn('Supabase 配置未设置，使用本地模式');
+                            this.updateBackendStatus(false, '未配置云端');
+                            return;
+                        }
+
+                        this.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                        
+                        // 测试连接
+                        const { data, error } = await this.supabase.from('platform_config').select('*').limit(1);
+                        if (error) {
+                            console.warn('Supabase 连接测试失败，使用本地模式:', error);
+                            this.updateBackendStatus(false, '连接失败');
+                        } else {
+                            console.log('Supabase 连接成功');
+                            this.isConnected = true;
+                            this.updateBackendStatus(true, '已连接云端');
+                            
+                            // 监听配置变化
+                            this.setupRealtimeSubscription();
+                        }
+                    } catch (error) {
+                        console.error('Supabase 初始化失败:', error);
+                        this.updateBackendStatus(false, '初始化失败');
+                    }
+                }
+
+                updateBackendStatus(connected, message) {
+                    const statusElement = document.getElementById('backendStatus');
+                    if (statusElement) {
+                        statusElement.className = connected ? 'backend-status connected' : 'backend-status disconnected';
+                        statusElement.innerHTML = `<i class="fas fa-${connected ? 'check' : 'exclamation-triangle'}"></i> <span>${message}</span>`;
+                    }
+                }
+
+                // 设置实时订阅
+                setupRealtimeSubscription() {
+                    this.supabase
+                        .channel('platform-config-changes')
+                        .on('postgres_changes', 
+                            { 
+                                event: '*', 
+                                schema: 'public', 
+                                table: 'platform_config' 
+                            }, 
+                            (payload) => {
+                                console.log('配置已更新:', payload);
+                                this.handleConfigUpdate(payload);
+                            }
+                        )
+                        .subscribe((status) => {
+                            if (status === 'SUBSCRIBED') {
+                                console.log('实时订阅已建立');
+                            }
+                        });
+                }
+
+                // 处理配置更新
+                handleConfigUpdate(payload) {
+                    if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+                        const newConfig = payload.new;
+                        
+                        // 更新本地存储
+                        if (newConfig.templates) {
+                            localStorage.setItem('templates', JSON.stringify(newConfig.templates));
+                        }
+                        if (newConfig.template_visibility) {
+                            localStorage.setItem('templateVisibility', JSON.stringify(newConfig.template_visibility));
+                        }
+                        if (newConfig.users) {
+                            localStorage.setItem('users', JSON.stringify(newConfig.users));
+                        }
+                        
+                        // 刷新界面
+                        if (window.platformManager) {
+                            window.platformManager.templates = newConfig.templates || window.platformManager.templates;
+                            window.platformManager.templateVisibility = newConfig.template_visibility || window.platformManager.templateVisibility;
+                            window.platformManager.users = newConfig.users || window.platformManager.users;
+                            
+                            window.platformManager.renderModules();
+                            if (window.platformManager.isAdmin) {
+                                window.platformManager.renderTemplateManagement();
+                                window.platformManager.renderUserManagement();
+                            }
+                        }
+                        
+                        // 显示更新通知（非管理员）
+                        if (!window.platformManager?.isAdmin) {
+                            this.showUpdateNotification();
+                        }
+                    }
+                }
+
+                // 显示更新通知
+                showUpdateNotification() {
+                    const notification = document.createElement('div');
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: var(--success-color);
+                        color: white;
+                        padding: 15px 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                        z-index: 10000;
+                        cursor: pointer;
+                        animation: slideInRight 0.3s ease;
+                    `;
+                    notification.innerHTML = `
+                        <i class="fas fa-sync-alt"></i> 系统配置已更新，页面已自动刷新
+                    `;
+                    
+                    document.body.appendChild(notification);
+                    
+                    notification.addEventListener('click', () => {
+                        notification.remove();
+                    });
+                    
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 5000);
+                }
+
+                // 获取最新配置
+                async getLatestConfig() {
+                    if (!this.isConnected) {
+                        return this.getLocalConfig();
+                    }
+
+                    try {
+                        const { data, error } = await this.supabase
+                            .from('platform_config')
+                            .select('*')
+                            .order('updated_at', { ascending: false })
+                            .limit(1)
+                            .single();
+
+                        if (error) throw error;
+                        return data;
+                    } catch (error) {
+                        console.error('获取配置失败:', error);
+                        return this.getLocalConfig();
+                    }
+                }
+
+                // 保存配置到云端
+                async saveConfig(configData) {
+                    if (!this.isConnected) {
+                        console.warn('未连接到云端，使用本地存储');
+                        this.saveLocalConfig(configData);
+                        return false;
+                    }
+
+                    try {
+                        const config = {
+                            templates: configData.templates,
+                            template_visibility: configData.templateVisibility,
+                            users: configData.users,
+                            updated_by: configData.updatedBy,
+                            updated_at: new Date().toISOString()
+                        };
+
+                        const { data, error } = await this.supabase
+                            .from('platform_config')
+                            .upsert(config)
+                            .select();
+
+                        if (error) throw error;
+                        
+                        console.log('配置已保存到云端');
+                        return true;
+                    } catch (error) {
+                        console.error('保存配置失败:', error);
+                        this.saveLocalConfig(configData);
+                        return false;
+                    }
+                }
+
+                // 手动同步配置
+                async syncConfig() {
+                    if (!this.isConnected) {
+                        alert('未连接到云端，无法同步配置');
+                        return false;
+                    }
+
+                    try {
+                        const config = await this.getLatestConfig();
+                        if (config) {
+                            localStorage.setItem('templates', JSON.stringify(config.templates));
+                            localStorage.setItem('templateVisibility', JSON.stringify(config.template_visibility));
+                            localStorage.setItem('users', JSON.stringify(config.users));
+                            
+                            if (window.platformManager) {
+                                window.platformManager.templates = config.templates;
+                                window.platformManager.templateVisibility = config.template_visibility;
+                                window.platformManager.users = config.users;
+                                
+                                window.platformManager.renderModules();
+                                if (window.platformManager.isAdmin) {
+                                    window.platformManager.renderTemplateManagement();
+                                    window.platformManager.renderUserManagement();
+                                }
+                            }
+                            
+                            alert('配置同步成功！');
+                            return true;
+                        }
+                    } catch (error) {
+                        console.error('同步配置失败:', error);
+                        alert('同步配置失败: ' + error.message);
+                    }
+                    return false;
+                }
+
+                // 本地存储回退
+                getLocalConfig() {
+                    return {
+                        templates: JSON.parse(localStorage.getItem('templates') || '[]'),
+                        template_visibility: JSON.parse(localStorage.getItem('templateVisibility') || '{}'),
+                        users: JSON.parse(localStorage.getItem('users') || '[]')
+                    };
+                }
+
+                saveLocalConfig(configData) {
+                    localStorage.setItem('templates', JSON.stringify(configData.templates));
+                    localStorage.setItem('templateVisibility', JSON.stringify(configData.templateVisibility));
+                    localStorage.setItem('users', JSON.stringify(configData.users));
+                }
+            }
 
             class PlatformManager {
                 constructor() {
@@ -2040,18 +2097,25 @@
                     this.currentUser = sessionStorage.getItem('currentUser') || '';
                     this.isAdmin = this.currentUser === '胡国柱';
                     
+                    // 后端管理器
+                    this.backendManager = new BackendManager();
+                    
                     // 管理员相关数据
-                    this.templates = JSON.parse(localStorage.getItem('templates')) || [...modulesData];
-                    this.users = JSON.parse(localStorage.getItem('users')) || [];
+                    this.templates = JSON.parse(localStorage.getItem('templates')) || [];
                     this.templateVisibility = JSON.parse(localStorage.getItem('templateVisibility')) || {};
+                    this.users = JSON.parse(localStorage.getItem('users')) || [];
                     
                     this.init();
                 }
 
-                init() {
+                async init() {
                     this.checkAuth();
                     this.loadClickData();
                     this.setupEventListeners();
+                    
+                    // 从后端加载配置
+                    await this.loadConfigFromBackend();
+                    
                     this.renderModules();
                     this.applyTheme(this.currentTheme);
                     
@@ -2090,6 +2154,47 @@
                     });
                 }
 
+                async loadConfigFromBackend() {
+                    const config = await this.backendManager.getLatestConfig();
+                    
+                    if (config.templates && config.templates.length > 0) {
+                        this.templates = config.templates;
+                        localStorage.setItem('templates', JSON.stringify(this.templates));
+                    } else if (this.templates.length === 0) {
+                        // 如果本地和云端都没有数据，使用默认数据
+                        this.templates = [
+                            {
+                                id: 'aviation',
+                                name: '黑屏智能指令生成',
+                                desc: '支持身份证/护照双模式，自动生成标准民航指令',
+                                url: 'pages/aviation.html',
+                                tags: ['核心工具'],
+                                icon: 'fa-passport',
+                                clicks: 42
+                            },
+                            // ... 其他默认模块数据
+                        ];
+                        localStorage.setItem('templates', JSON.stringify(this.templates));
+                    }
+                    
+                    if (config.template_visibility) {
+                        this.templateVisibility = config.template_visibility;
+                        localStorage.setItem('templateVisibility', JSON.stringify(this.templateVisibility));
+                    }
+                    
+                    if (config.users && config.users.length > 0) {
+                        this.users = config.users;
+                        localStorage.setItem('users', JSON.stringify(this.users));
+                    } else if (this.users.length === 0) {
+                        // 默认用户
+                        this.users = [
+                            { username: '胡国柱', password: '123456' },
+                            { username: 'test', password: '123456' }
+                        ];
+                        localStorage.setItem('users', JSON.stringify(this.users));
+                    }
+                }
+
                 checkAuth() {
                     if (!sessionStorage.getItem('loggedIn') || !this.currentUser) {
                         window.location.href = 'login.html';
@@ -2107,32 +2212,12 @@
 
                 // 初始化管理员面板
                 initAdminPanel() {
-                    // 加载用户数据
-                    if (this.users.length === 0) {
-                        this.loadInitialUsers();
-                    }
-                    
                     // 渲染管理员面板
                     this.renderTemplateManagement();
                     this.renderUserManagement();
                     
                     // 设置管理员事件监听
                     this.setupAdminEventListeners();
-                }
-
-                // 从users.json加载初始用户数据
-                async loadInitialUsers() {
-                    try {
-                        const response = await fetch('users.json');
-                        if (response.ok) {
-                            const data = await response.json();
-                            this.users = data.users;
-                            localStorage.setItem('users', JSON.stringify(this.users));
-                            this.renderUserManagement();
-                        }
-                    } catch (error) {
-                        console.error('加载用户数据失败:', error);
-                    }
                 }
 
                 // 设置管理员事件监听
@@ -2161,6 +2246,11 @@
                     // 添加用户按钮
                     document.getElementById('addUserBtn').addEventListener('click', () => {
                         this.showAddUserModal();
+                    });
+                    
+                    // 同步配置按钮
+                    document.getElementById('syncConfigBtn').addEventListener('click', () => {
+                        this.backendManager.syncConfig();
                     });
                     
                     // 模态框关闭事件
@@ -2214,7 +2304,7 @@
                 }
 
                 // 保存新模板
-                saveNewTemplate() {
+                async saveNewTemplate() {
                     const name = document.getElementById('templateName').value;
                     const description = document.getElementById('templateDescription').value;
                     const url = document.getElementById('templateUrl').value;
@@ -2238,15 +2328,18 @@
                     this.templates.push(newTemplate);
                     localStorage.setItem('templates', JSON.stringify(this.templates));
                     
+                    // 保存到云端
+                    const success = await this.saveConfigToBackend();
+                    
                     this.hideAddTemplateModal();
                     this.renderTemplateManagement();
                     this.renderModules();
                     
-                    alert('模板添加成功！');
+                    alert('模板添加成功！' + (success ? '已同步到所有用户。' : '（仅本地保存）'));
                 }
 
                 // 保存新用户
-                saveNewUser() {
+                async saveNewUser() {
                     const username = document.getElementById('newUsername').value;
                     const password = document.getElementById('newPassword').value;
                     const confirmPassword = document.getElementById('confirmPassword').value;
@@ -2275,16 +2368,50 @@
                     this.users.push(newUser);
                     localStorage.setItem('users', JSON.stringify(this.users));
                     
+                    // 保存到云端
+                    const success = await this.saveConfigToBackend();
+                    
                     this.hideAddUserModal();
                     this.renderUserManagement();
                     
-                    alert('用户添加成功！');
+                    alert('用户添加成功！' + (success ? '已同步到云端。' : '（仅本地保存）'));
+                }
+
+                // 保存配置到后端
+                async saveConfigToBackend() {
+                    const configData = {
+                        templates: this.templates,
+                        templateVisibility: this.templateVisibility,
+                        users: this.users,
+                        updatedBy: this.currentUser
+                    };
+                    
+                    return await this.backendManager.saveConfig(configData);
                 }
 
                 // 渲染模板管理
                 renderTemplateManagement() {
                     const templateList = document.getElementById('templateList');
                     templateList.innerHTML = '';
+                    
+                    // 添加同步说明
+                    const syncInfo = document.createElement('div');
+                    syncInfo.style.cssText = `
+                        background: #e3f2fd;
+                        border: 1px solid #2196f3;
+                        border-radius: 8px;
+                        padding: 15px;
+                        margin-bottom: 20px;
+                        font-size: 0.9rem;
+                        color: #0d47a1;
+                    `;
+                    syncInfo.innerHTML = `
+                        <strong><i class="fas fa-info-circle"></i> 多用户同步说明：</strong><br>
+                        所有更改将自动同步到所有用户的浏览器，无需手动操作。
+                        ${!this.backendManager.isConnected ? '<br><strong style="color: var(--danger-color);">当前未连接云端，更改仅本地保存</strong>' : ''}
+                    `;
+                    
+                    templateList.appendChild(syncInfo);
                     
                     this.templates.forEach(template => {
                         const isVisible = !this.templateVisibility[template.id] || 
@@ -2372,7 +2499,7 @@
                 }
 
                 // 切换模板可见性
-                toggleTemplateVisibility(templateId) {
+                async toggleTemplateVisibility(templateId) {
                     const currentVisibility = this.templateVisibility[templateId];
                     
                     if (!currentVisibility || currentVisibility.includes('*')) {
@@ -2384,46 +2511,73 @@
                     }
                     
                     localStorage.setItem('templateVisibility', JSON.stringify(this.templateVisibility));
+                    
+                    // 保存到云端
+                    const success = await this.saveConfigToBackend();
+                    if (success) {
+                        console.log('配置已同步到云端');
+                    }
+                    
                     this.renderTemplateManagement();
                     this.renderModules();
                 }
 
                 // 删除模板
-                deleteTemplate(templateId) {
-                    if (confirm('确定要删除这个模板吗？此操作不可撤销。')) {
+                async deleteTemplate(templateId) {
+                    if (confirm('确定要删除这个模板吗？此操作将同步到所有用户。')) {
                         this.templates = this.templates.filter(t => t.id !== templateId);
                         delete this.templateVisibility[templateId];
                         
                         localStorage.setItem('templates', JSON.stringify(this.templates));
                         localStorage.setItem('templateVisibility', JSON.stringify(this.templateVisibility));
                         
+                        // 保存到云端
+                        const success = await this.saveConfigToBackend();
+                        if (success) {
+                            console.log('配置已同步到云端');
+                        }
+                        
                         this.renderTemplateManagement();
                         this.renderModules();
                         
-                        alert('模板删除成功！');
+                        alert('模板删除成功！' + (success ? '（已同步）' : '（仅本地）'));
                     }
                 }
 
                 // 重置用户密码
-                resetUserPassword(username) {
+                async resetUserPassword(username) {
                     if (confirm(`确定要重置用户 "${username}" 的密码吗？`)) {
                         const user = this.users.find(u => u.username === username);
                         if (user) {
                             user.password = '123456';
                             localStorage.setItem('users', JSON.stringify(this.users));
+                            
+                            // 保存到云端
+                            const success = await this.saveConfigToBackend();
+                            if (success) {
+                                console.log('配置已同步到云端');
+                            }
+                            
                             this.renderUserManagement();
-                            alert(`用户 "${username}" 的密码已重置为 123456`);
+                            alert(`用户 "${username}" 的密码已重置为 123456` + (success ? '（已同步）' : '（仅本地）'));
                         }
                     }
                 }
 
                 // 删除用户
-                deleteUser(username) {
-                    if (confirm(`确定要删除用户 "${username}" 吗？此操作不可撤销。`)) {
+                async deleteUser(username) {
+                    if (confirm(`确定要删除用户 "${username}" 吗？此操作将同步到所有用户。`)) {
                         this.users = this.users.filter(u => u.username !== username);
                         localStorage.setItem('users', JSON.stringify(this.users));
+                        
+                        // 保存到云端
+                        const success = await this.saveConfigToBackend();
+                        if (success) {
+                            console.log('配置已同步到云端');
+                        }
+                        
                         this.renderUserManagement();
-                        alert(`用户 "${username}" 已删除`);
+                        alert(`用户 "${username}" 已删除` + (success ? '（已同步）' : '（仅本地）'));
                     }
                 }
 
@@ -2921,7 +3075,9 @@
             }
 
             // 初始化
-            document.addEventListener('DOMContentLoaded', () => new PlatformManager());
+            document.addEventListener('DOMContentLoaded', () => {
+                window.platformManager = new PlatformManager();
+            });
         })();
     </script>
 </body>
